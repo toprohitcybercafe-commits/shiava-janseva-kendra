@@ -8,27 +8,31 @@
     *{box-sizing:border-box}
     body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#172033}
     .top{background:#111827;color:#fff;padding:16px}
-    .top h1{margin:0;font-size:21px}.top p{margin:5px 0 0;color:#cbd5e1;font-size:13px}
+    .top h1{margin:0;font-size:21px}
+    .top p{margin:5px 0 0;color:#cbd5e1;font-size:13px}
     .wrap{max-width:1100px;margin:auto;padding:18px}
-    .balance{background:#fff;border-radius:14px;padding:18px;margin-bottom:18px;box-shadow:0 3px 14px #00000012}
+    .balance{background:#fff;border-radius:14px;padding:18px;margin-bottom:18px;box-shadow:0 3px 14px rgba(0,0,0,.06)}
     .balance strong{font-size:25px}
+    h2{margin:18px 0 12px}
     .services{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-    .service-tile{width:100%;text-align:left;border:0;background:#fff;border-radius:14px;padding:18px;cursor:pointer;box-shadow:0 3px 14px #00000012}
+    .service-tile{width:100%;text-align:left;border:1px solid #dbe2ea;background:#fff;border-radius:14px;padding:18px;cursor:pointer}
     .service-tile:hover{transform:translateY(-1px)}
-    .service-tile h3{margin:0 0 8px;font-size:16px}.service-tile p{margin:0 0 14px;color:#64748b;font-size:13px}
-    .open{display:inline-block;background:#2563eb;color:white;border-radius:8px;padding:9px 13px;font-size:13px}
-    .modal{display:none;position:fixed;inset:0;background:#0008;z-index:9999;padding:20px;overflow:auto}
+    .service-tile h3{margin:0 0 8px;font-size:16px}
+    .service-tile p{margin:0 0 14px;color:#64748b;font-size:14px}
+    .open{display:inline-block;background:#2563eb;color:white;border-radius:8px;padding:9px 13px;font-size:14px}
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;padding:20px;overflow:auto}
     .modal.open{display:flex;align-items:center;justify-content:center}
     .box{background:#fff;width:min(560px,100%);border-radius:16px;padding:20px;position:relative}
     .close{position:absolute;right:14px;top:10px;border:0;background:none;font-size:28px;cursor:pointer}
     label{display:block;font-weight:600;font-size:13px;margin:13px 0 6px}
     input,select,textarea{width:100%;padding:11px;border:1px solid #d5dbe5;border-radius:8px;font-size:14px}
     textarea{min-height:90px;resize:vertical}
-    .submit{margin-top:16px;width:100%;border:0;background:#16a34a;color:white;padding:12px;border-radius:9px;font-size:15px;font-weight:700;cursor:pointer}
+    .submit{margin-top:16px;width:100%;border:0;background:#16a34a;color:white;padding:12px;border-radius:8px;font-size:15px;cursor:pointer}
     .hint{font-size:12px;color:#64748b;margin-top:8px}
     .empty{background:#fff;padding:20px;border-radius:12px;color:#64748b}
   </style>
 </head>
+
 <body>
   <div class="top">
     <div class="wrap">
@@ -50,8 +54,10 @@
         {% for s in services %}
           <button type="button" class="service-tile"
                   onclick='openService({{ s|tojson|safe }})'>
-            <h3>{{ s.name|default(s.title|default(s)) }}</h3>
-            <p>{{ s.description|default("Online service assistance") }}</p>
+            <h3>{{ s.name if s.name is defined else s }}</h3>
+            <p>
+              {{ s.description if s.description is defined else "Online service assistance" }}
+            </p>
             <span class="open">Open Service</span>
           </button>
         {% endfor %}
@@ -63,7 +69,7 @@
 
   <div id="serviceModal" class="modal" aria-hidden="true">
     <div class="box">
-      <button type="button" class="close" onclick="closeService()" aria-label="Close">×</button>
+      <button type="button" class="close" onclick="closeService()" aria-label="Close">&times;</button>
       <h2 id="modalTitle">Service Request</h2>
 
       <form id="serviceForm" method="POST" action="/request">
@@ -72,86 +78,59 @@
         <label for="customer_name">Customer Name</label>
         <input id="customer_name" name="customer_name" type="text" required>
 
-        <label for="mobile">Mobile Number</label>
-        <input id="mobile" name="mobile" type="tel" maxlength="10" required>
+        <label for="customer_mobile">Mobile Number</label>
+        <input id="customer_mobile" name="customer_mobile" type="tel" maxlength="10" required>
 
-        <div id="dynamicFields"></div>
+        <label for="message">Message / Extra Details</label>
+        <textarea id="message" name="message" maxlength="500"
+                  placeholder="Aadhaar number/OTP mat likhein"></textarea>
 
-        <label for="message">Additional Details</label>
-        <textarea id="message" name="message" placeholder="Agar koi extra information ho..."></textarea>
-
+        <div class="hint">OTP, password ya sensitive login details yahan share na karein.</div>
         <button class="submit" type="submit">Submit Service Request</button>
-        <div class="hint">Submit karne se pehle customer details check kar lein.</div>
       </form>
     </div>
   </div>
 
-<script>
-function getValue(obj, keys, fallback) {
-  if (!obj || typeof obj !== "object") return fallback;
-  for (const key of keys) {
-    if (obj[key] !== undefined && obj[key] !== null && obj[key] !== "") return obj[key];
-  }
-  return fallback;
-}
+  <script>
+    function getServiceName(service){
+      if (service === null || service === undefined) return '';
+      if (typeof service === 'string') return service;
+      if (typeof service === 'object'){
+        if (service.name !== undefined && service.name !== null) return String(service.name);
+        if (service.title !== undefined && service.title !== null) return String(service.title);
+        return JSON.stringify(service);
+      }
+      return String(service);
+    }
 
-function openService(service) {
-  const modal = document.getElementById("serviceModal");
-  const select = document.getElementById("serviceSelect");
-  const title = document.getElementById("modalTitle");
-  const fields = document.getElementById("dynamicFields");
+    function openService(service){
+      const modal = document.getElementById('serviceModal');
+      const select = document.getElementById('serviceSelect');
+      const title = document.getElementById('modalTitle');
 
-  const name = typeof service === "string"
-    ? service
-    : getValue(service, ["name","title","service","label"], "Service Request");
+      const name = getServiceName(service);
+      select.value = name;
+      title.textContent = name || 'Service Request';
 
-  title.textContent = name;
-  select.value = name;
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden','false');
+      document.body.style.overflow='hidden';
+    }
 
-  fields.innerHTML = "";
+    function closeService(){
+      const modal = document.getElementById('serviceModal');
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden','true');
+      document.body.style.overflow='';
+    }
 
-  const rawFields = typeof service === "object" && service
-    ? getValue(service, ["fields","service_fields"], [])
-    : [];
-
-  let list = rawFields;
-  if (typeof rawFields === "string") {
-    try { list = JSON.parse(rawFields); } catch(e) { list = []; }
-  }
-
-  if (Array.isArray(list)) {
-    list.forEach((item, index) => {
-      const fieldName = typeof item === "string" ? item : getValue(item, ["name","label","field"], "Document");
-      const inputName = typeof item === "string" ? item.toLowerCase().replace(/[^a-z0-9]+/g,"_") : getValue(item, ["key","name","field"], "field_"+index);
-      const label = document.createElement("label");
-      label.textContent = fieldName;
-      const input = document.createElement("input");
-      input.name = inputName;
-      input.type = "text";
-      fields.appendChild(label);
-      fields.appendChild(input);
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape') closeService();
     });
-  }
 
-  modal.classList.add("open");
-  modal.setAttribute("aria-hidden","false");
-  document.body.style.overflow = "hidden";
-}
-
-function closeService() {
-  const modal = document.getElementById("serviceModal");
-  modal.classList.remove("open");
-  modal.setAttribute("aria-hidden","true");
-  document.body.style.overflow = "";
-}
-
-document.getElementById("serviceModal").addEventListener("click", function(e) {
-  if (e.target === this) closeService();
-});
-
-document.addEventListener("keydown", function(e) {
-  if (e.key === "Escape") closeService();
-});
-</script>
+    document.getElementById('serviceModal').addEventListener('click', function(e){
+      if(e.target === this) closeService();
+    });
+  </script>
 </body>
 </html>
