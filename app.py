@@ -50,6 +50,7 @@ def verify_password(password, stored):
 
 def init_db():
     con = db()
+    init_db()
     con.executescript("""
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
