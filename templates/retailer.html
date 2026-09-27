@@ -1,10 +1,40 @@
 <!doctype html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Retailer Dashboard</title><link rel="stylesheet" href="/static/style.css"></head><body>
-<header><div class="wrap nav"><div><h1>Retailer Dashboard</h1><small>{{retailer.name}} · {{retailer.username}}</small></div><a class="btn ghost" href="/logout">Logout</a></div></header><main class="wrap">
+<header><div class="wrap nav"><div class="brand"><img src="/static/logo.svg" class="brand-logo" alt="Shiva Janseva Kendra logo"><div><h1>Shiva Janseva Kendra</h1><small>Retailer Dashboard · {{retailer.name}} · {{retailer.username}}</small></div></div><a class="btn ghost" href="/logout">Logout</a></div></header><main class="wrap">
 {% with messages=get_flashed_messages(with_categories=true) %}{% for cat,msg in messages %}<div class="alert {{cat}}">{{msg}}</div>{% endfor %}{% endwith %}
 <section class="wallet-grid"><div class="wallet-card"><span>Wallet Balance</span><strong>₹{{"{:,.2f}".format(retailer.wallet_balance or 0)}}</strong><small>Minimum required balance: ₹{{"{:,.0f}".format(min_required_balance)}}</small></div><div class="wallet-card"><span>Minimum Add</span><strong>₹{{"{:,.0f}".format(min_topup)}}</strong><small>QR payment + Transaction ID</small></div><div class="wallet-card"><span>Service Charge</span><strong>₹{{"{:,.0f}".format(service_charge)}}</strong><small>₹20 must remain after request</small></div></section>
 
+<section class="card services-dashboard">
+<h2>🧾 All Services</h2>
+<p class="muted">Dashboard se kisi bhi service ko directly open karein.</p>
+<div class="service-grid">
+{% for s in services %}<button type="button" class="service-tile" onclick="openService({{s|tojson}})"><span class="service-icon">{{ service_icons.get(s, '📄') }}</span><span>{{s}}</span><small>Open Service</small></button>{% endfor %}
+</div>
+</section>
+
 <div class="two-col">
-<section class="card"><h2>💰 Add Wallet</h2><p>₹{{"{:,.0f}".format(min_topup)}} minimum. QR scan karke payment karein, phir Transaction ID/UTR submit karein.</p><img class="qr" src="/static/qr.jpg" alt="Payment QR Code"><form method="post" action="/retailer/topup"><label>Amount (₹)<input name="amount" type="number" min="{{min_topup}}" step="1" required></label><label>Transaction ID / UTR<input name="transaction_id" maxlength="100" required placeholder="Payment ke baad UTR/Transaction ID"></label><button class="btn">Submit Wallet Request</button></form></section>
+<section class="card">
+<h2>💰 Add Wallet</h2>
+<p>₹{{"{:,.0f}".format(min_topup)}} minimum. Wallet add karne ke liye button dabayein.</p>
+<button type="button" class="btn" id="openWalletBtn" onclick="toggleWalletBox()">➕ Add Wallet</button>
+<div id="walletBox" style="display:none;margin-top:16px;">
+<p class="muted">QR scan karke payment karein, phir Transaction ID/UTR submit karein.</p>
+<img class="qr" src="/static/qr.jpg" alt="Payment QR Code">
+<form method="post" action="/retailer/topup">
+<label>Amount (₹)<input name="amount" type="number" min="{{min_topup}}" step="1" required></label>
+<label>Transaction ID / UTR<input name="transaction_id" maxlength="100" required placeholder="Payment ke baad UTR/Transaction ID"></label>
+<button class="btn">Submit Wallet Request</button>
+</form>
+</div>
+<script>
+function toggleWalletBox(){
+ const box=document.getElementById('walletBox');
+ const btn=document.getElementById('openWalletBtn');
+ const open=box.style.display==='none';
+ box.style.display=open?'block':'none';
+ btn.textContent=open?'✖ Close Wallet':'➕ Add Wallet';
+}
+</script>
+</section>
 
 <section class="card"><h2>🧾 Service Request</h2>
 <p class="muted">Service select karte hi required fields dikhenge. Charge Admin set karta hai. Request ke baad wallet me kam se kam ₹{{"{:,.0f}".format(min_required_balance)}} rehna chahiye.</p>
@@ -15,15 +45,39 @@
 <div id="chargeBox" class="notice">Service select karein.</div>
 <button class="btn">Submit Service Request</button></form>
 <script>
+function openService(service){
+ const sel=document.getElementById('serviceSelect');
+ sel.value=service;
+ sel.dispatchEvent(new Event('change'));
+ document.getElementById('serviceForm').scrollIntoView({behavior:'smooth',block:'start'});
+}
 const fields={{service_fields|tojson}};
+const states=[
+'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal',
+'Andaman and Nicobar Islands','Chandigarh','Dadra and Nagar Haveli and Daman and Diu','Delhi','Jammu and Kashmir','Ladakh','Lakshadweep','Puducherry'
+];
 const charges={% set dummy=namespace(x=1) %}{ {% for c in service_charges %}{{c.service|tojson}}:{{c.charge|float}},{% endfor %} };
 const sel=document.getElementById('serviceSelect'), holder=document.getElementById('serviceFields'), box=document.getElementById('chargeBox');
-sel.addEventListener('change',()=>{holder.innerHTML=''; const fs=fields[sel.value]||[]; fs.forEach(([key,label,type,req])=>{const l=document.createElement('label');l.textContent=label+(req?'*':'');const i=document.createElement('input');i.name=key;i.type=type;i.required=req;i.maxLength=120;l.appendChild(i);holder.appendChild(l)});const c=Number(charges[sel.value]||0);box.textContent='Service Charge: ₹'+c.toFixed(2);});
+sel.addEventListener('change',()=>{holder.innerHTML=''; const fs=fields[sel.value]||[]; fs.forEach(([key,label,type,req])=>{const l=document.createElement('label');l.textContent=label+(req?'*':'');let i;if(key==='state_name'){i=document.createElement('select');i.name=key;i.required=req;const first=document.createElement('option');first.value='';first.textContent='Select State / UT';i.appendChild(first);states.forEach(st=>{const o=document.createElement('option');o.value=st;o.textContent=st;i.appendChild(o)});}else{i=document.createElement('input');i.name=key;i.type=type;i.required=req;i.maxLength=120;}l.appendChild(i);holder.appendChild(l)});const c=Number(charges[sel.value]||0);box.textContent='Service Charge: ₹'+c.toFixed(2);});
+
+async function updatePresence(){
+  const service=sel.value||'';
+  try{
+    await fetch('/retailer/presence',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'service='+encodeURIComponent(service),credentials:'same-origin',keepalive:true});
+  }catch(e){}
+}
+async function markOffline(){
+  try{await fetch('/retailer/presence/offline',{method:'POST',credentials:'same-origin',keepalive:true});}catch(e){}
+}
+sel.addEventListener('change',updatePresence);
+updatePresence();
+setInterval(updatePresence,10000);
+window.addEventListener('pagehide',markOffline);
 </script></section></div>
 
 <section class="card"><h2>Wallet Add Requests</h2><div class="tablewrap"><table><thead><tr><th>ID</th><th>Amount</th><th>Transaction ID</th><th>Status</th><th>Date</th></tr></thead><tbody>{% for t in topups %}<tr><td>#{{t.id}}</td><td>₹{{"{:,.2f}".format(t.amount)}}</td><td>{{t.transaction_id}}</td><td><span class="badge {{t.status|lower}}">{{t.status}}</span></td><td>{{t.created_at}}</td></tr>{% else %}<tr><td colspan="5">No wallet requests yet.</td></tr>{% endfor %}</tbody></table></div></section>
 
-<section class="card"><h2>Service History</h2><div class="tablewrap"><table><thead><tr><th>ID</th><th>Customer</th><th>Service</th><th>Charge</th><th>Status</th><th>Date</th></tr></thead><tbody>{% for r in requests %}<tr><td>#{{r.id}}</td><td>{{r.name}}<br>{{r.phone}}</td><td>{{r.service}}</td><td>₹{{"{:,.2f}".format(r.charge)}}</td><td><span class="badge {{r.status|lower}}">{{r.status}}</span></td><td>{{r.created_at}}</td></tr>{% else %}<tr><td colspan="6">No service requests yet.</td></tr>{% endfor %}</tbody></table></div></section>
+<section class="card"><h2>Service History</h2><div class="tablewrap"><table><thead><tr><th>ID</th><th>Customer</th><th>Service</th><th>Charge</th><th>Status</th><th>PDF</th><th>Date</th></tr></thead><tbody>{% for r in requests %}<tr><td>#{{r.id}}</td><td>{{r.name}}<br>{{r.phone}}</td><td>{{r.service}}</td><td>₹{{"{:,.2f}".format(r.charge)}}</td><td>{% if r.status=="Success" %}<span class="approved-msg">🟢 Successfully Approved</span>{% else %}<span class="badge {{r.status|lower}}">{{r.status}}</span>{% endif %}</td><td>{% if r.status=="Success" and r.pdf_filename %}<a class="btn" href="/retailer/request/{{r.id}}/download">📄 Download PDF</a>{% else %}-{% endif %}</td><td>{{r.created_at}}</td></tr>{% else %}<tr><td colspan="7">No service requests yet.</td></tr>{% endfor %}</tbody></table></div></section>
 
 <section class="card"><h2>Wallet Ledger</h2><div class="tablewrap"><table><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Balance After</th><th>Note</th></tr></thead><tbody>{% for l in ledger %}<tr><td>{{l.created_at}}</td><td>{{l.type}}</td><td class="{% if l.amount < 0 %}negative{% else %}positive{% endif %}">₹{{"{:,.2f}".format(l.amount)}}</td><td>₹{{"{:,.2f}".format(l.balance_after)}}</td><td>{{l.note or '-'}}</td></tr>{% else %}<tr><td colspan="5">No ledger entries yet.</td></tr>{% endfor %}</tbody></table></div></section>
 </main></body></html>
