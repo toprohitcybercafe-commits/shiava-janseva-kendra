@@ -4,36 +4,216 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Retailer Dashboard - Shiva Janseva Kendra</title>
+
   <style>
     *{box-sizing:border-box}
-    body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#172033}
-    .top{background:#111827;color:#fff;padding:16px}
-    .top h1{margin:0;font-size:21px}
-    .top p{margin:5px 0 0;color:#cbd5e1;font-size:13px}
-    .wrap{max-width:1100px;margin:auto;padding:18px}
-    .balance{background:#fff;border-radius:14px;padding:18px;margin-bottom:18px;box-shadow:0 3px 14px rgba(0,0,0,.06)}
-    .balance strong{font-size:25px}
-    h2{margin:18px 0 12px}
-    .services{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-    .service-tile{width:100%;text-align:left;border:1px solid #dbe2ea;background:#fff;border-radius:14px;padding:18px;cursor:pointer}
-    .service-tile:hover{transform:translateY(-1px)}
-    .service-tile h3{margin:0 0 8px;font-size:16px}
-    .service-tile p{margin:0 0 14px;color:#64748b;font-size:14px}
-    .open{display:inline-block;background:#2563eb;color:white;border-radius:8px;padding:9px 13px;font-size:14px}
-    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;padding:20px;overflow:auto}
-    .modal.open{display:flex;align-items:center;justify-content:center}
-    .box{background:#fff;width:min(560px,100%);border-radius:16px;padding:20px;position:relative}
-    .close{position:absolute;right:14px;top:10px;border:0;background:none;font-size:28px;cursor:pointer}
-    label{display:block;font-weight:600;font-size:13px;margin:13px 0 6px}
-    input,select,textarea{width:100%;padding:11px;border:1px solid #d5dbe5;border-radius:8px;font-size:14px}
-    textarea{min-height:90px;resize:vertical}
-    .submit{margin-top:16px;width:100%;border:0;background:#16a34a;color:white;padding:12px;border-radius:8px;font-size:15px;cursor:pointer}
-    .hint{font-size:12px;color:#64748b;margin-top:8px}
-    .empty{background:#fff;padding:20px;border-radius:12px;color:#64748b}
+
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      background:#f5f7fb;
+      color:#172033
+    }
+
+    .top{
+      background:#111827;
+      color:#fff;
+      padding:16px
+    }
+
+    .top h1{
+      margin:0;
+      font-size:21px
+    }
+
+    .top p{
+      margin:5px 0 0;
+      color:#cbd5e1;
+      font-size:13px
+    }
+
+    .wrap{
+      max-width:1100px;
+      margin:auto;
+      padding:18px
+    }
+
+    .balance{
+      background:#fff;
+      border-radius:14px;
+      padding:18px;
+      margin-bottom:18px;
+      box-shadow:0 3px 14px rgba(0,0,0,.06)
+    }
+
+    .balance strong{
+      font-size:25px
+    }
+
+    h2{
+      margin:18px 0 12px
+    }
+
+    .services{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:14px
+    }
+
+    .service-tile{
+      width:100%;
+      text-align:left;
+      border:1px solid #dbe2ea;
+      background:#fff;
+      border-radius:14px;
+      padding:18px;
+      cursor:pointer;
+      transition:.2s;
+    }
+
+    .service-tile:hover{
+      transform:translateY(-2px);
+      box-shadow:0 5px 15px rgba(0,0,0,.08)
+    }
+
+    /* SERVICE ICON */
+    .service-icon{
+      width:52px;
+      height:52px;
+      border-radius:13px;
+      background:#eff6ff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:27px;
+      margin-bottom:12px;
+    }
+
+    .service-tile h3{
+      margin:0 0 8px;
+      font-size:16px;
+      line-height:1.35
+    }
+
+    .service-tile p{
+      margin:0 0 14px;
+      color:#64748b;
+      font-size:14px
+    }
+
+    .open{
+      display:inline-block;
+      background:#2563eb;
+      color:white;
+      border-radius:8px;
+      padding:9px 13px;
+      font-size:14px
+    }
+
+    /* MODAL */
+    .modal{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.55);
+      z-index:999;
+      padding:20px;
+      overflow:auto
+    }
+
+    .modal.open{
+      display:flex;
+      align-items:center;
+      justify-content:center
+    }
+
+    .box{
+      background:#fff;
+      width:min(560px,100%);
+      border-radius:16px;
+      padding:20px;
+      position:relative;
+      max-height:95vh;
+      overflow:auto
+    }
+
+    .close{
+      position:absolute;
+      right:14px;
+      top:10px;
+      border:0;
+      background:none;
+      font-size:28px;
+      cursor:pointer
+    }
+
+    #modalTitle{
+      margin-top:0;
+      padding-right:35px;
+    }
+
+    label{
+      display:block;
+      font-weight:600;
+      font-size:13px;
+      margin:13px 0 6px
+    }
+
+    input,select,textarea{
+      width:100%;
+      padding:11px;
+      border:1px solid #d5dbe5;
+      border-radius:8px;
+      font-size:14px;
+      background:#fff
+    }
+
+    textarea{
+      min-height:90px;
+      resize:vertical
+    }
+
+    .submit{
+      margin-top:16px;
+      width:100%;
+      border:0;
+      background:#16a34a;
+      color:white;
+      padding:12px;
+      border-radius:8px;
+      font-size:15px;
+      cursor:pointer
+    }
+
+    .hint{
+      font-size:12px;
+      color:#64748b;
+      margin-top:8px
+    }
+
+    .empty{
+      background:#fff;
+      padding:20px;
+      border-radius:12px;
+      color:#64748b
+    }
+
+    @media(max-width:600px){
+      .services{
+        grid-template-columns:1fr
+      }
+
+      .modal{
+        padding:10px
+      }
+    }
   </style>
 </head>
 
+
 <body>
+
+  <!-- HEADER -->
   <div class="top">
     <div class="wrap">
       <h1>Shiva Janseva Kendra</h1>
@@ -41,96 +221,416 @@
     </div>
   </div>
 
+
   <main class="wrap">
+
+    <!-- WALLET -->
     <section class="balance">
       <div>Wallet Balance</div>
       <strong>₹{{ wallet_balance|default(0) }}</strong>
     </section>
 
+
     <h2>All Services</h2>
 
+
+    <!-- SERVICES -->
     <section class="services">
+
       {% if services %}
+
         {% for s in services %}
-          <button type="button" class="service-tile"
-                  onclick='openService({{ s|tojson|safe }})'>
-            <h3>{{ s.name if s.name is defined else s }}</h3>
+
+          <button
+            type="button"
+            class="service-tile"
+            onclick='openService({{ s|tojson|safe }})'
+          >
+
+            <!-- ICON -->
+            <div class="service-icon" data-service="{{ s.name if s.name is defined else s }}">
+              📋
+            </div>
+
+            <h3>
+              {{ s.name if s.name is defined else s }}
+            </h3>
+
             <p>
               {{ s.description if s.description is defined else "Online service assistance" }}
             </p>
-            <span class="open">Open Service</span>
+
+            <span class="open">
+              Open Service
+            </span>
+
           </button>
+
         {% endfor %}
+
       {% else %}
-        <div class="empty">Abhi koi service available nahi hai.</div>
+
+        <div class="empty">
+          Abhi koi service available nahi hai.
+        </div>
+
       {% endif %}
+
     </section>
+
   </main>
 
+
+  <!-- SERVICE MODAL -->
   <div id="serviceModal" class="modal" aria-hidden="true">
+
     <div class="box">
-      <button type="button" class="close" onclick="closeService()" aria-label="Close">&times;</button>
-      <h2 id="modalTitle">Service Request</h2>
 
-      <form id="serviceForm" method="POST" action="/request">
-        <input type="hidden" id="serviceSelect" name="service">
+      <button
+        type="button"
+        class="close"
+        onclick="closeService()"
+        aria-label="Close"
+      >
+        &times;
+      </button>
 
-        <label for="customer_name">Customer Name</label>
-        <input id="customer_name" name="customer_name" type="text" required>
 
-        <label for="customer_mobile">Mobile Number</label>
-        <input id="customer_mobile" name="customer_mobile" type="tel" maxlength="10" required>
+      <!-- POPUP TITLE -->
+      <h2 id="modalTitle">
+        Service Request
+      </h2>
 
-        <label for="message">Message / Extra Details</label>
-        <textarea id="message" name="message" maxlength="500"
-                  placeholder="Aadhaar number/OTP mat likhein"></textarea>
 
-        <div class="hint">OTP, password ya sensitive login details yahan share na karein.</div>
-        <button class="submit" type="submit">Submit Service Request</button>
+      <form
+        id="serviceForm"
+        method="POST"
+        action="/request"
+      >
+
+        <!-- SERVICE NAME -->
+        <input
+          type="hidden"
+          id="serviceSelect"
+          name="service"
+        >
+
+
+        <!-- STATE -->
+        <label for="state">
+          Select State
+        </label>
+
+        <select
+          id="state"
+          name="state"
+          required
+        >
+
+          <option value="">
+            Select State
+          </option>
+
+          <option>Andhra Pradesh</option>
+          <option>Arunachal Pradesh</option>
+          <option>Assam</option>
+          <option>Bihar</option>
+          <option>Chhattisgarh</option>
+          <option>Goa</option>
+          <option>Gujarat</option>
+          <option>Haryana</option>
+          <option>Himachal Pradesh</option>
+          <option>Jharkhand</option>
+          <option>Karnataka</option>
+          <option>Kerala</option>
+          <option>Madhya Pradesh</option>
+          <option>Maharashtra</option>
+          <option>Manipur</option>
+          <option>Meghalaya</option>
+          <option>Mizoram</option>
+          <option>Nagaland</option>
+          <option>Odisha</option>
+          <option>Punjab</option>
+          <option>Rajasthan</option>
+          <option>Sikkim</option>
+          <option>Tamil Nadu</option>
+          <option>Telangana</option>
+          <option>Tripura</option>
+          <option>Uttar Pradesh</option>
+          <option>Uttarakhand</option>
+          <option>West Bengal</option>
+          <option>Andaman and Nicobar Islands</option>
+          <option>Chandigarh</option>
+          <option>Dadra and Nagar Haveli and Daman and Diu</option>
+          <option>Delhi</option>
+          <option>Jammu and Kashmir</option>
+          <option>Ladakh</option>
+          <option>Lakshadweep</option>
+          <option>Puducherry</option>
+
+        </select>
+
+
+        <!-- CUSTOMER NAME -->
+        <label for="customer_name">
+          Customer Name
+        </label>
+
+        <input
+          id="customer_name"
+          name="customer_name"
+          type="text"
+          placeholder="Enter customer name"
+          required
+        >
+
+
+        <!-- MOBILE -->
+        <label for="customer_mobile">
+          Mobile Number
+        </label>
+
+        <input
+          id="customer_mobile"
+          name="customer_mobile"
+          type="tel"
+          maxlength="10"
+          inputmode="numeric"
+          placeholder="Enter 10 digit mobile number"
+          required
+        >
+
+
+        <!-- DETAILS -->
+        <label for="message">
+          Message / Extra Details
+        </label>
+
+        <textarea
+          id="message"
+          name="message"
+          maxlength="500"
+          placeholder="Service ke baare me details likhein"
+        ></textarea>
+
+
+        <div class="hint">
+          OTP, password ya sensitive login details yahan share na karein.
+        </div>
+
+
+        <button
+          class="submit"
+          type="submit"
+        >
+          Submit Service Request
+        </button>
+
       </form>
+
     </div>
+
   </div>
 
+
   <script>
+
+    /* SERVICE NAME */
     function getServiceName(service){
-      if (service === null || service === undefined) return '';
-      if (typeof service === 'string') return service;
-      if (typeof service === 'object'){
-        if (service.name !== undefined && service.name !== null) return String(service.name);
-        if (service.title !== undefined && service.title !== null) return String(service.title);
-        return JSON.stringify(service);
+
+      if(service === null || service === undefined){
+        return '';
       }
+
+      if(typeof service === 'string'){
+        return service;
+      }
+
+      if(typeof service === 'object'){
+
+        if(
+          service.name !== undefined &&
+          service.name !== null
+        ){
+          return String(service.name);
+        }
+
+        if(
+          service.title !== undefined &&
+          service.title !== null
+        ){
+          return String(service.title);
+        }
+
+        return '';
+      }
+
       return String(service);
     }
 
-    function openService(service){
-      const modal = document.getElementById('serviceModal');
-      const select = document.getElementById('serviceSelect');
-      const title = document.getElementById('modalTitle');
 
-      const name = getServiceName(service);
+    /* SERVICE ICON */
+    function getServiceIcon(name){
+
+      const n = String(name).toLowerCase();
+
+      if(n.includes('aadhaar') && n.includes('name')){
+        return '🪪';
+      }
+
+      if(n.includes('aadhaar') && n.includes('dob')){
+        return '📅';
+      }
+
+      if(n.includes('birth')){
+        return '👶';
+      }
+
+      if(n.includes('voter') && n.includes('download')){
+        return '🗳️';
+      }
+
+      if(n.includes('voter') && n.includes('link')){
+        return '🔗';
+      }
+
+      if(n.includes('pan')){
+        return '💳';
+      }
+
+      if(
+        n.includes('income') ||
+        n.includes('caste') ||
+        n.includes('residence')
+      ){
+        return '📜';
+      }
+
+      if(n.includes('online form')){
+        return '📝';
+      }
+
+      if(
+        n.includes('print') ||
+        n.includes('scan') ||
+        n.includes('photocopy')
+      ){
+        return '🖨️';
+      }
+
+      return '📋';
+    }
+
+
+    /* SET ICONS */
+    document.addEventListener('DOMContentLoaded', function(){
+
+      document.querySelectorAll('.service-icon').forEach(function(icon){
+
+        const name = icon.getAttribute('data-service');
+
+        icon.textContent = getServiceIcon(name);
+
+      });
+
+    });
+
+
+    /* OPEN SERVICE */
+    function openService(service){
+
+      const modal =
+        document.getElementById('serviceModal');
+
+      const select =
+        document.getElementById('serviceSelect');
+
+      const title =
+        document.getElementById('modalTitle');
+
+
+      const name =
+        getServiceName(service);
+
+
       select.value = name;
-      title.textContent = name || 'Service Request';
+
+      title.textContent =
+        name || 'Service Request';
+
 
       modal.classList.add('open');
-      modal.setAttribute('aria-hidden','false');
-      document.body.style.overflow='hidden';
+
+      modal.setAttribute(
+        'aria-hidden',
+        'false'
+      );
+
+      document.body.style.overflow =
+        'hidden';
     }
 
+
+    /* CLOSE SERVICE */
     function closeService(){
-      const modal = document.getElementById('serviceModal');
+
+      const modal =
+        document.getElementById('serviceModal');
+
       modal.classList.remove('open');
-      modal.setAttribute('aria-hidden','true');
-      document.body.style.overflow='';
+
+      modal.setAttribute(
+        'aria-hidden',
+        'true'
+      );
+
+      document.body.style.overflow = '';
+
     }
 
-    document.addEventListener('keydown', function(e){
-      if(e.key === 'Escape') closeService();
-    });
 
-    document.getElementById('serviceModal').addEventListener('click', function(e){
-      if(e.target === this) closeService();
-    });
+    /* ESC KEY */
+    document.addEventListener(
+      'keydown',
+      function(e){
+
+        if(e.key === 'Escape'){
+          closeService();
+        }
+
+      }
+    );
+
+
+    /* CLICK OUTSIDE */
+    document
+      .getElementById('serviceModal')
+      .addEventListener(
+        'click',
+        function(e){
+
+          if(e.target === this){
+            closeService();
+          }
+
+        }
+      );
+
+
+    /* MOBILE NUMBER */
+    document
+      .getElementById('customer_mobile')
+      .addEventListener(
+        'input',
+        function(){
+
+          this.value =
+            this.value.replace(/[^0-9]/g,'');
+
+        }
+      );
+
   </script>
+
 </body>
 </html>
