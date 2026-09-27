@@ -50,7 +50,6 @@ def verify_password(password, stored):
 
 def init_db():
     con = db()
-    init_db()
     con.executescript("""
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -102,7 +101,7 @@ def init_db():
         con.execute("INSERT INTO wallet(id,balance) VALUES(1,1000000)")
     con.commit()
     con.close()
-
+init_db()
 
 def login_required(fn):
     @wraps(fn)
