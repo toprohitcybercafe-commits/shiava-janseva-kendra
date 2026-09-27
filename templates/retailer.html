@@ -378,7 +378,7 @@
         <div class="wallet-title">Available Wallet Balance</div>
 
         <div class="wallet-balance">
-            ₹{{ "%.2f"|format(retailer.wallet|float) }}
+            ₹{{ "%.2f"|format(retailer["wallet"]|float) }}
         </div>
 
         <form method="POST"
