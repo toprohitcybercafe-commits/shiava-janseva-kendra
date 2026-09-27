@@ -1,6 +1,7 @@
-import os, csv, io, sqlite3, hashlib, secrets
+import os, csv, io, sqlite3, hashlib, secrets, uuid
 from functools import wraps
-from flask import Flask, render_template, request, redirect, url_for, session, flash, Response, abort
+from flask import Flask, render_template, request, redirect, url_for, session, flash, Response, abort, send_from_directory
+from werkzeug.utils import secure_filename
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "shiva_janseva.db")
@@ -16,6 +17,10 @@ app.config.update(
 MIN_TOPUP = 100.0
 MIN_REQUIRED_BALANCE = 20.0
 SERVICE_CHARGE = 100.0
+ALLOWED_PDF_EXTENSIONS = {"pdf"}
+UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+MAX_PDF_SIZE = 10 * 1024 * 1024
 
 SERVICES = [
     "Aadhaar Name Update Assistance",
@@ -48,6 +53,18 @@ def verify_password(password, stored):
         return secrets.compare_digest(check, digest)
     except Exception:
         return False
+
+def next_retailer_username(con):
+    rows = con.execute("SELECT username FROM retailers WHERE username IS NOT NULL AND username LIKE 'RET%'").fetchall()
+    used = set()
+    for row in rows:
+        value = (row["username"] or "").strip()
+        if value.startswith("RET") and value[3:].isdigit():
+            used.add(int(value[3:]))
+    n = 1
+    while n in used:
+        n += 1
+    return f"RET{n:04d}"
 
 def ensure_column(con, table, column, definition):
     cols = {r["name"] for r in con.execute(f"PRAGMA table_info({table})").fetchall()}
@@ -156,13 +173,22 @@ def init_db():
         message TEXT,
         charge REAL NOT NULL DEFAULT 100,
         status TEXT NOT NULL DEFAULT 'Pending',
+        pdf_filename TEXT,
         created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS retailer_presence (
+        retailer_id INTEGER PRIMARY KEY,
+        service TEXT,
+        last_seen TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        online INTEGER NOT NULL DEFAULT 0
     );
     """)
 
     # Migrate older retailer table safely.
     ensure_column(con, "retailers", "password_hash", "TEXT")
     ensure_column(con, "retailers", "wallet_balance", "REAL NOT NULL DEFAULT 0")
+    ensure_column(con, "retailer_requests", "pdf_filename", "TEXT")
 
     if not con.execute("SELECT 1 FROM users WHERE username='admin'").fetchone():
         con.execute(
@@ -236,6 +262,10 @@ def service_request():
         "INSERT INTO requests(name,phone,service,preferred_date,message) VALUES(?,?,?,?,?)",
         (name, phone, service, date, message)
     )
+    # Backward-compatible migration for existing databases.
+    cols = {row[1] for row in con.execute("PRAGMA table_info(retailer_requests)").fetchall()}
+    if "pdf_filename" not in cols:
+        con.execute("ALTER TABLE retailer_requests ADD COLUMN pdf_filename TEXT")
     con.commit()
     con.close()
     flash("Request submitted successfully. Kendra will contact you.", "success")
@@ -281,6 +311,24 @@ def retailer_login():
 
         flash("Invalid retailer login details.", "error")
     return render_template("retailer_login.html")
+
+@app.route("/retailer-recover", methods=["GET", "POST"])
+def retailer_recover():
+    username = None
+    if request.method == "POST":
+        phone = request.form.get("phone", "").strip()
+        if not phone:
+            flash("Registered mobile number enter karein.", "error")
+        else:
+            con = db()
+            retailer = con.execute("SELECT username FROM retailers WHERE phone=?", (phone,)).fetchone()
+            con.close()
+            if retailer:
+                username = retailer["username"]
+                flash("User ID mil gaya. Password sirf Admin reset/change karega.", "success")
+            else:
+                flash("Is mobile number se koi retailer nahi mila.", "error")
+    return render_template("retailer_recover.html", username=username)
 
 @app.get("/logout")
 def logout():
@@ -362,13 +410,23 @@ def admin():
         JOIN retailers r ON r.id=wt.retailer_id
         ORDER BY wt.id DESC LIMIT 50
     """).fetchall()
+    retailer_presence = con.execute("""
+        SELECT r.id, r.name, r.username, r.phone, p.service, p.last_seen,
+               CASE WHEN p.retailer_id IS NOT NULL AND p.online=1
+                         AND p.last_seen >= datetime('now','-30 seconds')
+                    THEN 1 ELSE 0 END AS is_online
+        FROM retailers r
+        LEFT JOIN retailer_presence p ON p.retailer_id=r.id
+        ORDER BY r.id
+    """).fetchall()
     con.close()
 
     return render_template(
         "admin.html", rows=rows, stats=stats, q=q,
         selected_status=status, retailers=retailers,
         distributors=distributors, wallet=wallet,
-        transfers=transfers, topups=topups, retailer_requests=retailer_requests, service_charges=service_charges
+        transfers=transfers, topups=topups, retailer_requests=retailer_requests, service_charges=service_charges,
+        retailer_presence=retailer_presence
     )
 
 @app.post("/admin/add-retailer")
@@ -376,23 +434,24 @@ def admin():
 def add_retailer():
     name = request.form.get("name", "").strip()
     phone = request.form.get("phone", "").strip()
-    username = request.form.get("username", "").strip()
     password = request.form.get("password", "")
 
-    if not name or not phone or not username or len(password) < 6:
-        flash("Retailer name, mobile, username and password (6+ chars) are required.", "error")
+    if not name or not phone or len(password) < 6:
+        flash("Retailer name, mobile and password (6+ chars) are required. User ID automatically generate hoga.", "error")
         return redirect(url_for("admin"))
 
     con = db()
+    username = next_retailer_username(con)
     try:
         con.execute(
             "INSERT INTO retailers(name,phone,username,password_hash,wallet_balance) VALUES(?,?,?,?,0)",
             (name, phone, username, hash_password(password))
         )
         con.commit()
-        flash("Retailer added successfully.", "success")
+        flash(f"Retailer added. Auto User ID: {username}", "success")
     except sqlite3.IntegrityError:
-        flash("Retailer username already exists.", "error")
+        con.rollback()
+        flash("Retailer could not be added. Please try again.", "error")
     finally:
         con.close()
     return redirect(url_for("admin"))
@@ -466,6 +525,24 @@ def transfer_balance():
         con.commit()
         flash(f"₹{amount:,.2f} transfer recorded.", "success")
     con.close()
+    return redirect(url_for("admin"))
+
+@app.post("/admin/retailer-password/<int:retailer_id>")
+@admin_required
+def admin_retailer_password(retailer_id):
+    password = request.form.get("password", "")
+    if len(password) < 6:
+        flash("Retailer password must be at least 6 characters.", "error")
+        return redirect(url_for("admin"))
+    con = db()
+    retailer = con.execute("SELECT username FROM retailers WHERE id=?", (retailer_id,)).fetchone()
+    if not retailer:
+        con.close()
+        flash("Retailer not found.", "error")
+        return redirect(url_for("admin"))
+    con.execute("UPDATE retailers SET password_hash=? WHERE id=?", (hash_password(password), retailer_id))
+    con.commit(); con.close()
+    flash(f"Password changed for {retailer['username']}.", "success")
     return redirect(url_for("admin"))
 
 @app.post("/admin/service-charge")
@@ -542,6 +619,44 @@ def review_topup(topup_id, action):
     flash(f"₹{float(topup['amount']):,.2f} added to retailer wallet.", "success")
     return redirect(url_for("admin"))
 
+@app.post("/retailer/presence")
+@retailer_required
+def retailer_presence_update():
+    service = request.form.get("service", "").strip()
+    if service and service not in SERVICES:
+        service = ""
+    con = db()
+    con.execute(
+        """INSERT INTO retailer_presence(retailer_id,service,last_seen,online) VALUES(?,?,CURRENT_TIMESTAMP,1)
+           ON CONFLICT(retailer_id) DO UPDATE SET service=excluded.service,last_seen=CURRENT_TIMESTAMP,online=1""",
+        (session["retailer_id"], service or None)
+    )
+    con.commit(); con.close()
+    return ("ok", 200)
+
+@app.post("/retailer/presence/offline")
+@retailer_required
+def retailer_presence_offline():
+    con = db()
+    con.execute("UPDATE retailer_presence SET online=0,last_seen=CURRENT_TIMESTAMP WHERE retailer_id=?", (session["retailer_id"],))
+    con.commit(); con.close()
+    return ("ok", 200)
+
+@app.get("/admin/retailer-presence")
+@admin_required
+def admin_retailer_presence():
+    con = db()
+    rows = con.execute("""
+        SELECT r.id, r.name, r.username, r.phone, p.service, p.last_seen,
+               CASE WHEN p.retailer_id IS NOT NULL AND p.online=1
+                         AND p.last_seen >= datetime('now','-30 seconds')
+                    THEN 1 ELSE 0 END AS is_online
+        FROM retailers r LEFT JOIN retailer_presence p ON p.retailer_id=r.id
+        ORDER BY r.id
+    """).fetchall()
+    con.close()
+    return {"retailers": [dict(r) for r in rows]}
+
 @app.get("/retailer")
 @retailer_required
 def retailer_dashboard():
@@ -564,7 +679,14 @@ def retailer_dashboard():
     if not retailer:
         session.clear()
         return redirect(url_for("retailer_login"))
-    return render_template("retailer.html", retailer=retailer, topups=topups, requests=requests, ledger=ledger, service_charges=service_charges)
+    service_icons = {
+        "Aadhaar Name Update Assistance":"🪪", "Aadhaar DOB Update Assistance":"📅",
+        "Aadhaar Full Name Update Assistance":"👤", "Birth Certificate PDF Download Assistance":"👶",
+        "Voter ID Download Assistance":"🗳️", "Voter Number Link Assistance":"🔗",
+        "PAN Card":"💳", "Income/Caste/Residence Certificate":"📜",
+        "Online Form / Application":"📝", "Print / Scan / Photocopy":"🖨️", "Other":"📂"
+    }
+    return render_template("retailer.html", retailer=retailer, topups=topups, requests=requests, ledger=ledger, service_charges=service_charges, services=SERVICES, service_fields=SERVICE_FIELDS, service_icons=service_icons, service_charge=0, min_topup=MIN_TOPUP, min_required_balance=MIN_REQUIRED_BALANCE)
 
 @app.post("/retailer/topup")
 @retailer_required
@@ -656,10 +778,29 @@ def review_retailer_request(req_id, action):
         return redirect(url_for("admin"))
 
     if action == "success":
-        con.execute("UPDATE retailer_requests SET status='Success' WHERE id=?", (req_id,))
+        pdf = request.files.get("pdf")
+        if not pdf or not pdf.filename:
+            con.close()
+            flash("PDF upload karke hi Successfully Approved karein.", "error")
+            return redirect(url_for("admin"))
+        filename = secure_filename(pdf.filename)
+        if not filename or "." not in filename or filename.rsplit(".", 1)[1].lower() not in ALLOWED_PDF_EXTENSIONS:
+            con.close()
+            flash("Sirf PDF file upload karein.", "error")
+            return redirect(url_for("admin"))
+        pdf.seek(0, os.SEEK_END)
+        size = pdf.tell()
+        pdf.seek(0)
+        if size > MAX_PDF_SIZE:
+            con.close()
+            flash("PDF maximum 10 MB ki ho sakti hai.", "error")
+            return redirect(url_for("admin"))
+        stored_name = f"request_{req_id}_{uuid.uuid4().hex}.pdf"
+        pdf.save(os.path.join(UPLOAD_DIR, stored_name))
+        con.execute("UPDATE retailer_requests SET status='Success', pdf_filename=? WHERE id=?", (stored_name, req_id))
         con.commit()
         con.close()
-        flash("Retailer service request marked Success.", "success")
+        flash("PDF upload ho gayi aur request Successfully Approved hai.", "success")
         return redirect(url_for("admin"))
 
     retailer = con.execute(
@@ -680,8 +821,38 @@ def review_retailer_request(req_id, action):
     con.execute("UPDATE retailer_requests SET status='Rejected' WHERE id=?", (req_id,))
     con.commit()
     con.close()
-    flash("Request rejected and ₹100 refunded to retailer wallet.", "success")
+    flash(f"Request rejected and ₹{float(req['charge']):,.2f} refunded to retailer wallet.", "success")
     return redirect(url_for("admin"))
+
+@app.get("/admin/retailer-request/<int:req_id>/download")
+@admin_required
+def admin_download_retailer_pdf(req_id):
+    con = db()
+    req = con.execute("SELECT * FROM retailer_requests WHERE id=?", (req_id,)).fetchone()
+    con.close()
+    if not req or not req["pdf_filename"]:
+        abort(404)
+    path = os.path.join(UPLOAD_DIR, os.path.basename(req["pdf_filename"]))
+    if not os.path.isfile(path):
+        abort(404)
+    return send_from_directory(UPLOAD_DIR, os.path.basename(path), as_attachment=False, mimetype="application/pdf")
+
+@app.get("/retailer/request/<int:req_id>/download")
+@retailer_required
+def download_retailer_pdf(req_id):
+    con = db()
+    req = con.execute(
+        "SELECT * FROM retailer_requests WHERE id=? AND retailer_id=?",
+        (req_id, session["retailer_id"])
+    ).fetchone()
+    con.close()
+    if not req or req["status"] != "Success" or not req["pdf_filename"]:
+        abort(404)
+    path = os.path.join(UPLOAD_DIR, os.path.basename(req["pdf_filename"]))
+    if not os.path.isfile(path):
+        abort(404)
+    download_name = secure_filename(f"{req['service']}_{req_id}.pdf") or f"service_{req_id}.pdf"
+    return send_from_directory(UPLOAD_DIR, os.path.basename(path), as_attachment=True, download_name=download_name)
 
 @app.post("/admin/status/<int:req_id>")
 @admin_required
