@@ -68,31 +68,22 @@
       border-radius:14px;
       padding:18px;
       cursor:pointer;
-      transition:.2s;
+      transition:.15s;
     }
 
     .service-tile:hover{
-      transform:translateY(-2px);
-      box-shadow:0 5px 15px rgba(0,0,0,.08)
+      transform:translateY(-1px);
+      box-shadow:0 5px 18px rgba(0,0,0,.08)
     }
 
-    /* SERVICE ICON */
     .service-icon{
-      width:52px;
-      height:52px;
-      border-radius:13px;
-      background:#eff6ff;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:27px;
-      margin-bottom:12px;
+      font-size:30px;
+      margin-bottom:10px
     }
 
     .service-tile h3{
       margin:0 0 8px;
-      font-size:16px;
-      line-height:1.35
+      font-size:16px
     }
 
     .service-tile p{
@@ -111,6 +102,7 @@
     }
 
     /* MODAL */
+
     .modal{
       display:none;
       position:fixed;
@@ -129,12 +121,12 @@
 
     .box{
       background:#fff;
-      width:min(560px,100%);
+      width:min(600px,100%);
+      max-height:92vh;
+      overflow:auto;
       border-radius:16px;
       padding:20px;
-      position:relative;
-      max-height:95vh;
-      overflow:auto
+      position:relative
     }
 
     .close{
@@ -147,9 +139,36 @@
       cursor:pointer
     }
 
-    #modalTitle{
-      margin-top:0;
+    .modal-head{
+      display:flex;
+      align-items:center;
+      gap:12px;
       padding-right:35px;
+      margin-bottom:15px
+    }
+
+    .modal-icon{
+      width:48px;
+      height:48px;
+      border-radius:12px;
+      background:#eff6ff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:25px
+    }
+
+    .modal-head h2{
+      margin:0;
+      font-size:20px
+    }
+
+    .section-title{
+      margin-top:18px;
+      margin-bottom:8px;
+      font-size:15px;
+      font-weight:bold;
+      color:#334155
     }
 
     label{
@@ -171,6 +190,13 @@
     textarea{
       min-height:90px;
       resize:vertical
+    }
+
+    .service-fields{
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      border-radius:12px;
+      padding:12px
     }
 
     .submit{
@@ -198,22 +224,20 @@
       color:#64748b
     }
 
-    @media(max-width:600px){
-      .services{
-        grid-template-columns:1fr
-      }
-
-      .modal{
-        padding:10px
-      }
+    .security{
+      background:#fff7ed;
+      border:1px solid #fed7aa;
+      color:#9a3412;
+      padding:10px;
+      border-radius:8px;
+      font-size:12px;
+      margin-top:10px
     }
   </style>
 </head>
 
-
 <body>
 
-  <!-- HEADER -->
   <div class="top">
     <div class="wrap">
       <h1>Shiva Janseva Kendra</h1>
@@ -221,20 +245,15 @@
     </div>
   </div>
 
-
   <main class="wrap">
 
-    <!-- WALLET -->
     <section class="balance">
       <div>Wallet Balance</div>
       <strong>₹{{ wallet_balance|default(0) }}</strong>
     </section>
 
-
     <h2>All Services</h2>
 
-
-    <!-- SERVICES -->
     <section class="services">
 
       {% if services %}
@@ -247,10 +266,7 @@
             onclick='openService({{ s|tojson|safe }})'
           >
 
-            <!-- ICON -->
-            <div class="service-icon" data-service="{{ s.name if s.name is defined else s }}">
-              📋
-            </div>
+            <div class="service-icon service-card-icon">📋</div>
 
             <h3>
               {{ s.name if s.name is defined else s }}
@@ -260,9 +276,7 @@
               {{ s.description if s.description is defined else "Online service assistance" }}
             </p>
 
-            <span class="open">
-              Open Service
-            </span>
+            <span class="open">Open Service</span>
 
           </button>
 
@@ -282,6 +296,7 @@
 
 
   <!-- SERVICE MODAL -->
+
   <div id="serviceModal" class="modal" aria-hidden="true">
 
     <div class="box">
@@ -296,10 +311,19 @@
       </button>
 
 
-      <!-- POPUP TITLE -->
-      <h2 id="modalTitle">
-        Service Request
-      </h2>
+      <div class="modal-head">
+
+        <div class="modal-icon" id="modalIcon">
+          📋
+        </div>
+
+        <div>
+          <h2 id="modalTitle">
+            Service Request
+          </h2>
+        </div>
+
+      </div>
 
 
       <form
@@ -316,19 +340,48 @@
         >
 
 
-        <!-- STATE -->
-        <label for="state">
-          Select State
+        <!-- COMMON DETAILS -->
+
+        <div class="section-title">
+          Customer Details
+        </div>
+
+        <label for="customer_name">
+          Customer Name
         </label>
 
-        <select
-          id="state"
-          name="state"
+        <input
+          id="customer_name"
+          name="customer_name"
+          type="text"
+          placeholder="Customer ka naam"
           required
         >
 
+
+        <label for="customer_mobile">
+          Mobile Number
+        </label>
+
+        <input
+          id="customer_mobile"
+          name="customer_mobile"
+          type="tel"
+          maxlength="10"
+          inputmode="numeric"
+          placeholder="10 digit mobile number"
+          required
+        >
+
+
+        <label for="state">
+          State
+        </label>
+
+        <select id="state" name="state">
+
           <option value="">
-            Select State
+            -- State Select Karein --
           </option>
 
           <option>Andhra Pradesh</option>
@@ -371,48 +424,351 @@
         </select>
 
 
-        <!-- CUSTOMER NAME -->
-        <label for="customer_name">
-          Customer Name
-        </label>
+        <!-- SERVICE SPECIFIC DETAILS -->
 
-        <input
-          id="customer_name"
-          name="customer_name"
-          type="text"
-          placeholder="Enter customer name"
-          required
+        <div class="section-title">
+          Service Details
+        </div>
+
+        <div
+          class="service-fields"
+          id="serviceFields"
         >
 
+          <!-- AADHAAR -->
 
-        <!-- MOBILE -->
-        <label for="customer_mobile">
-          Mobile Number
-        </label>
+          <div class="field-group" data-type="aadhaar">
 
-        <input
-          id="customer_mobile"
-          name="customer_mobile"
-          type="tel"
-          maxlength="10"
-          inputmode="numeric"
-          placeholder="Enter 10 digit mobile number"
-          required
-        >
+            <label>
+              Current Name
+            </label>
+
+            <input
+              name="current_name"
+              type="text"
+              placeholder="Aadhaar par current name"
+            >
 
 
-        <!-- DETAILS -->
+            <label>
+              New Name
+            </label>
+
+            <input
+              name="new_name"
+              type="text"
+              placeholder="New name"
+            >
+
+
+            <label>
+              Aadhaar Last 4 Digits
+            </label>
+
+            <input
+              name="aadhaar_last4"
+              type="text"
+              maxlength="4"
+              inputmode="numeric"
+              placeholder="XXXX"
+            >
+
+            <div class="security">
+              Security ke liye full Aadhaar number yahan enter/store na karein.
+            </div>
+
+          </div>
+
+
+          <!-- DOB -->
+
+          <div class="field-group" data-type="dob">
+
+            <label>
+              Current Date of Birth
+            </label>
+
+            <input
+              name="current_dob"
+              type="date"
+            >
+
+
+            <label>
+              New Date of Birth
+            </label>
+
+            <input
+              name="new_dob"
+              type="date"
+            >
+
+
+            <label>
+              Aadhaar Last 4 Digits
+            </label>
+
+            <input
+              name="aadhaar_last4_dob"
+              type="text"
+              maxlength="4"
+              inputmode="numeric"
+              placeholder="XXXX"
+            >
+
+          </div>
+
+
+          <!-- BIRTH CERTIFICATE -->
+
+          <div class="field-group" data-type="birth">
+
+            <label>
+              Child Name
+            </label>
+
+            <input
+              name="child_name"
+              type="text"
+              placeholder="Bacche ka naam"
+            >
+
+
+            <label>
+              Date of Birth
+            </label>
+
+            <input
+              name="birth_date"
+              type="date"
+            >
+
+
+            <label>
+              Father / Mother Name
+            </label>
+
+            <input
+              name="parent_name"
+              type="text"
+              placeholder="Father/Mother name"
+            >
+
+
+            <label>
+              Birth Place
+            </label>
+
+            <input
+              name="birth_place"
+              type="text"
+              placeholder="Birth place"
+            >
+
+          </div>
+
+
+          <!-- VOTER -->
+
+          <div class="field-group" data-type="voter">
+
+            <label>
+              Voter Name
+            </label>
+
+            <input
+              name="voter_name"
+              type="text"
+              placeholder="Voter name"
+            >
+
+
+            <label>
+              Date of Birth
+            </label>
+
+            <input
+              name="voter_dob"
+              type="date"
+            >
+
+
+            <label>
+              EPIC / Voter Number
+            </label>
+
+            <input
+              name="epic_number"
+              type="text"
+              placeholder="Voter ID number"
+            >
+
+          </div>
+
+
+          <!-- PAN -->
+
+          <div class="field-group" data-type="pan">
+
+            <label>
+              PAN Holder Name
+            </label>
+
+            <input
+              name="pan_holder_name"
+              type="text"
+              placeholder="PAN holder name"
+            >
+
+
+            <label>
+              Date of Birth
+            </label>
+
+            <input
+              name="pan_dob"
+              type="date"
+            >
+
+
+            <label>
+              PAN Number
+            </label>
+
+            <input
+              name="pan_number"
+              type="text"
+              maxlength="10"
+              placeholder="PAN number"
+            >
+
+          </div>
+
+
+          <!-- CERTIFICATE -->
+
+          <div class="field-group" data-type="certificate">
+
+            <label>
+              Applicant Name
+            </label>
+
+            <input
+              name="applicant_name"
+              type="text"
+              placeholder="Applicant name"
+            >
+
+
+            <label>
+              Father / Husband Name
+            </label>
+
+            <input
+              name="father_husband_name"
+              type="text"
+              placeholder="Father/Husband name"
+            >
+
+
+            <label>
+              Purpose
+            </label>
+
+            <input
+              name="certificate_purpose"
+              type="text"
+              placeholder="Certificate kis purpose ke liye"
+            >
+
+          </div>
+
+
+          <!-- ONLINE FORM -->
+
+          <div class="field-group" data-type="online">
+
+            <label>
+              Application / Form Name
+            </label>
+
+            <input
+              name="application_name"
+              type="text"
+              placeholder="Form ka naam"
+            >
+
+
+            <label>
+              Application Details
+            </label>
+
+            <textarea
+              name="application_details"
+              placeholder="Application ki complete details"
+            ></textarea>
+
+          </div>
+
+
+          <!-- PRINT -->
+
+          <div class="field-group" data-type="print">
+
+            <label>
+              Document / Work Details
+            </label>
+
+            <textarea
+              name="print_details"
+              placeholder="Kaunsa document print/scan karna hai"
+            ></textarea>
+
+
+            <label>
+              Number of Copies
+            </label>
+
+            <input
+              name="copies"
+              type="number"
+              min="1"
+              placeholder="Copies"
+            >
+
+          </div>
+
+
+          <!-- DEFAULT -->
+
+          <div class="field-group" data-type="other">
+
+            <label>
+              Service Details
+            </label>
+
+            <textarea
+              name="other_details"
+              placeholder="Customer ki complete service details"
+            ></textarea>
+
+          </div>
+
+        </div>
+
+
+        <!-- MESSAGE -->
+
         <label for="message">
-          Message / Extra Details
+          Extra Details / Message
         </label>
 
         <textarea
           id="message"
           name="message"
           maxlength="500"
-          placeholder="Service ke baare me details likhein"
+          placeholder="Extra information yahan likhein"
         ></textarea>
-
 
         <div class="hint">
           OTP, password ya sensitive login details yahan share na karein.
@@ -436,6 +792,7 @@
   <script>
 
     /* SERVICE NAME */
+
     function getServiceName(service){
 
       if(service === null || service === undefined){
@@ -455,13 +812,6 @@
           return String(service.name);
         }
 
-        if(
-          service.title !== undefined &&
-          service.title !== null
-        ){
-          return String(service.title);
-        }
-
         return '';
       }
 
@@ -470,28 +820,21 @@
 
 
     /* SERVICE ICON */
+
     function getServiceIcon(name){
 
-      const n = String(name).toLowerCase();
+      const n = name.toLowerCase();
 
-      if(n.includes('aadhaar') && n.includes('name')){
+      if(n.includes('aadhaar') || n.includes('aadhar')){
         return '🪪';
-      }
-
-      if(n.includes('aadhaar') && n.includes('dob')){
-        return '📅';
       }
 
       if(n.includes('birth')){
         return '👶';
       }
 
-      if(n.includes('voter') && n.includes('download')){
+      if(n.includes('voter')){
         return '🗳️';
-      }
-
-      if(n.includes('voter') && n.includes('link')){
-        return '🔗';
       }
 
       if(n.includes('pan')){
@@ -501,12 +844,16 @@
       if(
         n.includes('income') ||
         n.includes('caste') ||
-        n.includes('residence')
+        n.includes('residence') ||
+        n.includes('certificate')
       ){
         return '📜';
       }
 
-      if(n.includes('online form')){
+      if(
+        n.includes('form') ||
+        n.includes('application')
+      ){
         return '📝';
       }
 
@@ -522,21 +869,66 @@
     }
 
 
-    /* SET ICONS */
-    document.addEventListener('DOMContentLoaded', function(){
+    /* SERVICE TYPE */
 
-      document.querySelectorAll('.service-icon').forEach(function(icon){
+    function getServiceType(name){
 
-        const name = icon.getAttribute('data-service');
+      const n = name.toLowerCase();
 
-        icon.textContent = getServiceIcon(name);
+      if(n.includes('aadhaar') || n.includes('aadhar')){
 
-      });
+        if(
+          n.includes('dob') ||
+          n.includes('date of birth')
+        ){
+          return 'dob';
+        }
 
-    });
+        return 'aadhaar';
+      }
+
+      if(n.includes('birth')){
+        return 'birth';
+      }
+
+      if(n.includes('voter')){
+        return 'voter';
+      }
+
+      if(n.includes('pan')){
+        return 'pan';
+      }
+
+      if(
+        n.includes('income') ||
+        n.includes('caste') ||
+        n.includes('residence') ||
+        n.includes('certificate')
+      ){
+        return 'certificate';
+      }
+
+      if(
+        n.includes('form') ||
+        n.includes('application')
+      ){
+        return 'online';
+      }
+
+      if(
+        n.includes('print') ||
+        n.includes('scan') ||
+        n.includes('photocopy')
+      ){
+        return 'print';
+      }
+
+      return 'other';
+    }
 
 
     /* OPEN SERVICE */
+
     function openService(service){
 
       const modal =
@@ -548,15 +940,45 @@
       const title =
         document.getElementById('modalTitle');
 
+      const icon =
+        document.getElementById('modalIcon');
 
       const name =
         getServiceName(service);
 
+      const type =
+        getServiceType(name);
 
       select.value = name;
 
       title.textContent =
         name || 'Service Request';
+
+      icon.textContent =
+        getServiceIcon(name);
+
+
+      /* Hide all service fields */
+
+      document
+        .querySelectorAll('.field-group')
+        .forEach(function(group){
+
+          group.style.display = 'none';
+
+        });
+
+
+      /* Show selected service fields */
+
+      const selected =
+        document.querySelector(
+          '.field-group[data-type="' + type + '"]'
+        );
+
+      if(selected){
+        selected.style.display = 'block';
+      }
 
 
       modal.classList.add('open');
@@ -568,10 +990,12 @@
 
       document.body.style.overflow =
         'hidden';
+
     }
 
 
     /* CLOSE SERVICE */
+
     function closeService(){
 
       const modal =
@@ -584,12 +1008,14 @@
         'true'
       );
 
-      document.body.style.overflow = '';
+      document.body.style.overflow =
+        '';
 
     }
 
 
     /* ESC KEY */
+
     document.addEventListener(
       'keydown',
       function(e){
@@ -602,7 +1028,8 @@
     );
 
 
-    /* CLICK OUTSIDE */
+    /* OUTSIDE CLICK */
+
     document
       .getElementById('serviceModal')
       .addEventListener(
@@ -617,7 +1044,8 @@
       );
 
 
-    /* MOBILE NUMBER */
+    /* MOBILE NUMBER ONLY DIGITS */
+
     document
       .getElementById('customer_mobile')
       .addEventListener(
@@ -625,10 +1053,34 @@
         function(){
 
           this.value =
-            this.value.replace(/[^0-9]/g,'');
+            this.value.replace(/\D/g,'')
+                       .slice(0,10);
 
         }
       );
+
+
+    /* AADHAAR LAST 4 ONLY */
+
+    document
+      .querySelectorAll(
+        'input[name="aadhaar_last4"], input[name="aadhaar_last4_dob"]'
+      )
+      .forEach(function(input){
+
+        input.addEventListener(
+          'input',
+          function(){
+
+            this.value =
+              this.value
+                .replace(/\D/g,'')
+                .slice(0,4);
+
+          }
+        );
+
+      });
 
   </script>
 
