@@ -1,1088 +1,585 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Retailer Dashboard - Shiva Janseva Kendra</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shiva Janseva Kendra - Retailer Dashboard</title>
 
-  <style>
-    *{box-sizing:border-box}
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
 
-    body{
-      margin:0;
-      font-family:Arial,sans-serif;
-      background:#f5f7fb;
-      color:#172033
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f4f7fb;
+    color:#172033;
+    min-height:100vh;
+}
+
+.top{
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    color:#fff;
+    padding:22px 16px;
+}
+
+.top-inner{
+    max-width:1100px;
+    margin:auto;
+}
+
+.top h1{
+    font-size:25px;
+    margin-bottom:5px;
+}
+
+.top p{
+    opacity:.9;
+    font-size:14px;
+}
+
+.container{
+    width:min(1100px,94%);
+    margin:20px auto 50px;
+}
+
+.balance-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.balance{
+    background:#fff;
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 5px 20px rgba(0,0,0,.07);
+    border:1px solid #e5eaf2;
+}
+
+.balance-label{
+    color:#667085;
+    font-size:14px;
+    margin-bottom:7px;
+}
+
+.balance strong{
+    font-size:29px;
+    color:#15803d;
+}
+
+.wallet-box{
+    background:#fff;
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 5px 20px rgba(0,0,0,.07);
+    border:1px solid #e5eaf2;
+}
+
+.wallet-box h2{
+    font-size:18px;
+    margin-bottom:13px;
+}
+
+.wallet-form{
+    display:grid;
+    grid-template-columns:1fr 1fr auto;
+    gap:10px;
+}
+
+input,select,textarea{
+    width:100%;
+    padding:12px 13px;
+    border:1px solid #d0d5dd;
+    border-radius:10px;
+    font-size:14px;
+    outline:none;
+    background:#fff;
+}
+
+input:focus,select:focus,textarea:focus{
+    border-color:#2563eb;
+    box-shadow:0 0 0 3px rgba(37,99,235,.10);
+}
+
+button{
+    font-family:inherit;
+}
+
+.btn{
+    border:0;
+    border-radius:10px;
+    padding:12px 17px;
+    cursor:pointer;
+    font-weight:700;
+}
+
+.btn-primary{
+    background:#2563eb;
+    color:white;
+}
+
+.btn-primary:hover{
+    background:#1d4ed8;
+}
+
+.btn-green{
+    background:#16a34a;
+    color:white;
+}
+
+.btn-red{
+    background:#dc2626;
+    color:white;
+}
+
+.section-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:28px 0 14px;
+}
+
+.section-title h2{
+    font-size:21px;
+}
+
+.section-title span{
+    color:#667085;
+    font-size:13px;
+}
+
+.services{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+}
+
+.service-tile{
+    width:100%;
+    text-align:left;
+    border:1px solid #e5eaf2;
+    background:#fff;
+    border-radius:16px;
+    padding:19px;
+    cursor:pointer;
+    box-shadow:0 4px 16px rgba(0,0,0,.05);
+    transition:.2s;
+}
+
+.service-tile:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 25px rgba(0,0,0,.09);
+    border-color:#93c5fd;
+}
+
+.service-icon{
+    width:52px;
+    height:52px;
+    border-radius:14px;
+    background:#eff6ff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:27px;
+    margin-bottom:12px;
+}
+
+.service-tile h3{
+    font-size:16px;
+    line-height:1.35;
+    margin-bottom:7px;
+}
+
+.service-tile p{
+    color:#667085;
+    font-size:13px;
+    min-height:35px;
+    line-height:1.4;
+}
+
+.open{
+    display:inline-block;
+    margin-top:12px;
+    color:#2563eb;
+    font-size:13px;
+    font-weight:700;
+}
+
+.card{
+    background:#fff;
+    border:1px solid #e5eaf2;
+    border-radius:16px;
+    padding:18px;
+    box-shadow:0 4px 16px rgba(0,0,0,.05);
+}
+
+.table-wrap{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:650px;
+}
+
+th,td{
+    padding:12px 10px;
+    border-bottom:1px solid #edf0f5;
+    text-align:left;
+    font-size:13px;
+}
+
+th{
+    background:#f8fafc;
+    font-weight:700;
+}
+
+.badge{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:700;
+}
+
+.pending{
+    background:#fff7ed;
+    color:#c2410c;
+}
+
+.success{
+    background:#ecfdf3;
+    color:#15803d;
+}
+
+.rejected{
+    background:#fef2f2;
+    color:#b91c1c;
+}
+
+.info{
+    background:#eff6ff;
+    color:#1d4ed8;
+}
+
+.muted{
+    color:#667085;
+    font-size:13px;
+}
+
+.flash{
+    padding:13px 15px;
+    border-radius:10px;
+    margin-bottom:12px;
+    font-size:14px;
+    font-weight:600;
+}
+
+.flash.success{
+    background:#ecfdf3;
+    color:#166534;
+    border:1px solid #bbf7d0;
+}
+
+.flash.error{
+    background:#fef2f2;
+    color:#991b1b;
+    border:1px solid #fecaca;
+}
+
+/* MODAL */
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(15,23,42,.65);
+    z-index:9999;
+    padding:15px;
+    overflow:auto;
+}
+
+.modal.show{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.modal-box{
+    width:min(650px,100%);
+    background:#fff;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,.25);
+    max-height:94vh;
+    overflow-y:auto;
+}
+
+.modal-head{
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    color:#fff;
+    padding:17px 18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    position:sticky;
+    top:0;
+    z-index:2;
+}
+
+.modal-head h2{
+    font-size:19px;
+}
+
+.close{
+    border:0;
+    background:rgba(255,255,255,.15);
+    color:#fff;
+    width:35px;
+    height:35px;
+    border-radius:50%;
+    font-size:22px;
+    cursor:pointer;
+}
+
+.modal-body{
+    padding:18px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:13px;
+}
+
+.form-group{
+    margin-bottom:13px;
+}
+
+.form-group.full{
+    grid-column:1/-1;
+}
+
+.form-group label{
+    display:block;
+    font-size:13px;
+    font-weight:700;
+    margin-bottom:6px;
+    color:#344054;
+}
+
+.required{
+    color:#dc2626;
+}
+
+.service-extra{
+    margin-top:4px;
+}
+
+.security{
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    padding:11px 12px;
+    border-radius:10px;
+    font-size:12px;
+    color:#475467;
+    margin:10px 0 14px;
+    line-height:1.5;
+}
+
+.charge-box{
+    background:#eff6ff;
+    border:1px solid #bfdbfe;
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:14px;
+    font-size:13px;
+}
+
+.modal-actions{
+    display:flex;
+    gap:10px;
+    margin-top:5px;
+}
+
+.modal-actions button{
+    flex:1;
+}
+
+.empty{
+    padding:25px;
+    text-align:center;
+    color:#667085;
+}
+
+.logout{
+    color:#fff;
+    text-decoration:none;
+    display:inline-block;
+    margin-top:10px;
+    font-size:13px;
+    opacity:.9;
+}
+
+@media(max-width:800px){
+    .services{
+        grid-template-columns:repeat(2,1fr);
     }
 
-    .top{
-      background:#111827;
-      color:#fff;
-      padding:16px
+    .balance-row{
+        grid-template-columns:1fr;
+    }
+
+    .wallet-form{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:520px){
+    .services{
+        grid-template-columns:1fr;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .form-group.full{
+        grid-column:auto;
     }
 
     .top h1{
-      margin:0;
-      font-size:21px
+        font-size:21px;
     }
-
-    .top p{
-      margin:5px 0 0;
-      color:#cbd5e1;
-      font-size:13px
-    }
-
-    .wrap{
-      max-width:1100px;
-      margin:auto;
-      padding:18px
-    }
-
-    .balance{
-      background:#fff;
-      border-radius:14px;
-      padding:18px;
-      margin-bottom:18px;
-      box-shadow:0 3px 14px rgba(0,0,0,.06)
-    }
-
-    .balance strong{
-      font-size:25px
-    }
-
-    h2{
-      margin:18px 0 12px
-    }
-
-    .services{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:14px
-    }
-
-    .service-tile{
-      width:100%;
-      text-align:left;
-      border:1px solid #dbe2ea;
-      background:#fff;
-      border-radius:14px;
-      padding:18px;
-      cursor:pointer;
-      transition:.15s;
-    }
-
-    .service-tile:hover{
-      transform:translateY(-1px);
-      box-shadow:0 5px 18px rgba(0,0,0,.08)
-    }
-
-    .service-icon{
-      font-size:30px;
-      margin-bottom:10px
-    }
-
-    .service-tile h3{
-      margin:0 0 8px;
-      font-size:16px
-    }
-
-    .service-tile p{
-      margin:0 0 14px;
-      color:#64748b;
-      font-size:14px
-    }
-
-    .open{
-      display:inline-block;
-      background:#2563eb;
-      color:white;
-      border-radius:8px;
-      padding:9px 13px;
-      font-size:14px
-    }
-
-    /* MODAL */
-
-    .modal{
-      display:none;
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.55);
-      z-index:999;
-      padding:20px;
-      overflow:auto
-    }
-
-    .modal.open{
-      display:flex;
-      align-items:center;
-      justify-content:center
-    }
-
-    .box{
-      background:#fff;
-      width:min(600px,100%);
-      max-height:92vh;
-      overflow:auto;
-      border-radius:16px;
-      padding:20px;
-      position:relative
-    }
-
-    .close{
-      position:absolute;
-      right:14px;
-      top:10px;
-      border:0;
-      background:none;
-      font-size:28px;
-      cursor:pointer
-    }
-
-    .modal-head{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      padding-right:35px;
-      margin-bottom:15px
-    }
-
-    .modal-icon{
-      width:48px;
-      height:48px;
-      border-radius:12px;
-      background:#eff6ff;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:25px
-    }
-
-    .modal-head h2{
-      margin:0;
-      font-size:20px
-    }
-
-    .section-title{
-      margin-top:18px;
-      margin-bottom:8px;
-      font-size:15px;
-      font-weight:bold;
-      color:#334155
-    }
-
-    label{
-      display:block;
-      font-weight:600;
-      font-size:13px;
-      margin:13px 0 6px
-    }
-
-    input,select,textarea{
-      width:100%;
-      padding:11px;
-      border:1px solid #d5dbe5;
-      border-radius:8px;
-      font-size:14px;
-      background:#fff
-    }
-
-    textarea{
-      min-height:90px;
-      resize:vertical
-    }
-
-    .service-fields{
-      background:#f8fafc;
-      border:1px solid #e2e8f0;
-      border-radius:12px;
-      padding:12px
-    }
-
-    .submit{
-      margin-top:16px;
-      width:100%;
-      border:0;
-      background:#16a34a;
-      color:white;
-      padding:12px;
-      border-radius:8px;
-      font-size:15px;
-      cursor:pointer
-    }
-
-    .hint{
-      font-size:12px;
-      color:#64748b;
-      margin-top:8px
-    }
-
-    .empty{
-      background:#fff;
-      padding:20px;
-      border-radius:12px;
-      color:#64748b
-    }
-
-    .security{
-      background:#fff7ed;
-      border:1px solid #fed7aa;
-      color:#9a3412;
-      padding:10px;
-      border-radius:8px;
-      font-size:12px;
-      margin-top:10px
-    }
-  </style>
+}
+</style>
 </head>
 
 <body>
 
-  <div class="top">
-    <div class="wrap">
-      <h1>Shiva Janseva Kendra</h1>
-      <p>Retailer Dashboard</p>
+<header class="top">
+    <div class="top-inner">
+        <h1>Shiva Janseva Kendra</h1>
+        <p>Retailer Dashboard</p>
+        <a href="/logout" class="logout">Logout</a>
     </div>
-  </div>
+</header>
 
-  <main class="wrap">
+<main class="container">
 
-    <section class="balance">
-      <div>Wallet Balance</div>
-      <strong>₹{{ wallet_balance|default(0) }}</strong>
-    </section>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
-    <h2>All Services</h2>
+    <!-- WALLET -->
+    <div class="balance-row">
+
+        <section class="balance">
+            <div class="balance-label">Wallet Balance</div>
+            <strong>₹{{ "%.2f"|format(retailer.wallet_balance|default(0)|float) }}</strong>
+            <div class="muted" style="margin-top:7px;">
+                Minimum ₹{{ "%.0f"|format(min_required_balance|float) }} balance required after service
+            </div>
+        </section>
+
+        <section class="wallet-box">
+            <h2>💰 Add Wallet</h2>
+
+            <form method="POST" action="/retailer/topup" class="wallet-form">
+
+                <input
+                    type="number"
+                    name="amount"
+                    min="{{ min_topup }}"
+                    step="0.01"
+                    placeholder="Amount ₹ (Min {{ min_topup|int }})"
+                    required
+                >
+
+                <input
+                    type="text"
+                    name="transaction_id"
+                    maxlength="100"
+                    placeholder="Transaction ID / UTR"
+                    required
+                >
+
+                <button type="submit" class="btn btn-green">
+                    Add Wallet
+                </button>
+
+            </form>
+
+            <div class="muted" style="margin-top:9px;">
+                Payment karne ke baad Transaction ID / UTR submit karein.
+                Admin approval ke baad wallet balance add hoga.
+            </div>
+        </section>
+
+    </div>
+
+    <!-- SERVICES -->
+    <div class="section-title">
+        <h2>All Services</h2>
+        <span>Service select karke details submit karein</span>
+    </div>
 
     <section class="services">
 
-      {% if services %}
-
-        {% for s in services %}
-
-          <button
-            type="button"
-            class="service-tile"
-            onclick='openService({{ s|tojson|safe }})'
-          >
-
-            <div class="service-icon service-card-icon">📋</div>
-
-            <h3>
-              {{ s.name if s.name is defined else s }}
-            </h3>
-
-            <p>
-              {{ s.description if s.description is defined else "Online service assistance" }}
-            </p>
-
-            <span class="open">Open Service</span>
-
-          </button>
-
-        {% endfor %}
-
-      {% else %}
-
-        <div class="empty">
-          Abhi koi service available nahi hai.
-        </div>
-
-      {% endif %}
-
-    </section>
-
-  </main>
-
-
-  <!-- SERVICE MODAL -->
-
-  <div id="serviceModal" class="modal" aria-hidden="true">
-
-    <div class="box">
-
-      <button
-        type="button"
-        class="close"
-        onclick="closeService()"
-        aria-label="Close"
-      >
-        &times;
-      </button>
-
-
-      <div class="modal-head">
-
-        <div class="modal-icon" id="modalIcon">
-          📋
-        </div>
-
-        <div>
-          <h2 id="modalTitle">
-            Service Request
-          </h2>
-        </div>
-
-      </div>
-
-
-      <form
-        id="serviceForm"
-        method="POST"
-        action="/request"
-      >
-
-        <!-- SERVICE NAME -->
-        <input
-          type="hidden"
-          id="serviceSelect"
-          name="service"
-        >
-
-
-        <!-- COMMON DETAILS -->
-
-        <div class="section-title">
-          Customer Details
-        </div>
-
-        <label for="customer_name">
-          Customer Name
-        </label>
-
-        <input
-          id="customer_name"
-          name="customer_name"
-          type="text"
-          placeholder="Customer ka naam"
-          required
-        >
-
-
-        <label for="customer_mobile">
-          Mobile Number
-        </label>
-
-        <input
-          id="customer_mobile"
-          name="customer_mobile"
-          type="tel"
-          maxlength="10"
-          inputmode="numeric"
-          placeholder="10 digit mobile number"
-          required
-        >
-
-
-        <label for="state">
-          State
-        </label>
-
-        <select id="state" name="state">
-
-          <option value="">
-            -- State Select Karein --
-          </option>
-
-          <option>Andhra Pradesh</option>
-          <option>Arunachal Pradesh</option>
-          <option>Assam</option>
-          <option>Bihar</option>
-          <option>Chhattisgarh</option>
-          <option>Goa</option>
-          <option>Gujarat</option>
-          <option>Haryana</option>
-          <option>Himachal Pradesh</option>
-          <option>Jharkhand</option>
-          <option>Karnataka</option>
-          <option>Kerala</option>
-          <option>Madhya Pradesh</option>
-          <option>Maharashtra</option>
-          <option>Manipur</option>
-          <option>Meghalaya</option>
-          <option>Mizoram</option>
-          <option>Nagaland</option>
-          <option>Odisha</option>
-          <option>Punjab</option>
-          <option>Rajasthan</option>
-          <option>Sikkim</option>
-          <option>Tamil Nadu</option>
-          <option>Telangana</option>
-          <option>Tripura</option>
-          <option>Uttar Pradesh</option>
-          <option>Uttarakhand</option>
-          <option>West Bengal</option>
-          <option>Andaman and Nicobar Islands</option>
-          <option>Chandigarh</option>
-          <option>Dadra and Nagar Haveli and Daman and Diu</option>
-          <option>Delhi</option>
-          <option>Jammu and Kashmir</option>
-          <option>Ladakh</option>
-          <option>Lakshadweep</option>
-          <option>Puducherry</option>
-
-        </select>
-
-
-        <!-- SERVICE SPECIFIC DETAILS -->
-
-        <div class="section-title">
-          Service Details
-        </div>
-
-        <div
-          class="service-fields"
-          id="serviceFields"
-        >
-
-          <!-- AADHAAR -->
-
-          <div class="field-group" data-type="aadhaar">
-
-            <label>
-              Current Name
-            </label>
-
-            <input
-              name="current_name"
-              type="text"
-              placeholder="Aadhaar par current name"
-            >
-
-
-            <label>
-              New Name
-            </label>
-
-            <input
-              name="new_name"
-              type="text"
-              placeholder="New name"
-            >
-
-
-            <label>
-              Aadhaar Last 4 Digits
-            </label>
-
-            <input
-              name="aadhaar_last4"
-              type="text"
-              maxlength="4"
-              inputmode="numeric"
-              placeholder="XXXX"
-            >
-
-            <div class="security">
-              Security ke liye full Aadhaar number yahan enter/store na karein.
-            </div>
-
-          </div>
-
-
-          <!-- DOB -->
-
-          <div class="field-group" data-type="dob">
-
-            <label>
-              Current Date of Birth
-            </label>
-
-            <input
-              name="current_dob"
-              type="date"
-            >
-
-
-            <label>
-              New Date of Birth
-            </label>
-
-            <input
-              name="new_dob"
-              type="date"
-            >
-
-
-            <label>
-              Aadhaar Last 4 Digits
-            </label>
-
-            <input
-              name="aadhaar_last4_dob"
-              type="text"
-              maxlength="4"
-              inputmode="numeric"
-              placeholder="XXXX"
-            >
-
-          </div>
-
-
-          <!-- BIRTH CERTIFICATE -->
-
-          <div class="field-group" data-type="birth">
-
-            <label>
-              Child Name
-            </label>
-
-            <input
-              name="child_name"
-              type="text"
-              placeholder="Bacche ka naam"
-            >
-
-
-            <label>
-              Date of Birth
-            </label>
-
-            <input
-              name="birth_date"
-              type="date"
-            >
-
-
-            <label>
-              Father / Mother Name
-            </label>
-
-            <input
-              name="parent_name"
-              type="text"
-              placeholder="Father/Mother name"
-            >
-
-
-            <label>
-              Birth Place
-            </label>
-
-            <input
-              name="birth_place"
-              type="text"
-              placeholder="Birth place"
-            >
-
-          </div>
-
-
-          <!-- VOTER -->
-
-          <div class="field-group" data-type="voter">
-
-            <label>
-              Voter Name
-            </label>
-
-            <input
-              name="voter_name"
-              type="text"
-              placeholder="Voter name"
-            >
-
-
-            <label>
-              Date of Birth
-            </label>
-
-            <input
-              name="voter_dob"
-              type="date"
-            >
-
-
-            <label>
-              EPIC / Voter Number
-            </label>
-
-            <input
-              name="epic_number"
-              type="text"
-              placeholder="Voter ID number"
-            >
-
-          </div>
-
-
-          <!-- PAN -->
-
-          <div class="field-group" data-type="pan">
-
-            <label>
-              PAN Holder Name
-            </label>
-
-            <input
-              name="pan_holder_name"
-              type="text"
-              placeholder="PAN holder name"
-            >
-
-
-            <label>
-              Date of Birth
-            </label>
-
-            <input
-              name="pan_dob"
-              type="date"
-            >
-
-
-            <label>
-              PAN Number
-            </label>
-
-            <input
-              name="pan_number"
-              type="text"
-              maxlength="10"
-              placeholder="PAN number"
-            >
-
-          </div>
-
-
-          <!-- CERTIFICATE -->
-
-          <div class="field-group" data-type="certificate">
-
-            <label>
-              Applicant Name
-            </label>
-
-            <input
-              name="applicant_name"
-              type="text"
-              placeholder="Applicant name"
-            >
-
-
-            <label>
-              Father / Husband Name
-            </label>
-
-            <input
-              name="father_husband_name"
-              type="text"
-              placeholder="Father/Husband name"
-            >
-
-
-            <label>
-              Purpose
-            </label>
-
-            <input
-              name="certificate_purpose"
-              type="text"
-              placeholder="Certificate kis purpose ke liye"
-            >
-
-          </div>
-
-
-          <!-- ONLINE FORM -->
-
-          <div class="field-group" data-type="online">
-
-            <label>
-              Application / Form Name
-            </label>
-
-            <input
-              name="application_name"
-              type="text"
-              placeholder="Form ka naam"
-            >
-
-
-            <label>
-              Application Details
-            </label>
-
-            <textarea
-              name="application_details"
-              placeholder="Application ki complete details"
-            ></textarea>
-
-          </div>
-
-
-          <!-- PRINT -->
-
-          <div class="field-group" data-type="print">
-
-            <label>
-              Document / Work Details
-            </label>
-
-            <textarea
-              name="print_details"
-              placeholder="Kaunsa document print/scan karna hai"
-            ></textarea>
-
-
-            <label>
-              Number of Copies
-            </label>
-
-            <input
-              name="copies"
-              type="number"
-              min="1"
-              placeholder="Copies"
-            >
-
-          </div>
-
-
-          <!-- DEFAULT -->
-
-          <div class="field-group" data-type="other">
-
-            <label>
-              Service Details
-            </label>
-
-            <textarea
-              name="other_details"
-              placeholder="Customer ki complete service details"
-            ></textarea>
-
-          </div>
-
-        </div>
-
-
-        <!-- MESSAGE -->
-
-        <label for="message">
-          Extra Details / Message
-        </label>
-
-        <textarea
-          id="message"
-          name="message"
-          maxlength="500"
-          placeholder="Extra information yahan likhein"
-        ></textarea>
-
-        <div class="hint">
-          OTP, password ya sensitive login details yahan share na karein.
-        </div>
-
-
-        <button
-          class="submit"
-          type="submit"
-        >
-          Submit Service Request
-        </button>
-
-      </form>
-
-    </div>
-
-  </div>
-
-
-  <script>
-
-    /* SERVICE NAME */
-
-    function getServiceName(service){
-
-      if(service === null || service === undefined){
-        return '';
-      }
-
-      if(typeof service === 'string'){
-        return service;
-      }
-
-      if(typeof service === 'object'){
-
-        if(
-          service.name !== undefined &&
-          service.name !== null
-        ){
-          return String(service.name);
-        }
-
-        return '';
-      }
-
-      return String(service);
-    }
-
-
-    /* SERVICE ICON */
-
-    function getServiceIcon(name){
-
-      const n = name.toLowerCase();
-
-      if(n.includes('aadhaar') || n.includes('aadhar')){
-        return '🪪';
-      }
-
-      if(n.includes('birth')){
-        return '👶';
-      }
-
-      if(n.includes('voter')){
-        return '🗳️';
-      }
-
-      if(n.includes('pan')){
-        return '💳';
-      }
-
-      if(
-        n.includes('income') ||
-        n.includes('caste') ||
-        n.includes('residence') ||
-        n.includes('certificate')
-      ){
-        return '📜';
-      }
-
-      if(
-        n.includes('form') ||
-        n.includes('application')
-      ){
-        return '📝';
-      }
-
-      if(
-        n.includes('print') ||
-        n.includes('scan') ||
-        n.includes('photocopy')
-      ){
-        return '🖨️';
-      }
-
-      return '📋';
-    }
-
-
-    /* SERVICE TYPE */
-
-    function getServiceType(name){
-
-      const n = name.toLowerCase();
-
-      if(n.includes('aadhaar') || n.includes('aadhar')){
-
-        if(
-          n.includes('dob') ||
-          n.includes('date of birth')
-        ){
-          return 'dob';
-        }
-
-        return 'aadhaar';
-      }
-
-      if(n.includes('birth')){
-        return 'birth';
-      }
-
-      if(n.includes('voter')){
-        return 'voter';
-      }
-
-      if(n.includes('pan')){
-        return 'pan';
-      }
-
-      if(
-        n.includes('income') ||
-        n.includes('caste') ||
-        n.includes('residence') ||
-        n.includes('certificate')
-      ){
-        return 'certificate';
-      }
-
-      if(
-        n.includes('form') ||
-        n.includes('application')
-      ){
-        return 'online';
-      }
-
-      if(
-        n.includes('print') ||
-        n.includes('scan') ||
-        n.includes('photocopy')
-      ){
-        return 'print';
-      }
-
-      return 'other';
-    }
-
-
-    /* OPEN SERVICE */
-
-    function openService(service){
-
-      const modal =
-        document.getElementById('serviceModal');
-
-      const select =
-        document.getElementById('serviceSelect');
-
-      const title =
-        document.getElementById('modalTitle');
-
-      const icon =
-        document.getElementById('modalIcon');
-
-      const name =
-        getServiceName(service);
-
-      const type =
-        getServiceType(name);
-
-      select.value = name;
-
-      title.textContent =
-        name || 'Service Request';
-
-      icon.textContent =
-        getServiceIcon(name);
-
-
-      /* Hide all service fields */
-
-      document
-        .querySelectorAll('.field-group')
-        .forEach(function(group){
-
-          group.style.display = 'none';
-
-        });
-
-
-      /* Show selected service fields */
-
-      const selected =
-        document.querySelector(
-          '.field-group[data-type="' + type + '"]'
-        );
-
-      if(selected){
-        selected.style.display = 'block';
-      }
-
-
-      modal.classList.add('open');
-
-      modal.setAttribute(
-        'aria-hidden',
-        'false'
-      );
-
-      document.body.style.overflow =
-        'hidden';
-
-    }
-
-
-    /* CLOSE SERVICE */
-
-    function closeService(){
-
-      const modal =
-        document.getElementById('serviceModal');
-
-      modal.classList.remove('open');
-
-      modal.setAttribute(
-        'aria-hidden',
-        'true'
-      );
-
-      document.body.style.overflow =
-        '';
-
-    }
-
-
-    /* ESC KEY */
-
-    document.addEventListener(
-      'keydown',
-      function(e){
-
-        if(e.key === 'Escape'){
-          closeService();
-        }
-
-      }
-    );
-
-
-    /* OUTSIDE CLICK */
-
-    document
-      .getElementById('serviceModal')
-      .addEventListener(
-        'click',
-        function(e){
-
-          if(e.target === this){
-            closeService();
-          }
-
-        }
-      );
-
-
-    /* MOBILE NUMBER ONLY DIGITS */
-
-    document
-      .getElementById('customer_mobile')
-      .addEventListener(
-        'input',
-        function(){
-
-          this.value =
-            this.value.replace(/\D/g,'')
-                       .slice(0,10);
-
-        }
-      );
-
-
-    /* AADHAAR LAST 4 ONLY */
-
-    document
-      .querySelectorAll(
-        'input[name="aadhaar_last4"], input[name="aadhaar_last4_dob"]'
-      )
-      .forEach(function(input){
-
-        input.addEventListener(
-          'input',
-          function(){
-
-            this.value =
-              this.value
-                .replace(/\D/g,'')
-                .slice(0,4);
-
-          }
-        );
-
-      });
-
-  </script>
-
-</body>
-</html>
+        {% if services %}
+
+            {% for s in services %}
+
+                <button
+                    type="button"
+                    class="service-tile"
+                    onclick='openService({{ s|tojson|safe }})'
+                >
+
+                    <div class="service-icon">
+                        {% if service_icons and s in service_icons %}
+                            {{ service_icons[s] }}
+                        {% else %}
+                            📋
+                        {% endif %}
+                    </div>
+
+                    <h3>{{ s }}</h3>
+
+                    <p>
+                        {% if s == "Aadhaar Name Update Assistance" %}
+                            Aadhaar name update assistance
+                        {% elif s == "Aadhaar DOB Update Assistance" %}
+                            Date of birth correction assistance
+                        {% elif s == "Aadhaar Full Name Update Assistance" %}
+                            Full name update assistance
+                        {% elif s == "Birth Certificate PDF Download Assistance" %}
+                            Birth certificate PDF assistance
+                        {% elif s == "Voter ID Download Assistance" %}
+                            Voter ID download assistance
+                        {% elif s == "Voter Number Link Assistance" %}
+                            Voter number/mobile linking assistance
+                        {% elif s == "PAN Card" %}
+                            PAN card application assistance
+                        {% elif s == "Income/Caste/Residence Certificate" %}
+                            Certificate application assistance
+                        {% elif s == "Online Form / Application" %}
+                            Online form/application assistance
+                        {% elif s == "Print / Scan / Photocopy" %}
+                            Print, scan and photocopy service
+                        {% else %}
+                            Other online service assistance
+                        {% endif %}
+                    </p>
+
+                    <span class="open">Open Service →</span>
+
+                </
