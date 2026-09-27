@@ -1,4 +1,13 @@
-<!doctype html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Retailer Dashboard</title><link rel="stylesheet" href="/static/style.css"></head><body>
+<!doctype html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Retailer Dashboard</title><link rel="stylesheet" href="/static/style.css"><style>
+body.modal-open{overflow:hidden}
+.service-modal{display:none;position:fixed;inset:0;z-index:9999;padding:18px;box-sizing:border-box;align-items:center;justify-content:center}
+.service-modal.open{display:flex}
+.service-modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(2px)}
+.service-modal-card{position:relative;z-index:1;width:min(760px,100%);max-height:92vh;overflow:auto;margin:0;padding:22px;box-sizing:border-box;box-shadow:0 20px 60px rgba(0,0,0,.28)}
+.service-modal-close{position:absolute;right:12px;top:10px;border:0;background:transparent;font-size:25px;line-height:1;cursor:pointer;padding:8px;color:#334155}
+.service-modal-card h2{padding-right:45px}
+@media(max-width:600px){.service-modal{padding:8px}.service-modal-card{max-height:96vh;padding:18px 14px}.service-modal-close{right:8px;top:7px}}
+</style></head><body>
 <header><div class="wrap nav"><div class="brand"><img src="/static/logo.svg" class="brand-logo" alt="Shiva Janseva Kendra logo"><div><h1>Shiva Janseva Kendra</h1><small>Retailer Dashboard · {{retailer.name}} · {{retailer.username}}</small></div></div><a class="btn ghost" href="/logout">Logout</a></div></header><main class="wrap">
 {% with messages=get_flashed_messages(with_categories=true) %}{% for cat,msg in messages %}<div class="alert {{cat}}">{{msg}}</div>{% endfor %}{% endwith %}
 <section class="wallet-grid"><div class="wallet-card"><span>Wallet Balance</span><strong>₹{{"{:,.2f}".format(retailer.wallet_balance or 0)}}</strong><small>Minimum required balance: ₹{{"{:,.0f}".format(min_required_balance)}}</small></div><div class="wallet-card"><span>Minimum Add</span><strong>₹{{"{:,.0f}".format(min_topup)}}</strong><small>QR payment + Transaction ID</small></div><div class="wallet-card"><span>Service Charge</span><strong>₹{{"{:,.0f}".format(service_charge)}}</strong><small>₹20 must remain after request</small></div></section>
@@ -7,11 +16,13 @@
 <h2>🧾 All Services</h2>
 <p class="muted">Dashboard se kisi bhi service ko directly open karein.</p>
 <div class="service-grid">
-{% for s in services %}<a href="#serviceForm" class="service-tile" onclick="openService({{s|tojson}}); return true;"><span class="service-icon">{{ service_icons.get(s, '📄') }}</span><span>{{s}}</span><small>Open Service</small></a>{% endfor %}
+{% for s in services %}<button type="button" class="service-tile" onclick="openService({{s|tojson}})"><span class="service-icon">{{ service_icons.get(s, '📄') }}</span><span>{{s}}</span><small>Open Service</small></button>{% endfor %}
 </div>
 </section>
 
-<section class="card"><h2>🧾 Service Request</h2>
+<div id="serviceModal" class="service-modal" aria-hidden="true">
+<div class="service-modal-backdrop" onclick="closeService()"></div>
+<section class="card service-modal-card" role="dialog" aria-modal="true" aria-labelledby="serviceModalTitle"><button type="button" class="service-modal-close" onclick="closeService()" aria-label="Close">✕</button><h2 id="serviceModalTitle">🧾 Service Request</h2>
 <p class="muted">Service select karte hi required fields dikhenge. Charge Admin set karta hai. Request ke baad wallet me kam se kam ₹{{"{:,.0f}".format(min_required_balance)}} rehna chahiye.</p>
 <form method="post" action="/retailer/service-request" id="serviceForm">
 <label>Service*<select name="service" id="serviceSelect" required><option value="">Select Service</option>{% for s in services %}<option value="{{s}}">{{s}}</option>{% endfor %}</select></label>
@@ -21,12 +32,21 @@
 <button class="btn">Submit Service Request</button></form>
 <script>
 function openService(service){
+ const modal=document.getElementById('serviceModal');
  const sel=document.getElementById('serviceSelect');
- const form=document.getElementById('serviceForm');
  sel.value=service;
  sel.dispatchEvent(new Event('change', {bubbles:true}));
- setTimeout(()=>{ form.scrollIntoView({behavior:'smooth',block:'start'}); }, 50);
+ modal.classList.add('open');
+ modal.setAttribute('aria-hidden','false');
+ document.body.classList.add('modal-open');
 }
+function closeService(){
+ const modal=document.getElementById('serviceModal');
+ modal.classList.remove('open');
+ modal.setAttribute('aria-hidden','true');
+ document.body.classList.remove('modal-open');
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape') closeService();});
 const fields={{service_fields|tojson}};
 const states=[
 'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal',
@@ -49,7 +69,7 @@ sel.addEventListener('change',updatePresence);
 updatePresence();
 setInterval(updatePresence,10000);
 window.addEventListener('pagehide',markOffline);
-</script></section>
+</script></section></div>
 
 <div class="two-col">
 <section class="card">
