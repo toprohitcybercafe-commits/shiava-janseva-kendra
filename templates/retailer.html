@@ -1,530 +1,490 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shiva Janseva Kendra - Retailer Dashboard</title>
-
-<style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-}
-
-body{
-    font-family:Arial,Helvetica,sans-serif;
-    background:#f4f7fb;
-    color:#172033;
-    min-height:100vh;
-}
-
-.top{
-    background:linear-gradient(135deg,#2563eb,#1d4ed8);
-    color:#fff;
-    padding:22px 16px;
-}
-
-.top-inner{
-    max-width:1100px;
-    margin:auto;
-}
-
-.top h1{
-    font-size:25px;
-    margin-bottom:5px;
-}
-
-.top p{
-    opacity:.9;
-    font-size:14px;
-}
-
-.container{
-    width:min(1100px,94%);
-    margin:20px auto 50px;
-}
-
-.balance-row{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:15px;
-    margin-bottom:20px;
-}
-
-.balance{
-    background:#fff;
-    border-radius:16px;
-    padding:20px;
-    box-shadow:0 5px 20px rgba(0,0,0,.07);
-    border:1px solid #e5eaf2;
-}
-
-.balance-label{
-    color:#667085;
-    font-size:14px;
-    margin-bottom:7px;
-}
-
-.balance strong{
-    font-size:29px;
-    color:#15803d;
-}
-
-.wallet-box{
-    background:#fff;
-    border-radius:16px;
-    padding:20px;
-    box-shadow:0 5px 20px rgba(0,0,0,.07);
-    border:1px solid #e5eaf2;
-}
-
-.wallet-box h2{
-    font-size:18px;
-    margin-bottom:13px;
-}
-
-.wallet-form{
-    display:grid;
-    grid-template-columns:1fr 1fr auto;
-    gap:10px;
-}
-
-input,select,textarea{
-    width:100%;
-    padding:12px 13px;
-    border:1px solid #d0d5dd;
-    border-radius:10px;
-    font-size:14px;
-    outline:none;
-    background:#fff;
-}
-
-input:focus,select:focus,textarea:focus{
-    border-color:#2563eb;
-    box-shadow:0 0 0 3px rgba(37,99,235,.10);
-}
-
-button{
-    font-family:inherit;
-}
-
-.btn{
-    border:0;
-    border-radius:10px;
-    padding:12px 17px;
-    cursor:pointer;
-    font-weight:700;
-}
-
-.btn-primary{
-    background:#2563eb;
-    color:white;
-}
-
-.btn-primary:hover{
-    background:#1d4ed8;
-}
-
-.btn-green{
-    background:#16a34a;
-    color:white;
-}
-
-.btn-red{
-    background:#dc2626;
-    color:white;
-}
-
-.section-title{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin:28px 0 14px;
-}
-
-.section-title h2{
-    font-size:21px;
-}
-
-.section-title span{
-    color:#667085;
-    font-size:13px;
-}
-
-.services{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:15px;
-}
-
-.service-tile{
-    width:100%;
-    text-align:left;
-    border:1px solid #e5eaf2;
-    background:#fff;
-    border-radius:16px;
-    padding:19px;
-    cursor:pointer;
-    box-shadow:0 4px 16px rgba(0,0,0,.05);
-    transition:.2s;
-}
-
-.service-tile:hover{
-    transform:translateY(-2px);
-    box-shadow:0 8px 25px rgba(0,0,0,.09);
-    border-color:#93c5fd;
-}
-
-.service-icon{
-    width:52px;
-    height:52px;
-    border-radius:14px;
-    background:#eff6ff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:27px;
-    margin-bottom:12px;
-}
-
-.service-tile h3{
-    font-size:16px;
-    line-height:1.35;
-    margin-bottom:7px;
-}
-
-.service-tile p{
-    color:#667085;
-    font-size:13px;
-    min-height:35px;
-    line-height:1.4;
-}
-
-.open{
-    display:inline-block;
-    margin-top:12px;
-    color:#2563eb;
-    font-size:13px;
-    font-weight:700;
-}
-
-.card{
-    background:#fff;
-    border:1px solid #e5eaf2;
-    border-radius:16px;
-    padding:18px;
-    box-shadow:0 4px 16px rgba(0,0,0,.05);
-}
-
-.table-wrap{
-    overflow-x:auto;
-}
-
-table{
-    width:100%;
-    border-collapse:collapse;
-    min-width:650px;
-}
-
-th,td{
-    padding:12px 10px;
-    border-bottom:1px solid #edf0f5;
-    text-align:left;
-    font-size:13px;
-}
-
-th{
-    background:#f8fafc;
-    font-weight:700;
-}
-
-.badge{
-    display:inline-block;
-    padding:5px 9px;
-    border-radius:20px;
-    font-size:12px;
-    font-weight:700;
-}
-
-.pending{
-    background:#fff7ed;
-    color:#c2410c;
-}
-
-.success{
-    background:#ecfdf3;
-    color:#15803d;
-}
-
-.rejected{
-    background:#fef2f2;
-    color:#b91c1c;
-}
-
-.info{
-    background:#eff6ff;
-    color:#1d4ed8;
-}
-
-.muted{
-    color:#667085;
-    font-size:13px;
-}
-
-.flash{
-    padding:13px 15px;
-    border-radius:10px;
-    margin-bottom:12px;
-    font-size:14px;
-    font-weight:600;
-}
-
-.flash.success{
-    background:#ecfdf3;
-    color:#166534;
-    border:1px solid #bbf7d0;
-}
-
-.flash.error{
-    background:#fef2f2;
-    color:#991b1b;
-    border:1px solid #fecaca;
-}
-
-/* MODAL */
-.modal{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(15,23,42,.65);
-    z-index:9999;
-    padding:15px;
-    overflow:auto;
-}
-
-.modal.show{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
-
-.modal-box{
-    width:min(650px,100%);
-    background:#fff;
-    border-radius:18px;
-    overflow:hidden;
-    box-shadow:0 20px 60px rgba(0,0,0,.25);
-    max-height:94vh;
-    overflow-y:auto;
-}
-
-.modal-head{
-    background:linear-gradient(135deg,#2563eb,#1d4ed8);
-    color:#fff;
-    padding:17px 18px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    position:sticky;
-    top:0;
-    z-index:2;
-}
-
-.modal-head h2{
-    font-size:19px;
-}
-
-.close{
-    border:0;
-    background:rgba(255,255,255,.15);
-    color:#fff;
-    width:35px;
-    height:35px;
-    border-radius:50%;
-    font-size:22px;
-    cursor:pointer;
-}
-
-.modal-body{
-    padding:18px;
-}
-
-.form-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:13px;
-}
-
-.form-group{
-    margin-bottom:13px;
-}
-
-.form-group.full{
-    grid-column:1/-1;
-}
-
-.form-group label{
-    display:block;
-    font-size:13px;
-    font-weight:700;
-    margin-bottom:6px;
-    color:#344054;
-}
-
-.required{
-    color:#dc2626;
-}
-
-.service-extra{
-    margin-top:4px;
-}
-
-.security{
-    background:#f8fafc;
-    border:1px solid #e2e8f0;
-    padding:11px 12px;
-    border-radius:10px;
-    font-size:12px;
-    color:#475467;
-    margin:10px 0 14px;
-    line-height:1.5;
-}
-
-.charge-box{
-    background:#eff6ff;
-    border:1px solid #bfdbfe;
-    padding:12px;
-    border-radius:10px;
-    margin-bottom:14px;
-    font-size:13px;
-}
-
-.modal-actions{
-    display:flex;
-    gap:10px;
-    margin-top:5px;
-}
-
-.modal-actions button{
-    flex:1;
-}
-
-.empty{
-    padding:25px;
-    text-align:center;
-    color:#667085;
-}
-
-.logout{
-    color:#fff;
-    text-decoration:none;
-    display:inline-block;
-    margin-top:10px;
-    font-size:13px;
-    opacity:.9;
-}
-
-@media(max-width:800px){
-    .services{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .balance-row{
-        grid-template-columns:1fr;
-    }
-
-    .wallet-form{
-        grid-template-columns:1fr;
-    }
-}
-
-@media(max-width:520px){
-    .services{
-        grid-template-columns:1fr;
-    }
-
-    .form-grid{
-        grid-template-columns:1fr;
-    }
-
-    .form-group.full{
-        grid-column:auto;
-    }
-
-    .top h1{
-        font-size:21px;
-    }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retailer Dashboard - Shiva Janseva Kendra</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #172554, #2563eb);
+            color: white;
+            padding: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .brand p {
+            margin: 5px 0 0;
+            opacity: .85;
+            font-size: 13px;
+        }
+
+        .logout {
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,.15);
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+
+        .container {
+            width: 94%;
+            max-width: 1200px;
+            margin: 20px auto 50px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 3px 15px rgba(0,0,0,.07);
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, #047857, #10b981);
+            color: white;
+        }
+
+        .balance {
+            font-size: 30px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .muted {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .balance-card .muted {
+            color: rgba(255,255,255,.85);
+        }
+
+        .section-title {
+            margin: 28px 0 12px;
+        }
+
+        .section-title h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .section-title span {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .wallet-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 15px;
+            background: white;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 8px;
+            padding: 12px 18px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-green {
+            background: #059669;
+            color: white;
+        }
+
+        .btn-blue {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-red {
+            background: #dc2626;
+            color: white;
+        }
+
+        .services {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .service-tile {
+            border: 0;
+            text-align: left;
+            background: white;
+            border-radius: 14px;
+            padding: 18px;
+            cursor: pointer;
+            box-shadow: 0 3px 15px rgba(0,0,0,.07);
+            transition: .2s;
+        }
+
+        .service-tile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 22px rgba(0,0,0,.12);
+        }
+
+        .service-icon {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eff6ff;
+            border-radius: 12px;
+            font-size: 27px;
+            margin-bottom: 12px;
+        }
+
+        .service-tile h3 {
+            margin: 0 0 8px;
+            font-size: 16px;
+        }
+
+        .service-tile p {
+            margin: 0 0 15px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .open {
+            color: #2563eb;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        th,
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background: #f8fafc;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .flash {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background: #eff6ff;
+            color: #1e40af;
+        }
+
+        .flash.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .flash.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .empty {
+            padding: 20px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        /* MODAL */
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            inset: 0;
+            background: rgba(0,0,0,.65);
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .modal-box {
+            background: white;
+            max-width: 600px;
+            margin: 30px auto;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 15px 50px rgba(0,0,0,.25);
+        }
+
+        .modal-head {
+            background: linear-gradient(135deg, #172554, #2563eb);
+            color: white;
+            padding: 17px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-head h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .close {
+            border: 0;
+            background: transparent;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 13px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .required {
+            color: #dc2626;
+        }
+
+        .charge-box {
+            background: #eff6ff;
+            border-radius: 10px;
+            padding: 12px;
+            margin: 15px 0;
+        }
+
+        .submit-service {
+            width: 100%;
+            padding: 13px;
+            border: 0;
+            border-radius: 9px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .warning {
+            background: #fff7ed;
+            color: #9a3412;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+
+        @media (max-width: 700px) {
+            .wallet-form {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                align-items: flex-start;
+            }
+
+            .container {
+                width: 92%;
+            }
+
+            .services {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<header class="top">
-    <div class="top-inner">
+<header class="header">
+    <div class="brand">
         <h1>Shiva Janseva Kendra</h1>
         <p>Retailer Dashboard</p>
-        <a href="/logout" class="logout">Logout</a>
     </div>
+
+    <a class="logout" href="/logout">Logout</a>
 </header>
 
-<main class="container">
 
+<div class="container">
+
+    <!-- FLASH MESSAGES -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
-                <div class="flash {{ category }}">{{ message }}</div>
+                <div class="flash {{ category }}">
+                    {{ message }}
+                </div>
             {% endfor %}
         {% endif %}
     {% endwith %}
 
-    <!-- WALLET -->
-    <div class="balance-row">
 
-        <section class="balance">
-            <div class="balance-label">Wallet Balance</div>
-            <strong>₹{{ "%.2f"|format(retailer.wallet_balance|default(0)|float) }}</strong>
-            <div class="muted" style="margin-top:7px;">
-                Minimum ₹{{ "%.0f"|format(min_required_balance|float) }} balance required after service
+    <!-- RETAILER + WALLET -->
+    <div class="grid">
+
+        <div class="card">
+            <div class="muted">Retailer</div>
+
+            <h2>
+                {{ retailer.name or retailer.username or "Retailer" }}
+            </h2>
+
+            {% if retailer.mobile %}
+                <div class="muted">
+                    Mobile: {{ retailer.mobile }}
+                </div>
+            {% endif %}
+        </div>
+
+
+        <div class="card balance-card">
+
+            <div class="muted">
+                Wallet Balance
             </div>
-        </section>
 
-        <section class="wallet-box">
-            <h2>💰 Add Wallet</h2>
-
-            <form method="POST" action="/retailer/topup" class="wallet-form">
-
-                <input
-                    type="number"
-                    name="amount"
-                    min="{{ min_topup }}"
-                    step="0.01"
-                    placeholder="Amount ₹ (Min {{ min_topup|int }})"
-                    required
-                >
-
-                <input
-                    type="text"
-                    name="transaction_id"
-                    maxlength="100"
-                    placeholder="Transaction ID / UTR"
-                    required
-                >
-
-                <button type="submit" class="btn btn-green">
-                    Add Wallet
-                </button>
-
-            </form>
-
-            <div class="muted" style="margin-top:9px;">
-                Payment karne ke baad Transaction ID / UTR submit karein.
-                Admin approval ke baad wallet balance add hoga.
+            <div class="balance">
+                ₹{{ "%.2f"|format(retailer.wallet_balance|float) }}
             </div>
-        </section>
+
+            <div class="muted">
+                Minimum required balance: ₹{{ "%.2f"|format(min_required_balance|float) }}
+            </div>
+
+        </div>
 
     </div>
+
+
+    <!-- ADD WALLET -->
+    <div class="card">
+
+        <div class="section-title" style="margin-top:0;">
+            <h2>Add Wallet</h2>
+            <span>Payment karne ke baad Transaction ID / UTR submit karein.</span>
+        </div>
+
+        <form method="POST" action="/retailer/topup" class="wallet-form">
+
+            <input
+                type="number"
+                name="amount"
+                min="{{ min_topup }}"
+                step="0.01"
+                placeholder="Amount ₹ (Min {{ min_topup|int }})"
+                required
+            >
+
+            <input
+                type="text"
+                name="transaction_id"
+                maxlength="100"
+                placeholder="Transaction ID / UTR"
+                required
+            >
+
+            <button type="submit" class="btn btn-green">
+                Add Wallet
+            </button>
+
+        </form>
+
+        <div class="muted" style="margin-top:10px;">
+            Minimum top-up: ₹{{ min_topup|int }}.
+            Admin approval ke baad wallet balance add hoga.
+        </div>
+
+    </div>
+
 
     <!-- SERVICES -->
     <div class="section-title">
@@ -532,55 +492,402 @@ th{
         <span>Service select karke details submit karein</span>
     </div>
 
+
     <section class="services">
 
-        {% if services %}
+        {% for s in services %}
 
-            {% for s in services %}
+        <button
+            type="button"
+            class="service-tile"
+            onclick='openService({{ s|tojson|safe }})'
+        >
 
-                <button
-                    type="button"
-                    class="service-tile"
-                    onclick='openService({{ s|tojson|safe }})'
+            <div class="service-icon">
+
+                {% if service_icons and s in service_icons %}
+                    {{ service_icons[s] }}
+                {% else %}
+                    📂
+                {% endif %}
+
+            </div>
+
+            <h3>{{ s }}</h3>
+
+            <p>Online service assistance</p>
+
+            <span class="open">
+                Open Service →
+            </span>
+
+        </button>
+
+        {% endfor %}
+
+    </section>
+
+
+    <!-- TOPUP HISTORY -->
+    <div class="section-title">
+        <h2>Wallet Top-up History</h2>
+    </div>
+
+    <div class="card">
+
+        {% if topups %}
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Amount</th>
+                        <th>Transaction ID</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for t in topups %}
+
+                    <tr>
+
+                        <td>
+                            #{{ t.id }}
+                        </td>
+
+                        <td>
+                            ₹{{ "%.2f"|format(t.amount|float) }}
+                        </td>
+
+                        <td>
+                            {{ t.transaction_id }}
+                        </td>
+
+                        <td>
+
+                            {% if t.status == "Approved" or t.status == "Success" %}
+
+                                <span class="badge success">
+                                    {{ t.status }}
+                                </span>
+
+                            {% elif t.status == "Rejected" %}
+
+                                <span class="badge rejected">
+                                    {{ t.status }}
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge pending">
+                                    {{ t.status }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            {{ t.created_at }}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+            <div class="empty">
+                Abhi koi wallet top-up nahi hai.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- SERVICE REQUEST HISTORY -->
+    <div class="section-title">
+        <h2>Service Request History</h2>
+    </div>
+
+    <div class="card">
+
+        {% if requests %}
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Service</th>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>File</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for r in requests %}
+
+                    <tr>
+
+                        <td>
+                            #{{ r.id }}
+                        </td>
+
+                        <td>
+                            {{ r.service }}
+                        </td>
+
+                        <td>
+                            {{ r.customer_name }}
+                        </td>
+
+                        <td>
+
+                            {% if r.status == "Success" %}
+
+                                <span class="badge success">
+                                    Success
+                                </span>
+
+                            {% elif r.status == "Rejected" %}
+
+                                <span class="badge rejected">
+                                    Rejected
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge pending">
+                                    {{ r.status }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            {{ r.created_at }}
+                        </td>
+
+                        <td>
+
+                            {% if r.status == "Success" %}
+
+                                <a
+                                    class="btn btn-blue"
+                                    style="display:inline-block;padding:7px 10px;text-decoration:none;"
+                                    href="/retailer/request/{{ r.id }}/download"
+                                >
+                                    Download PDF
+                                </a>
+
+                            {% else %}
+
+                                -
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+            <div class="empty">
+                Abhi koi service request nahi hai.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- WALLET LEDGER -->
+    <div class="section-title">
+        <h2>Wallet Ledger</h2>
+    </div>
+
+    <div class="card">
+
+        {% if ledger %}
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for l in ledger %}
+
+                    <tr>
+
+                        <td>
+                            {{ l.created_at }}
+                        </td>
+
+                        <td>
+                            {{ l.entry_type }}
+                        </td>
+
+                        <td>
+                            {{ l.description }}
+                        </td>
+
+                        <td>
+
+                            {% if l.amount|float >= 0 %}
+
+                                <strong style="color:#059669;">
+                                    +₹{{ "%.2f"|format(l.amount|float) }}
+                                </strong>
+
+                            {% else %}
+
+                                <strong style="color:#dc2626;">
+                                    -₹{{ "%.2f"|format((l.amount|float)|abs) }}
+                                </strong>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+            <div class="empty">
+                Wallet ledger empty hai.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- SERVICE MODAL -->
+
+<div id="serviceModal" class="modal">
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2 id="modalTitle">
+                Service Request
+            </h2>
+
+            <button
+                type="button"
+                class="close"
+                onclick="closeService()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="modal-body">
+
+            <form
+                method="POST"
+                action="/retailer/service-request"
+                id="serviceForm"
+            >
+
+                <input
+                    type="hidden"
+                    name="service"
+                    id="serviceInput"
                 >
 
-                    <div class="service-icon">
-                        {% if service_icons and s in service_icons %}
-                            {{ service_icons[s] }}
-                        {% else %}
-                            📋
-                        {% endif %}
-                    </div>
 
-                    <h3>{{ s }}</h3>
+                <!-- COMMON CUSTOMER NAME -->
 
-                    <p>
-                        {% if s == "Aadhaar Name Update Assistance" %}
-                            Aadhaar name update assistance
-                        {% elif s == "Aadhaar DOB Update Assistance" %}
-                            Date of birth correction assistance
-                        {% elif s == "Aadhaar Full Name Update Assistance" %}
-                            Full name update assistance
-                        {% elif s == "Birth Certificate PDF Download Assistance" %}
-                            Birth certificate PDF assistance
-                        {% elif s == "Voter ID Download Assistance" %}
-                            Voter ID download assistance
-                        {% elif s == "Voter Number Link Assistance" %}
-                            Voter number/mobile linking assistance
-                        {% elif s == "PAN Card" %}
-                            PAN card application assistance
-                        {% elif s == "Income/Caste/Residence Certificate" %}
-                            Certificate application assistance
-                        {% elif s == "Online Form / Application" %}
-                            Online form/application assistance
-                        {% elif s == "Print / Scan / Photocopy" %}
-                            Print, scan and photocopy service
-                        {% else %}
-                            Other online service assistance
-                        {% endif %}
-                        {% endfor %}
-                    </p>
+                <div class="form-group">
 
-                    <span class="open">Open Service →</span>
+                    <label>
+                        Customer Name
+                        <span class="required">*</span>
+                    </label>
 
-                </
+                    <input
+                        type="text"
+                        name="customer_name"
+                        id="customerName"
+                        required
+                        placeholder="Customer name"
+                    >
+
+                </div>
+
+
+                <!-- COMMON MOBILE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Mobile Number
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="tel"
+                        name="mobile"
+                        id="mobile"
+                        maxlength="10"
+                        inputmode="numeric"
+                        required
+                        placeholder="10 digit mobile number"
+                    >
+
+                </div>
+
+
+ 
