@@ -7,9 +7,49 @@
 <h2>🧾 All Services</h2>
 <p class="muted">Dashboard se kisi bhi service ko directly open karein.</p>
 <div class="service-grid">
-{% for s in services %}<button type="button" class="service-tile" onclick="openService({{s|tojson}})"><span class="service-icon">{{ service_icons.get(s, '📄') }}</span><span>{{s}}</span><small>Open Service</small></button>{% endfor %}
+{% for s in services %}<a href="#serviceForm" class="service-tile" onclick="openService({{s|tojson}}); return true;"><span class="service-icon">{{ service_icons.get(s, '📄') }}</span><span>{{s}}</span><small>Open Service</small></a>{% endfor %}
 </div>
 </section>
+
+<section class="card"><h2>🧾 Service Request</h2>
+<p class="muted">Service select karte hi required fields dikhenge. Charge Admin set karta hai. Request ke baad wallet me kam se kam ₹{{"{:,.0f}".format(min_required_balance)}} rehna chahiye.</p>
+<form method="post" action="/retailer/service-request" id="serviceForm">
+<label>Service*<select name="service" id="serviceSelect" required><option value="">Select Service</option>{% for s in services %}<option value="{{s}}">{{s}}</option>{% endfor %}</select></label>
+<div id="serviceFields"></div>
+<label>Message / Extra Details<textarea name="message" maxlength="500" placeholder="Aadhaar number/OTP mat likhein"></textarea></label>
+<div id="chargeBox" class="notice">Service select karein.</div>
+<button class="btn">Submit Service Request</button></form>
+<script>
+function openService(service){
+ const sel=document.getElementById('serviceSelect');
+ const form=document.getElementById('serviceForm');
+ sel.value=service;
+ sel.dispatchEvent(new Event('change', {bubbles:true}));
+ setTimeout(()=>{ form.scrollIntoView({behavior:'smooth',block:'start'}); }, 50);
+}
+const fields={{service_fields|tojson}};
+const states=[
+'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal',
+'Andaman and Nicobar Islands','Chandigarh','Dadra and Nagar Haveli and Daman and Diu','Delhi','Jammu and Kashmir','Ladakh','Lakshadweep','Puducherry'
+];
+const charges={% set dummy=namespace(x=1) %}{ {% for c in service_charges %}{{c.service|tojson}}:{{c.charge|float}},{% endfor %} };
+const sel=document.getElementById('serviceSelect'), holder=document.getElementById('serviceFields'), box=document.getElementById('chargeBox');
+sel.addEventListener('change',()=>{holder.innerHTML=''; const fs=fields[sel.value]||[]; fs.forEach(([key,label,type,req])=>{const l=document.createElement('label');l.textContent=label+(req?'*':'');let i;if(key==='state_name'){i=document.createElement('select');i.name=key;i.required=req;const first=document.createElement('option');first.value='';first.textContent='Select State / UT';i.appendChild(first);states.forEach(st=>{const o=document.createElement('option');o.value=st;o.textContent=st;i.appendChild(o)});}else{i=document.createElement('input');i.name=key;i.type=type;i.required=req;i.maxLength=120;}l.appendChild(i);holder.appendChild(l)});const c=Number(charges[sel.value]||0);box.textContent='Service Charge: ₹'+c.toFixed(2);});
+
+async function updatePresence(){
+  const service=sel.value||'';
+  try{
+    await fetch('/retailer/presence',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'service='+encodeURIComponent(service),credentials:'same-origin',keepalive:true});
+  }catch(e){}
+}
+async function markOffline(){
+  try{await fetch('/retailer/presence/offline',{method:'POST',credentials:'same-origin',keepalive:true});}catch(e){}
+}
+sel.addEventListener('change',updatePresence);
+updatePresence();
+setInterval(updatePresence,10000);
+window.addEventListener('pagehide',markOffline);
+</script></section>
 
 <div class="two-col">
 <section class="card">
@@ -36,44 +76,7 @@ function toggleWalletBox(){
 </script>
 </section>
 
-<section class="card"><h2>🧾 Service Request</h2>
-<p class="muted">Service select karte hi required fields dikhenge. Charge Admin set karta hai. Request ke baad wallet me kam se kam ₹{{"{:,.0f}".format(min_required_balance)}} rehna chahiye.</p>
-<form method="post" action="/retailer/service-request" id="serviceForm">
-<label>Service*<select name="service" id="serviceSelect" required><option value="">Select Service</option>{% for s in services %}<option value="{{s}}">{{s}}</option>{% endfor %}</select></label>
-<div id="serviceFields"></div>
-<label>Message / Extra Details<textarea name="message" maxlength="500" placeholder="Aadhaar number/OTP mat likhein"></textarea></label>
-<div id="chargeBox" class="notice">Service select karein.</div>
-<button class="btn">Submit Service Request</button></form>
-<script>
-function openService(service){
- const sel=document.getElementById('serviceSelect');
- sel.value=service;
- sel.dispatchEvent(new Event('change'));
- document.getElementById('serviceForm').scrollIntoView({behavior:'smooth',block:'start'});
-}
-const fields={{service_fields|tojson}};
-const states=[
-'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal',
-'Andaman and Nicobar Islands','Chandigarh','Dadra and Nagar Haveli and Daman and Diu','Delhi','Jammu and Kashmir','Ladakh','Lakshadweep','Puducherry'
-];
-const charges={% set dummy=namespace(x=1) %}{ {% for c in service_charges %}{{c.service|tojson}}:{{c.charge|float}},{% endfor %} };
-const sel=document.getElementById('serviceSelect'), holder=document.getElementById('serviceFields'), box=document.getElementById('chargeBox');
-sel.addEventListener('change',()=>{holder.innerHTML=''; const fs=fields[sel.value]||[]; fs.forEach(([key,label,type,req])=>{const l=document.createElement('label');l.textContent=label+(req?'*':'');let i;if(key==='state_name'){i=document.createElement('select');i.name=key;i.required=req;const first=document.createElement('option');first.value='';first.textContent='Select State / UT';i.appendChild(first);states.forEach(st=>{const o=document.createElement('option');o.value=st;o.textContent=st;i.appendChild(o)});}else{i=document.createElement('input');i.name=key;i.type=type;i.required=req;i.maxLength=120;}l.appendChild(i);holder.appendChild(l)});const c=Number(charges[sel.value]||0);box.textContent='Service Charge: ₹'+c.toFixed(2);});
-
-async function updatePresence(){
-  const service=sel.value||'';
-  try{
-    await fetch('/retailer/presence',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'service='+encodeURIComponent(service),credentials:'same-origin',keepalive:true});
-  }catch(e){}
-}
-async function markOffline(){
-  try{await fetch('/retailer/presence/offline',{method:'POST',credentials:'same-origin',keepalive:true});}catch(e){}
-}
-sel.addEventListener('change',updatePresence);
-updatePresence();
-setInterval(updatePresence,10000);
-window.addEventListener('pagehide',markOffline);
-</script></section></div>
+</div>
 
 <section class="card"><h2>Wallet Add Requests</h2><div class="tablewrap"><table><thead><tr><th>ID</th><th>Amount</th><th>Transaction ID</th><th>Status</th><th>Date</th></tr></thead><tbody>{% for t in topups %}<tr><td>#{{t.id}}</td><td>₹{{"{:,.2f}".format(t.amount)}}</td><td>{{t.transaction_id}}</td><td><span class="badge {{t.status|lower}}">{{t.status}}</span></td><td>{{t.created_at}}</td></tr>{% else %}<tr><td colspan="5">No wallet requests yet.</td></tr>{% endfor %}</tbody></table></div></section>
 
