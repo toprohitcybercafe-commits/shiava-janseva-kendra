@@ -1,53 +1,52 @@
-function openService(service){
- const modal = document.getElementById('serviceModal');
- const sel = document.getElementById('serviceSelect');
-
- sel.value = service;
- sel.dispatchEvent(new Event('change'));
-
- modal.classList.add('open');
- modal.setAttribute('aria-hidden','false');
- document.body.classList.add('modal-open');
-
- // Force modal visible
- modal.style.display = 'flex';
- modal.style.position = 'fixed';
- modal.style.inset = '0';
- modal.style.zIndex = '99999';
- modal.style.alignItems = 'center';
- modal.style.justifyContent = 'center';
- modal.style.padding = '20px';
- modal.style.background = 'rgba(0,0,0,0.65)';
-
- const card = modal.querySelector('.service-modal-card');
- if(card){
-   card.style.display = 'block';
-   card.style.position = 'relative';
-   card.style.zIndex = '100000';
-   card.style.background = '#fff';
-   card.style.width = '100%';
-   card.style.maxWidth = '650px';
-   card.style.maxHeight = '90vh';
-   card.style.overflowY = 'auto';
-   card.style.padding = '24px';
-   card.style.borderRadius = '16px';
-   card.style.boxSizing = 'border-box';
- }
-
- setTimeout(()=>{
-   const first = document.querySelector(
-     '#serviceFields input, #serviceFields select'
-   );
-   if(first) first.focus();
- },50);
+<style>
+.service-modal {
+    display: none !important;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 99999 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0,0,0,.65) !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 20px !important;
+    box-sizing: border-box !important;
 }
 
-function closeServiceModal(){
- const modal = document.getElementById('serviceModal');
-
- modal.classList.remove('open');
- modal.setAttribute('aria-hidden','true');
- document.body.classList.remove('modal-open');
-
- modal.style.display = 'none';
+.service-modal.open {
+    display: flex !important;
 }
+
+.service-modal-backdrop {
+    position: absolute !important;
+    inset: 0 !important;
+    background: rgba(0,0,0,.65) !important;
+}
+
+.service-modal-card {
+    position: relative !important;
+    z-index: 100000 !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 650px !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    background: #fff !important;
+    color: #111 !important;
+    padding: 24px !important;
+    border-radius: 16px !important;
+    box-sizing: border-box !important;
+}
+
+.service-modal-close {
+    position: absolute !important;
+    right: 12px !important;
+    top: 12px !important;
+    z-index: 100001 !important;
+    cursor: pointer !important;
+}
+
+body.modal-open {
+    overflow: hidden !important;
+}
+</style>
