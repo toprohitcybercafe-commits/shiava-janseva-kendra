@@ -4,7 +4,12 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from werkzeug.utils import secure_filename
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "shiva_janseva.db")
+# Render Persistent Disk support:
+# Set a Render Persistent Disk mount path to /var/data. The database and uploads
+# are stored there so service restarts/redeploys do not wipe users/retailers.
+DATA_DIR = os.environ.get("DATA_DIR", "/var/data" if os.environ.get("RENDER") else BASE_DIR)
+os.makedirs(DATA_DIR, exist_ok=True)
+DB_PATH = os.path.join(DATA_DIR, "shiva_janseva.db")
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "CHANGE-ME-IN-PRODUCTION")
@@ -18,7 +23,7 @@ MIN_TOPUP = 100.0
 MIN_REQUIRED_BALANCE = 20.0
 SERVICE_CHARGE = 100.0
 ALLOWED_PDF_EXTENSIONS = {"pdf"}
-UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "uploads")
+UPLOAD_DIR = os.path.join(DATA_DIR, "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 MAX_PDF_SIZE = 10 * 1024 * 1024
 
