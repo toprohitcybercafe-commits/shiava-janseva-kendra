@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>Retailer Dashboard</title>
 
@@ -36,11 +36,14 @@
             display: none;
             position: fixed;
             inset: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0, 0, 0, 0.65);
-            z-index: 99999;
+            z-index: 999999;
             align-items: center;
             justify-content: center;
             padding: 15px;
+            box-sizing: border-box;
         }
 
         .modal.show {
@@ -66,15 +69,15 @@
 
         .modal-box label {
             display: block;
-            margin: 12px 0;
+            margin: 14px 0;
         }
 
         .modal-box input,
-        .modal-box textarea,
-        .modal-box select {
+        .modal-box textarea {
+            display: block;
             width: 100%;
             box-sizing: border-box;
-            padding: 10px;
+            padding: 11px;
             margin-top: 6px;
             border: 1px solid #ccc;
             border-radius: 7px;
@@ -88,13 +91,12 @@
         .close {
             position: absolute;
             right: 12px;
-            top: 5px;
+            top: 8px;
             border: none;
-            background: none;
+            background: transparent;
             font-size: 32px;
             line-height: 1;
             cursor: pointer;
-            color: #333;
         }
 
         .close:hover {
@@ -114,6 +116,7 @@
     </style>
 </head>
 
+
 <body>
 
 <header>
@@ -121,8 +124,9 @@
 
         <div>
             <h1>Retailer Dashboard</h1>
+
             <small>
-                Shiva Janseva Kendra · {{retailer.name}}
+                Shiva Janseva Kendra · {{ retailer.name }}
             </small>
         </div>
 
@@ -136,14 +140,15 @@
 
 <main class="wrap">
 
+
     <!-- FLASH MESSAGES -->
 
     {% with messages = get_flashed_messages(with_categories=true) %}
 
         {% for cat, msg in messages %}
 
-            <div class="alert {{cat}}">
-                {{msg}}
+            <div class="alert {{ cat }}">
+                {{ msg }}
             </div>
 
         {% endfor %}
@@ -160,12 +165,12 @@
             <span>My Balance</span>
 
             <strong>
-                ₹{{"{:,.2f}".format(retailer.balance)}}
+                ₹{{ "{:,.2f}".format(retailer.balance) }}
             </strong>
 
             <small>
                 Service charge:
-                ₹{{"{:,.2f}".format(service_charge)}}
+                ₹{{ "{:,.2f}".format(service_charge) }}
                 per request
             </small>
 
@@ -177,11 +182,11 @@
             <span>Retailer ID</span>
 
             <strong>
-                {{retailer.username}}
+                {{ retailer.username }}
             </strong>
 
             <small>
-                {{retailer.phone}}
+                {{ retailer.phone }}
             </small>
 
         </div>
@@ -196,7 +201,7 @@
         <h2>🧾 All Services</h2>
 
         <p class="muted">
-            Dashboard se kisi bhi service ko directly open karein.
+            Kisi bhi service ke saamne Apply Now dabayein.
         </p>
 
 
@@ -204,29 +209,27 @@
 
             {% for s in services %}
 
-                <div class="service-item">
+            <div class="service-item">
 
-                    <strong>
-                        {{s}}
-                    </strong>
+                <strong>
+                    {{ s }}
+                </strong>
 
+                <button
+                    type="button"
+                    class="btn apply-service-btn"
+                    data-service="{{ s }}"
+                >
+                    📝 Apply Now
+                </button>
 
-                    <button
-                        class="btn"
-                        type="button"
-                        onclick="openServiceForm({{ s|tojson|forceescape }})">
-
-                        📝 Apply Now
-
-                    </button>
-
-                </div>
+            </div>
 
             {% else %}
 
-                <p>
-                    No services available.
-                </p>
+            <p>
+                No services available.
+            </p>
 
             {% endfor %}
 
@@ -251,21 +254,13 @@
                 <thead>
 
                     <tr>
-
                         <th>ID</th>
-
                         <th>Customer</th>
-
                         <th>Service</th>
-
                         <th>Amount</th>
-
                         <th>Status</th>
-
                         <th>Refund</th>
-
                         <th>Date</th>
-
                     </tr>
 
                 </thead>
@@ -275,65 +270,54 @@
 
                     {% for r in rows %}
 
-                        <tr>
+                    <tr>
 
-                            <td>
-                                #{{r.id}}
-                            </td>
+                        <td>
+                            #{{ r.id }}
+                        </td>
 
+                        <td>
+                            {{ r.name }}<br>
+                            {{ r.phone }}
+                        </td>
 
-                            <td>
-                                {{r.name}}
-                                <br>
-                                {{r.phone}}
-                            </td>
+                        <td>
+                            {{ r.service }}
+                        </td>
 
+                        <td>
+                            ₹{{ "{:,.2f}".format(r.amount) }}
+                        </td>
 
-                            <td>
-                                {{r.service}}
-                            </td>
+                        <td>
+                            {{ r.status }}
+                        </td>
 
+                        <td>
 
-                            <td>
-                                ₹{{"{:,.2f}".format(r.amount)}}
-                            </td>
+                            {% if r.refunded %}
+                                Yes
+                            {% else %}
+                                -
+                            {% endif %}
 
+                        </td>
 
-                            <td>
-                                {{r.status}}
-                            </td>
+                        <td>
+                            {{ r.created_at }}
+                        </td>
 
-
-                            <td>
-
-                                {% if r.refunded %}
-
-                                    Yes
-
-                                {% else %}
-
-                                    -
-
-                                {% endif %}
-
-                            </td>
-
-
-                            <td>
-                                {{r.created_at}}
-                            </td>
-
-                        </tr>
+                    </tr>
 
                     {% else %}
 
-                        <tr>
+                    <tr>
 
-                            <td colspan="7">
-                                No service requests yet.
-                            </td>
+                        <td colspan="7">
+                            No service requests yet.
+                        </td>
 
-                        </tr>
+                    </tr>
 
                     {% endfor %}
 
@@ -350,18 +334,14 @@
 
 <!-- SERVICE FORM POPUP -->
 
-<div
-    id="serviceModal"
-    class="modal"
-    onclick="if(event.target === this) closeServiceForm()"
->
+<div id="serviceModal" class="modal">
 
     <div class="modal-box">
 
         <button
             type="button"
             class="close"
-            onclick="closeServiceForm()"
+            id="closeServiceModal"
         >
             ×
         </button>
@@ -378,7 +358,6 @@
         >
 
             <label>
-
                 Customer Name*
 
                 <input
@@ -387,12 +366,10 @@
                     maxlength="80"
                     required
                 >
-
             </label>
 
 
             <label>
-
                 Customer Mobile*
 
                 <input
@@ -401,12 +378,10 @@
                     maxlength="15"
                     required
                 >
-
             </label>
 
 
             <label>
-
                 Service*
 
                 <input
@@ -416,24 +391,20 @@
                     readonly
                     required
                 >
-
             </label>
 
 
             <label>
-
                 Preferred Date
 
                 <input
                     type="date"
                     name="preferred_date"
                 >
-
             </label>
 
 
             <label>
-
                 Message / Details
 
                 <textarea
@@ -441,14 +412,13 @@
                     rows="4"
                     maxlength="1000"
                 ></textarea>
-
             </label>
 
 
             <p class="muted">
 
                 Submit karne par
-                ₹{{"{:,.2f}".format(service_charge)}}
+                ₹{{ "{:,.2f}".format(service_charge) }}
                 balance se deduct hoga.
                 Admin Reject karega to amount automatically refund hoga.
 
@@ -456,12 +426,10 @@
 
 
             <button
-                class="btn"
                 type="submit"
+                class="btn"
             >
-
                 Submit Service Request
-
             </button>
 
         </form>
@@ -471,57 +439,75 @@
 </div>
 
 
-<!-- JAVASCRIPT -->
-
 <script>
 
-function openServiceForm(service) {
+document.addEventListener("DOMContentLoaded", function () {
 
     const modal = document.getElementById("serviceModal");
 
-    const serviceField = document.getElementById("serviceField");
+    const serviceField =
+        document.getElementById("serviceField");
 
-    const modalTitle = document.getElementById("modalTitle");
+    const modalTitle =
+        document.getElementById("modalTitle");
 
-
-    if (!modal || !serviceField || !modalTitle) {
-
-        alert("Service form load nahi ho raha.");
-
-        return;
-
-    }
+    const closeButton =
+        document.getElementById("closeServiceModal");
 
 
-    serviceField.value = service;
-
-    modalTitle.textContent = service + " — Apply Now";
-
-    modal.classList.add("show");
-
-}
+    const buttons =
+        document.querySelectorAll(".apply-service-btn");
 
 
-function closeServiceForm() {
+    buttons.forEach(function (button) {
 
-    const modal = document.getElementById("serviceModal");
+        button.addEventListener("click", function () {
 
-    if (modal) {
+            const service =
+                button.getAttribute("data-service");
+
+
+            serviceField.value = service;
+
+
+            modalTitle.textContent =
+                service + " — Apply Now";
+
+
+            modal.classList.add("show");
+
+        });
+
+    });
+
+
+    closeButton.addEventListener("click", function () {
 
         modal.classList.remove("show");
 
-    }
-
-}
+    });
 
 
-document.addEventListener("keydown", function(event) {
+    modal.addEventListener("click", function (event) {
 
-    if (event.key === "Escape") {
+        if (event.target === modal) {
 
-        closeServiceForm();
+            modal.classList.remove("show");
 
-    }
+        }
+
+    });
+
+
+    document.addEventListener("keydown", function (event) {
+
+        if (event.key === "Escape") {
+
+            modal.classList.remove("show");
+
+        }
+
+    });
 
 });
 
