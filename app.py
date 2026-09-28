@@ -4,10 +4,10 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from werkzeug.utils import secure_filename
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# Render Persistent Disk support:
-# Set a Render Persistent Disk mount path to /var/data. The database and uploads
-# are stored there so service restarts/redeploys do not wipe users/retailers.
-DATA_DIR = os.environ.get("DATA_DIR", "/var/data" if os.environ.get("RENDER") else BASE_DIR)
+# DormHost persistent storage:
+# DormHost keeps /data across deploys. DATA_DIR can be overridden in the
+# environment, but defaults to /data so the SQLite database and uploads persist.
+DATA_DIR = os.environ.get("DATA_DIR", "/data")
 os.makedirs(DATA_DIR, exist_ok=True)
 DB_PATH = os.path.join(DATA_DIR, "shiva_janseva.db")
 
