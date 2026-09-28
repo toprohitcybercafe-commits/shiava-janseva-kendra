@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retailer Dashboard - Shiva Janseva Kendra</title>
+
+    <title>Retailer Dashboard - {{ business_name }}</title>
 
     <style>
         * {
@@ -13,54 +14,66 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: #f4f7fb;
-            color: #222;
+            background: #f4f6f9;
+            color: #172033;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
         }
 
         .topbar {
-            background: #111827;
+            background: linear-gradient(135deg, #111827, #1f3c88);
             color: white;
-            padding: 15px 18px;
+            padding: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 3px 12px rgba(0,0,0,.18);
+        }
+
+        .topbar-inner {
+            max-width: 1100px;
+            margin: auto;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
-            flex-wrap: wrap;
         }
 
         .brand {
             font-size: 20px;
-            font-weight: bold;
+            font-weight: 800;
         }
 
-        .brand small {
-            display: block;
+        .subtitle {
             font-size: 12px;
-            font-weight: normal;
             opacity: .8;
             margin-top: 3px;
         }
 
         .logout {
-            background: #ef4444;
             color: white;
             text-decoration: none;
-            padding: 9px 14px;
-            border-radius: 8px;
-            font-size: 14px;
+            background: rgba(255,255,255,.15);
+            padding: 9px 13px;
+            border-radius: 10px;
         }
 
         .container {
-            width: 95%;
-            max-width: 1200px;
-            margin: 20px auto;
+            max-width: 1100px;
+            margin: auto;
+            padding: 18px;
         }
 
         .flash {
-            padding: 12px 15px;
-            border-radius: 8px;
+            padding: 13px 15px;
+            border-radius: 12px;
             margin-bottom: 12px;
-            background: #e5e7eb;
+            font-weight: 600;
         }
 
         .flash.success {
@@ -68,37 +81,58 @@
             color: #166534;
         }
 
-        .flash.error,
-        .flash.danger {
+        .flash.error {
             background: #fee2e2;
             color: #991b1b;
         }
 
-        .flash.warning {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
         .wallet-card {
-            background: white;
-            border-radius: 14px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,.08);
-            margin-bottom: 25px;
+            background: linear-gradient(135deg, #064e3b, #059669);
+            color: white;
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.15);
+            margin-bottom: 18px;
         }
 
         .wallet-title {
-            font-size: 15px;
-            color: #6b7280;
+            opacity: .9;
+            font-size: 14px;
         }
 
         .wallet-balance {
-            font-size: 32px;
-            font-weight: bold;
-            margin: 5px 0 18px;
+            font-size: 34px;
+            font-weight: 900;
+            margin: 5px 0 15px;
         }
 
-        .wallet-form {
+        .retailer-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .info-pill {
+            background: rgba(255,255,255,.15);
+            padding: 7px 10px;
+            border-radius: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 18px rgba(0,0,0,.07);
+        }
+
+        .card h2 {
+            margin: 0 0 15px;
+            font-size: 20px;
+        }
+
+        .topup-grid {
             display: grid;
             grid-template-columns: 1fr 1fr auto;
             gap: 10px;
@@ -108,98 +142,106 @@
         select,
         textarea {
             width: 100%;
-            padding: 11px 12px;
             border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 14px;
+            border-radius: 11px;
+            padding: 12px;
+            outline: none;
             background: white;
         }
 
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,.10);
+        }
+
         textarea {
-            resize: vertical;
             min-height: 90px;
+            resize: vertical;
         }
 
         .btn {
-            border: none;
-            padding: 11px 16px;
-            border-radius: 8px;
+            border: 0;
+            border-radius: 11px;
+            padding: 11px 15px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 700;
         }
 
-        .btn-green {
-            background: #16a34a;
-            color: white;
-        }
-
-        .btn-blue {
+        .btn-primary {
             background: #2563eb;
             color: white;
         }
 
-        .btn-red {
+        .btn-success {
+            background: #059669;
+            color: white;
+        }
+
+        .btn-danger {
             background: #dc2626;
             color: white;
         }
 
-        .section-title {
-            margin: 25px 0 14px;
-            font-size: 22px;
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #111827;
         }
 
-        .services-grid {
+        .hint {
+            color: #6b7280;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .service-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 13px;
         }
 
-        .service-tile {
-            width: 100%;
-            text-align: left;
-            background: white;
+        .service-card {
             border: 1px solid #e5e7eb;
-            border-radius: 14px;
-            padding: 18px;
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
             cursor: pointer;
-            box-shadow: 0 3px 12px rgba(0,0,0,.06);
             transition: .2s;
         }
 
-        .service-tile:hover {
+        .service-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(0,0,0,.1);
+            box-shadow: 0 8px 22px rgba(0,0,0,.09);
+            border-color: #93c5fd;
         }
 
         .service-icon {
-            font-size: 34px;
+            font-size: 31px;
             margin-bottom: 10px;
         }
 
-        .service-tile h3 {
-            margin: 0 0 8px;
-            font-size: 16px;
+        .service-name {
+            font-weight: 800;
+            line-height: 1.3;
+            min-height: 42px;
         }
 
-        .service-tile p {
-            margin: 0 0 14px;
-            color: #6b7280;
-            font-size: 13px;
-            line-height: 1.4;
+        .service-price {
+            color: #2563eb;
+            font-weight: 800;
+            margin-top: 9px;
         }
 
-        .open {
+        .open-label {
+            display: inline-block;
+            margin-top: 10px;
             color: #2563eb;
             font-size: 13px;
-            font-weight: bold;
+            font-weight: 700;
         }
 
-        .card {
-            background: white;
-            border-radius: 14px;
-            padding: 18px;
-            box-shadow: 0 3px 12px rgba(0,0,0,.06);
-            margin-bottom: 20px;
+        .table-wrap {
             overflow-x: auto;
         }
 
@@ -211,98 +253,116 @@
 
         th,
         td {
-            padding: 11px 10px;
+            padding: 11px 9px;
             border-bottom: 1px solid #e5e7eb;
             text-align: left;
             font-size: 13px;
         }
 
         th {
-            background: #f9fafb;
+            background: #f8fafc;
         }
 
-        .badge {
+        .status {
             display: inline-block;
             padding: 5px 9px;
             border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            background: #e5e7eb;
+            font-size: 11px;
+            font-weight: 800;
         }
 
-        .badge.success {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .badge.pending {
+        .status.pending {
             background: #fef3c7;
             color: #92400e;
         }
 
-        .badge.rejected {
+        .status.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status.rejected {
             background: #fee2e2;
             color: #991b1b;
         }
+
+        .status.approved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .empty {
+            color: #6b7280;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* MODAL */
 
         .modal {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,.6);
-            z-index: 9999;
+            z-index: 100;
+            background: rgba(0,0,0,.65);
             padding: 15px;
             overflow-y: auto;
         }
 
         .modal.show {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
         }
 
         .modal-box {
+            background: white;
             width: 100%;
             max-width: 650px;
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            position: relative;
-            max-height: 95vh;
-            overflow-y: auto;
+            margin: 20px auto;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,.3);
         }
 
-        .modal-header {
+        .modal-head {
+            background: linear-gradient(135deg, #1d4ed8, #2563eb);
+            color: white;
+            padding: 18px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             gap: 10px;
-            margin-bottom: 18px;
         }
 
-        .modal-header h2 {
-            margin: 0;
-            font-size: 20px;
+        .modal-title {
+            font-size: 19px;
+            font-weight: 900;
         }
 
         .close {
-            width: 35px;
-            height: 35px;
-            border: none;
+            border: 0;
+            background: rgba(255,255,255,.18);
+            color: white;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
-            background: #f3f4f6;
-            font-size: 20px;
+            font-size: 22px;
             cursor: pointer;
         }
 
+        .modal-body {
+            padding: 18px;
+        }
+
         .form-group {
-            margin-bottom: 14px;
+            margin-bottom: 13px;
         }
 
         .form-group label {
             display: block;
-            font-weight: bold;
             font-size: 13px;
+            font-weight: 800;
             margin-bottom: 6px;
         }
 
@@ -313,38 +373,72 @@
         .charge-box {
             background: #eff6ff;
             border: 1px solid #bfdbfe;
-            padding: 12px;
-            border-radius: 8px;
-            margin: 15px 0;
             color: #1e40af;
-            font-weight: bold;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            font-weight: 700;
         }
 
-        .empty {
-            padding: 20px;
-            text-align: center;
-            color: #6b7280;
-            background: #f9fafb;
-            border-radius: 10px;
+        .warning {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+            padding: 11px;
+            border-radius: 11px;
+            font-size: 12px;
+            margin-bottom: 14px;
         }
 
-        .actions {
+        .modal-actions {
             display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
         }
 
-        @media (max-width: 700px) {
-            .wallet-form {
-                grid-template-columns: 1fr;
+        .modal-actions button {
+            flex: 1;
+        }
+
+        @media(max-width: 800px) {
+            .service-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
 
-            .services-grid {
+            .topup-grid {
                 grid-template-columns: 1fr;
             }
+        }
 
+        @media(max-width: 520px) {
             .container {
-                width: 93%;
+                padding: 11px;
+            }
+
+            .service-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+
+            .service-card {
+                padding: 12px;
+            }
+
+            .service-icon {
+                font-size: 27px;
+            }
+
+            .service-name {
+                font-size: 13px;
+                min-height: auto;
+            }
+
+            .wallet-balance {
+                font-size: 29px;
+            }
+
+            .brand {
+                font-size: 16px;
             }
         }
     </style>
@@ -353,15 +447,24 @@
 <body>
 
 <header class="topbar">
-    <div class="brand">
-        Shiva Janseva Kendra
-        <small>Retailer Dashboard</small>
-    </div>
+    <div class="topbar-inner">
 
-    <a href="/logout" class="logout">Logout</a>
+        <div>
+            <div class="brand">🛡️ {{ business_name }}</div>
+            <div class="subtitle">Retailer Dashboard • {{ location }}</div>
+        </div>
+
+        <a class="logout" href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </div>
 </header>
 
+
 <main class="container">
+
+    <!-- FLASH -->
 
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -373,96 +476,141 @@
         {% endif %}
     {% endwith %}
 
-    <!-- WALLET -->
-    <section class="wallet-card">
-        <div class="wallet-title">Available Wallet Balance</div>
 
-        <div class="wallet-balance">
-            ₹{{ "%.2f"|format(retailer["wallet"]|float) }}
+    <!-- WALLET -->
+
+    <section class="wallet-card">
+
+        <div class="wallet-title">
+            Available Wallet Balance
         </div>
 
-        <form method="POST"
-              action="/retailer/topup"
-              class="wallet-form">
+        <div class="wallet-balance">
+            ₹{{ "%.2f"|format(retailer["wallet_balance"]|float) }}
+        </div>
 
-            <input
-                type="number"
-                name="amount"
-                min="{{ min_topup }}"
-                step="0.01"
-                placeholder="Amount ₹ (Min {{ min_topup|int }})"
-                required
-            >
+        <div class="retailer-info">
 
-            <input
-                type="text"
-                name="transaction_id"
-                maxlength="100"
-                placeholder="Transaction ID / UTR"
-                required
-            >
+            <div class="info-pill">
+                👤 {{ retailer["name"] }}
+            </div>
 
-            <button type="submit" class="btn btn-green">
-                Add Wallet
-            </button>
-        </form>
+            <div class="info-pill">
+                🆔 {{ retailer["username"] }}
+            </div>
+
+            <div class="info-pill">
+                📱 {{ retailer["phone"] }}
+            </div>
+
+        </div>
+
     </section>
 
+
+    <!-- ADD WALLET -->
+
+    <section class="card">
+
+        <h2>💰 Add Wallet</h2>
+
+        <form method="POST" action="{{ url_for('retailer_topup') }}">
+
+            <div class="topup-grid">
+
+                <input
+                    type="number"
+                    name="amount"
+                    min="{{ min_topup }}"
+                    step="0.01"
+                    placeholder="Amount ₹"
+                    required
+                >
+
+                <input
+                    type="text"
+                    name="transaction_id"
+                    maxlength="100"
+                    placeholder="Transaction ID / UTR"
+                    required
+                >
+
+                <button class="btn btn-success" type="submit">
+                    Submit Top-up
+                </button>
+
+            </div>
+
+        </form>
+
+        <div class="hint">
+            Minimum wallet add amount: ₹{{ "%.0f"|format(min_topup) }}.
+            Admin approval ke baad amount wallet me add hoga.
+        </div>
+
+    </section>
+
+
     <!-- SERVICES -->
-    <h2 class="section-title">All Services</h2>
 
-    <section class="services-grid">
+    <section class="card">
 
-        {% if services %}
+        <h2>🧾 All Services</h2>
 
-            {% for s in services %}
+        <div class="service-grid">
 
-                <button
-                    type="button"
-                    class="service-tile"
-                    onclick='openService({{ s|tojson|safe }})'
+            {% for service in services %}
+
+                <div
+                    class="service-card"
+                    onclick='openService({{ service|tojson }})'
                 >
 
                     <div class="service-icon">
-                        {% if service_icons and s in service_icons %}
-                            {{ service_icons[s] }}
-                        {% else %}
-                            📂
-                        {% endif %}
+                        {{ service_icons.get(service, "📂") }}
                     </div>
 
-                    <h3>{{ s }}</h3>
+                    <div class="service-name">
+                        {{ service }}
+                    </div>
 
-                    <p>
-                        Service details fill karke request submit karein.
-                    </p>
+                    <div class="service-price">
+                        ₹{{ "%.2f"|format(
+                            (
+                                service_charges
+                                |selectattr("service", "equalto", service)
+                                |map(attribute="charge")
+                                |first
+                                |default(0)
+                            )|float
+                        ) }}
+                    </div>
 
-                    <span class="open">
+                    <div class="open-label">
                         Open Service →
-                    </span>
+                    </div>
 
-                </button>
+                </div>
 
             {% endfor %}
 
-        {% else %}
-
-            <div class="empty">
-                Abhi koi service available nahi hai.
-            </div>
-
-        {% endif %}
+        </div>
 
     </section>
 
+
     <!-- TOPUP HISTORY -->
-    <h2 class="section-title">Wallet Top-up History</h2>
 
-    <div class="card">
+    <section class="card">
 
-        {% if topups %}
+        <h2>💳 Wallet Top-up History</h2>
+
+        <div class="table-wrap">
+
+            {% if topups %}
 
             <table>
+
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -475,227 +623,237 @@
 
                 <tbody>
 
-                    {% for t in topups %}
+                {% for row in topups %}
 
-                        <tr>
-                            <td>{{ t.id }}</td>
+                    <tr>
 
-                            <td>
-                                ₹{{ "%.2f"|format(t.amount|float) }}
-                            </td>
+                        <td>#{{ row["id"] }}</td>
 
-                            <td>
-                                {{ t.transaction_id }}
-                            </td>
+                        <td>
+                            ₹{{ "%.2f"|format(row["amount"]|float) }}
+                        </td>
 
-                            <td>
-                                {% if t.status == "Approved" %}
-                                    <span class="badge success">
-                                        Approved
-                                    </span>
+                        <td>
+                            {{ row["transaction_id"] }}
+                        </td>
 
-                                {% elif t.status == "Rejected" %}
-                                    <span class="badge rejected">
-                                        Rejected
-                                    </span>
+                        <td>
 
-                                {% else %}
-                                    <span class="badge pending">
-                                        Pending
-                                    </span>
-                                {% endif %}
-                            </td>
+                            {% set st = row["status"]|lower %}
 
-                            <td>
-                                {{ t.created_at }}
-                            </td>
-                        </tr>
+                            <span class="status {{ st }}">
+                                {{ row["status"] }}
+                            </span>
 
-                    {% endfor %}
+                        </td>
+
+                        <td>
+                            {{ row["created_at"] }}
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
 
                 </tbody>
+
             </table>
 
-        {% else %}
+            {% else %}
 
-            <div class="empty">
-                Koi top-up history nahi hai.
-            </div>
+                <div class="empty">
+                    No wallet top-up history.
+                </div>
 
-        {% endif %}
+            {% endif %}
 
-    </div>
+        </div>
 
-    <!-- SERVICE REQUEST HISTORY -->
-    <h2 class="section-title">Service Request History</h2>
+    </section>
 
-    <div class="card">
 
-        {% if requests %}
+    <!-- SERVICE REQUESTS -->
+
+    <section class="card">
+
+        <h2>📋 My Service Requests</h2>
+
+        <div class="table-wrap">
+
+            {% if requests %}
 
             <table>
+
                 <thead>
+
                     <tr>
                         <th>ID</th>
-                        <th>Service</th>
                         <th>Customer</th>
-                        <th>Mobile</th>
+                        <th>Service</th>
+                        <th>Charge</th>
                         <th>Status</th>
                         <th>Date</th>
-                        <th>Action</th>
+                        <th>PDF</th>
                     </tr>
+
                 </thead>
 
                 <tbody>
 
-                    {% for req in requests %}
+                {% for row in requests %}
 
-                        <tr>
+                    <tr>
 
-                            <td>
-                                {{ req.id }}
-                            </td>
+                        <td>
+                            #{{ row["id"] }}
+                        </td>
 
-                            <td>
-                                {{ req.service }}
-                            </td>
+                        <td>
+                            {{ row["name"] }}<br>
+                            <small>{{ row["phone"] }}</small>
+                        </td>
 
-                            <td>
-                                {{ req.customer_name }}
-                            </td>
+                        <td>
+                            {{ row["service"] }}
+                        </td>
 
-                            <td>
-                                {{ req.mobile }}
-                            </td>
+                        <td>
+                            ₹{{ "%.2f"|format(row["charge"]|float) }}
+                        </td>
 
-                            <td>
+                        <td>
 
-                                {% if req.status == "Success" %}
+                            {% set st = row["status"]|lower %}
 
-                                    <span class="badge success">
-                                        Success
-                                    </span>
+                            <span class="status {{ st }}">
+                                {{ row["status"] }}
+                            </span>
 
-                                {% elif req.status == "Rejected" %}
+                        </td>
 
-                                    <span class="badge rejected">
-                                        Rejected
-                                    </span>
+                        <td>
+                            {{ row["created_at"] }}
+                        </td>
 
-                                {% else %}
+                        <td>
 
-                                    <span class="badge pending">
-                                        {{ req.status }}
-                                    </span>
+                            {% if row["status"] == "Success" and row["pdf_filename"] %}
 
-                                {% endif %}
+                                <a
+                                    class="btn btn-success"
+                                    href="{{ url_for('download_retailer_pdf', req_id=row['id']) }}"
+                                >
+                                    Download
+                                </a>
 
-                            </td>
+                            {% else %}
 
-                            <td>
-                                {{ req.created_at }}
-                            </td>
+                                —
 
-                            <td>
+                            {% endif %}
 
-                                {% if req.status == "Success" %}
+                        </td>
 
-                                    <a
-                                        href="/retailer/request/{{ req.id }}/download"
-                                        class="btn btn-blue"
-                                        style="display:inline-block;text-decoration:none;padding:7px 10px;font-size:12px;"
-                                    >
-                                        Download PDF
-                                    </a>
+                    </tr>
 
-                                {% else %}
-
-                                    -
-
-                                {% endif %}
-
-                            </td>
-
-                        </tr>
-
-                    {% endfor %}
+                {% endfor %}
 
                 </tbody>
+
             </table>
 
-        {% else %}
+            {% else %}
 
-            <div class="empty">
-                Abhi koi service request nahi hai.
-            </div>
+                <div class="empty">
+                    No service requests yet.
+                </div>
 
-        {% endif %}
+            {% endif %}
 
-    </div>
+        </div>
 
-    <!-- WALLET LEDGER -->
-    <h2 class="section-title">Wallet Ledger</h2>
+    </section>
 
-    <div class="card">
 
-        {% if ledger %}
+    <!-- LEDGER -->
+
+    <section class="card">
+
+        <h2>📊 Wallet Ledger</h2>
+
+        <div class="table-wrap">
+
+            {% if ledger %}
 
             <table>
+
                 <thead>
+
                     <tr>
                         <th>Date</th>
-                        <th>Description</th>
+                        <th>Type</th>
                         <th>Amount</th>
-                        <th>Balance</th>
+                        <th>Balance After</th>
+                        <th>Note</th>
                     </tr>
+
                 </thead>
 
                 <tbody>
 
-                    {% for l in ledger %}
+                {% for row in ledger %}
 
-                        <tr>
+                    <tr>
 
-                            <td>
-                                {{ l.created_at }}
-                            </td>
+                        <td>
+                            {{ row["created_at"] }}
+                        </td>
 
-                            <td>
-                                {{ l.description }}
-                            </td>
+                        <td>
+                            {{ row["type"] }}
+                        </td>
 
-                            <td>
-                                {% if l.amount|float >= 0 %}
-                                    <span style="color:#16a34a;font-weight:bold;">
-                                        +₹{{ "%.2f"|format(l.amount|float) }}
-                                    </span>
-                                {% else %}
-                                    <span style="color:#dc2626;font-weight:bold;">
-                                        -₹{{ "%.2f"|format((l.amount|float)|abs) }}
-                                    </span>
-                                {% endif %}
-                            </td>
+                        <td>
 
-                            <td>
-                                ₹{{ "%.2f"|format(l.balance|float) }}
-                            </td>
+                            {% if row["amount"]|float >= 0 %}
+                                <span style="color:#059669;font-weight:800;">
+                                    +₹{{ "%.2f"|format(row["amount"]|float) }}
+                                </span>
+                            {% else %}
+                                <span style="color:#dc2626;font-weight:800;">
+                                    -₹{{ "%.2f"|format((row["amount"]|float)|abs) }}
+                                </span>
+                            {% endif %}
 
-                        </tr>
+                        </td>
 
-                    {% endfor %}
+                        <td>
+                            ₹{{ "%.2f"|format(row["balance_after"]|float) }}
+                        </td>
+
+                        <td>
+                            {{ row["note"] or "—" }}
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
 
                 </tbody>
+
             </table>
 
-        {% else %}
+            {% else %}
 
-            <div class="empty">
-                Wallet ledger empty hai.
-            </div>
+                <div class="empty">
+                    No wallet transactions yet.
+                </div>
 
-        {% endif %}
+            {% endif %}
 
-    </div>
+        </div>
+
+    </section>
 
 </main>
 
@@ -706,11 +864,11 @@
 
     <div class="modal-box">
 
-        <div class="modal-header">
+        <div class="modal-head">
 
-            <h2 id="serviceTitle">
-                Service Request
-            </h2>
+            <div class="modal-title" id="modalTitle">
+                Service
+            </div>
 
             <button
                 type="button"
@@ -722,113 +880,21 @@
 
         </div>
 
-        <form
-            method="POST"
-            action="/retailer/service-request"
-            id="serviceForm"
-        >
 
-            <input
-                type="hidden"
-                name="service"
-                id="serviceInput"
+        <div class="modal-body">
+
+            <form
+                method="POST"
+                action="{{ url_for('retailer_service_request') }}"
+                id="serviceForm"
             >
 
-            <!-- COMMON CUSTOMER NAME -->
-            <div class="form-group">
-
-                <label>
-                    Customer Name
-                    <span class="required">*</span>
-                </label>
-
                 <input
-                    type="text"
-                    name="customer_name"
-                    id="customerName"
-                    required
-                    autocomplete="name"
+                    type="hidden"
+                    name="service"
+                    id="serviceInput"
                 >
 
-            </div>
 
-            <!-- COMMON MOBILE -->
-            <div class="form-group">
-
-                <label>
-                    Mobile Number
-                    <span class="required">*</span>
-                </label>
-
-                <input
-                    type="tel"
-                    name="mobile"
-                    id="mobile"
-                    maxlength="10"
-                    inputmode="numeric"
-                    required
-                    placeholder="10 digit mobile number"
-                >
-
-            </div>
-
-            <!-- DYNAMIC FIELDS -->
-            <div id="dynamicFields"></div>
-
-            <!-- MESSAGE -->
-            <div class="form-group">
-
-                <label>
-                    Additional Message
-                </label>
-
-                <textarea
-                    name="message"
-                    id="message"
-                    placeholder="Agar koi extra information hai to yahan likhein..."
-                ></textarea>
-
-            </div>
-
-            <div class="charge-box">
-                Service charge:
-                <span id="chargeText">₹0.00</span>
-            </div>
-
-            <button
-                type="submit"
-                class="btn btn-green"
-                style="width:100%;"
-            >
-                Submit Service Request
-            </button>
-
-        </form>
-
-    </div>
-
-</div>
-
-
-<script>
-
-    /*
-     * Backend se service fields aa rahe hain.
-     */
-    const serviceFields = {{ service_fields|tojson|safe }};
-
-    /*
-     * Backend ke service charges.
-     */
-    const serviceCharges = {};
-
-    {% for sc in service_charges %}
-        serviceCharges[{{ sc.service|tojson|safe }}] =
-            Number({{ sc.charge|default(0)|tojson|safe }});
-    {% endfor %}
-
-
-    /*
-     * Indian states list
-     */
-    const states = 
+                <div class="charge-box">
+                    Service 
