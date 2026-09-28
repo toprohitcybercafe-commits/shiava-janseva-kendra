@@ -1,1 +1,338 @@
-<!doctype html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Retailer Dashboard</title><link rel="stylesheet" href="/static/style.css"></head><body><header><div class="wrap nav"><div><h1>Retailer Dashboard</h1><small>Shiva Janseva Kendra · {{retailer.name}}</small></div><a class="btn ghost" href="/retailer/logout">Logout</a></div></header><main class="wrap">{% with messages=get_flashed_messages(with_categories=true) %}{% for cat,msg in messages %}<div class="alert {{cat}}">{{msg}}</div>{% endfor %}{% endwith %}<section class="wallet-grid"><div class="wallet-card"><span>My Balance</span><strong>₹{{"{:,.2f}".format(retailer.balance)}}</strong><small>Service charge: ₹{{"{:,.2f}".format(service_charge)}} per request</small></div><div class="wallet-card"><span>Retailer ID</span><strong>{{retailer.username}}</strong><small>{{retailer.phone}}</small></div></section><div class="card"><h2>All Services</h2><form method="post" action="/retailer/request"><div class="management-grid"><label>Customer Name*<input name="name" required maxlength="80"></label><label>Customer Mobile*<input name="phone" required maxlength="15"></label><label>Service*<select name="service" required><option value="">Select Service</option>{% for s in services %}<option>{{s}}</option>{% endfor %}</select></label><label>Preferred Date<input name="preferred_date" type="date"></label></div><label>Message / Details<textarea name="message" rows="3" maxlength="1000"></textarea></label><p class="muted">Submit karne par ₹{{"{:,.2f}".format(service_charge)}} balance se deduct hoga. Admin Reject karega to amount automatically refund hoga.</p><button class="btn" type="submit">Submit Service Request</button></form></div><div class="card"><h2>My Service Requests</h2><div class="tablewrap"><table><thead><tr><th>ID</th><th>Customer</th><th>Service</th><th>Amount</th><th>Status</th><th>Refund</th><th>Date</th></tr></thead><tbody>{% for r in rows %}<tr><td>#{{r.id}}</td><td>{{r.name}}<br>{{r.phone}}</td><td>{{r.service}}</td><td>₹{{"{:,.2f}".format(r.amount)}}</td><td>{{r.status}}</td><td>{% if r.refunded %}Yes{% else %}-{% endif %}</td><td>{{r.created_at}}</td></tr>{% else %}<tr><td colspan="7">No service requests yet.</td></tr>{% endfor %}</tbody></table></div></div></main></body></html>
+```html
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Retailer Dashboard</title>
+<link rel="stylesheet" href="/static/style.css">
+
+<style>
+.service-list{
+    display:grid;
+    gap:12px;
+}
+
+.service-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:14px;
+    border:1px solid #ddd;
+    border-radius:10px;
+}
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+    padding:15px;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-box{
+    background:#fff;
+    width:min(650px,100%);
+    max-height:90vh;
+    overflow:auto;
+    border-radius:14px;
+    padding:20px;
+    position:relative;
+}
+
+.close{
+    position:absolute;
+    right:14px;
+    top:8px;
+    border:0;
+    background:none;
+    font-size:30px;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="wrap nav">
+
+<div>
+<h1>Retailer Dashboard</h1>
+<small>Shiva Janseva Kendra · {{retailer.name}}</small>
+</div>
+
+<a class="btn ghost" href="/retailer/logout">Logout</a>
+
+</div>
+</header>
+
+<main class="wrap">
+
+{% with messages=get_flashed_messages(with_categories=true) %}
+{% for cat,msg in messages %}
+<div class="alert {{cat}}">{{msg}}</div>
+{% endfor %}
+{% endwith %}
+
+<section class="wallet-grid">
+
+<div class="wallet-card">
+<span>My Balance</span>
+<strong>₹{{"{:,.2f}".format(retailer.balance)}}</strong>
+<small>
+Service charge:
+₹{{"{:,.2f}".format(service_charge)}} per request
+</small>
+</div>
+
+<div class="wallet-card">
+<span>Retailer ID</span>
+<strong>{{retailer.username}}</strong>
+<small>{{retailer.phone}}</small>
+</div>
+
+</section>
+
+
+<!-- ALL SERVICES -->
+
+<div class="card">
+
+<h2>🧾 All Services</h2>
+
+<p class="muted">
+Dashboard se kisi bhi service ko directly open karein.
+</p>
+
+<div class="service-list">
+
+{% for s in services %}
+
+<div class="service-item">
+
+<strong>{{s}}</strong>
+
+<button
+class="btn"
+type="button"
+onclick="openServiceForm({{s|tojson|forceescape}})">
+📝 Apply Now
+</button>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+
+<!-- SERVICE REQUESTS -->
+
+<div class="card">
+
+<h2>My Service Requests</h2>
+
+<div class="tablewrap">
+
+<table>
+
+<thead>
+
+<tr>
+<th>ID</th>
+<th>Customer</th>
+<th>Service</th>
+<th>Amount</th>
+<th>Status</th>
+<th>Refund</th>
+<th>Date</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for r in rows %}
+
+<tr>
+
+<td>#{{r.id}}</td>
+
+<td>
+{{r.name}}<br>
+{{r.phone}}
+</td>
+
+<td>{{r.service}}</td>
+
+<td>
+₹{{"{:,.2f}".format(r.amount)}}
+</td>
+
+<td>{{r.status}}</td>
+
+<td>
+{% if r.refunded %}
+Yes
+{% else %}
+-
+{% endif %}
+</td>
+
+<td>{{r.created_at}}</td>
+
+</tr>
+
+{% else %}
+
+<tr>
+<td colspan="7">
+No service requests yet.
+</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</main>
+
+
+<!-- SERVICE FORM POPUP -->
+
+<div
+id="serviceModal"
+class="modal"
+onclick="if(event.target===this)closeServiceForm()">
+
+<div class="modal-box">
+
+<button
+class="close"
+type="button"
+onclick="closeServiceForm()">
+×
+</button>
+
+<h2 id="modalTitle">
+Apply for Service
+</h2>
+
+<form method="post" action="/retailer/request">
+
+<label>
+Customer Name*
+<input
+name="name"
+required
+maxlength="80">
+</label>
+
+<label>
+Customer Mobile*
+<input
+name="phone"
+required
+maxlength="15">
+</label>
+
+<label>
+Service*
+<input
+id="serviceField"
+name="service"
+readonly
+required>
+</label>
+
+<label>
+Preferred Date
+<input
+name="preferred_date"
+type="date">
+</label>
+
+<label>
+Message / Details
+
+<textarea
+name="message"
+rows="4"
+maxlength="1000"></textarea>
+
+</label>
+
+<p class="muted">
+
+Submit karne par
+₹{{"{:,.2f}".format(service_charge)}}
+balance se deduct hoga.
+
+Admin Reject karega to amount automatically refund hoga.
+
+</p>
+
+<button
+class="btn"
+type="submit">
+Submit Service Request
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+
+<script>
+
+function openServiceForm(service){
+
+    document.getElementById("serviceField").value = service;
+
+    document.getElementById("modalTitle").textContent =
+        service + " — Apply Now";
+
+    document.getElementById("serviceModal")
+        .classList.add("show");
+}
+
+
+function closeServiceForm(){
+
+    document.getElementById("serviceModal")
+        .classList.remove("show");
+}
+
+
+document.addEventListener("keydown", function(e){
+
+    if(e.key === "Escape"){
+        closeServiceForm();
+    }
+
+});
+
+</script>
+
+</body>
+</html>
+```
