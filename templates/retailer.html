@@ -1,63 +1,23 @@
 ```html
 <!doctype html>
-<html lang="en">
+<html lang="hi">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>Shiva Janseva Kendra - Retailer Dashboard</title>
-```css
-/* ===== FORCE SERVICE MODAL FIX ===== */
-
-#serviceModal{
-    display:none;
-    position:fixed !important;
-    top:0 !important;
-    left:0 !important;
-    right:0 !important;
-    bottom:0 !important;
-    width:100vw !important;
-    height:100vh !important;
-    z-index:999999 !important;
-    background:rgba(0,0,0,.70);
-    align-items:center;
-    justify-content:center;
-    padding:15px;
-}
-
-#serviceModal.show{
-    display:flex !important;
-}
-
-#serviceModal .service-modal-backdrop{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    z-index:0;
-}
-
-#serviceModal .service-modal-card{
-    position:relative;
-    z-index:10;
-    width:100%;
-    max-width:650px;
-    max-height:92vh;
-    overflow-y:auto;
-    background:#fff;
-    color:#111827;
-    padding:25px;
-    border-radius:16px;
-    box-shadow:0 20px 60px rgba(0,0,0,.35);
-}
-```
 
 <style>
 *{
     box-sizing:border-box;
 }
 
-body{
+html,body{
     margin:0;
+    padding:0;
+}
+
+body{
     font-family:Arial,Helvetica,sans-serif;
     background:#f4f6f9;
     color:#111827;
@@ -72,10 +32,19 @@ a{
     color:inherit;
 }
 
+button,
+input,
+select,
+textarea{
+    font-family:inherit;
+}
+
 .wrap{
     width:min(1200px,calc(100% - 30px));
     margin:auto;
 }
+
+/* HEADER */
 
 header{
     background:#fff;
@@ -120,6 +89,8 @@ header{
     align-items:center;
 }
 
+/* BUTTONS */
+
 .btn{
     border:0;
     border-radius:9px;
@@ -148,9 +119,13 @@ header{
     background:#6b7280;
 }
 
+/* MAIN */
+
 main{
     padding:25px 0 45px;
 }
+
+/* FLASH */
 
 .flash-area{
     margin-bottom:18px;
@@ -173,6 +148,8 @@ main{
     color:#991b1b;
 }
 
+/* TITLE */
+
 .page-title{
     margin-bottom:20px;
 }
@@ -186,6 +163,8 @@ main{
     margin:0;
     color:#6b7280;
 }
+
+/* CARDS */
 
 .dashboard-grid{
     display:grid;
@@ -245,6 +224,8 @@ main{
     font-size:13px;
 }
 
+/* SERVICES */
+
 .services-list{
     display:flex;
     flex-direction:column;
@@ -279,6 +260,8 @@ main{
     background:#eff6ff;
     font-size:21px;
 }
+
+/* TABLE */
 
 .table-wrap{
     overflow-x:auto;
@@ -331,27 +314,37 @@ th{
     color:#6b7280;
 }
 
-
 /* =========================
    SERVICE MODAL
    ========================= */
 
-.service-modal{
+#serviceModal{
     display:none;
     position:fixed;
     inset:0;
-    z-index:99999;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,.70);
+    width:100vw;
+    height:100vh;
+    z-index:999999;
+    background:rgba(0,0,0,.72);
     align-items:center;
     justify-content:center;
     padding:15px;
 }
 
+#serviceModal.show{
+    display:flex !important;
+}
+
+.service-modal-backdrop{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+}
+
 .service-modal-card{
     position:relative;
-    z-index:2;
+    z-index:10;
     width:100%;
     max-width:650px;
     max-height:92vh;
@@ -405,7 +398,6 @@ th{
     background:#fff;
     color:#111827;
     font-size:15px;
-    font-family:inherit;
 }
 
 .form-input:focus,
@@ -434,6 +426,8 @@ th{
     margin-top:20px;
 }
 
+/* FOOTER */
+
 footer{
     padding:25px 0;
     text-align:center;
@@ -441,10 +435,7 @@ footer{
     font-size:13px;
 }
 
-
-/* =========================
-   MOBILE
-   ========================= */
+/* MOBILE */
 
 @media(max-width:850px){
 
@@ -463,14 +454,18 @@ footer{
         width:calc(100% - 20px);
     }
 
+    .nav{
+        align-items:flex-start;
+        padding:12px 0;
+    }
+
+    .nav-right{
+        flex-direction:column;
+    }
+
     .service-item{
         flex-direction:column;
         align-items:flex-start;
-    }
-
-    .nav-right .btn{
-        padding:8px 10px;
-        font-size:12px;
     }
 
     .service-modal{
@@ -491,15 +486,179 @@ footer{
     }
 }
 </style>
+
+
+<!-- =================================================
+     IMPORTANT: GLOBAL SERVICE FUNCTIONS
+     ================================================= -->
+
+<script>
+
+function openService(){
+
+    var modal = document.getElementById("serviceModal");
+
+    if(!modal){
+        alert("Service modal nahi mila.");
+        return;
+    }
+
+    modal.classList.add("show");
+    modal.style.display = "flex";
+
+    document.body.classList.add("modal-open");
+
+    var select = document.getElementById("serviceSelect");
+
+    if(select){
+        select.value = "";
+    }
+
+    document.querySelectorAll(".service-form-area").forEach(function(form){
+        form.classList.remove("active");
+    });
+}
+
+
+/* Compatibility */
+
+function openServiceModal(){
+    openService();
+}
+
+
+function closeService(){
+
+    var modal = document.getElementById("serviceModal");
+
+    if(modal){
+        modal.classList.remove("show");
+        modal.style.display = "none";
+    }
+
+    document.body.classList.remove("modal-open");
+
+    var select = document.getElementById("serviceSelect");
+
+    if(select){
+        select.value = "";
+    }
+
+    document.querySelectorAll(".service-form-area").forEach(function(form){
+        form.classList.remove("active");
+    });
+}
+
+
+function closeServiceModal(){
+    closeService();
+}
+
+
+function selectService(){
+
+    var select = document.getElementById("serviceSelect");
+
+    if(!select){
+        return;
+    }
+
+    var selectedIndex = select.value;
+
+    document.querySelectorAll(".service-form-area").forEach(function(form){
+        form.classList.remove("active");
+    });
+
+    if(selectedIndex === ""){
+        return;
+    }
+
+    var selectedForm = document.querySelector(
+        '.service-form-area[data-service-index="' +
+        selectedIndex +
+        '"]'
+    );
+
+    if(!selectedForm){
+        alert("Selected service ka form nahi mila.");
+        return;
+    }
+
+    selectedForm.classList.add("active");
+
+    var firstField = selectedForm.querySelector(
+        "input:not([type='hidden']):not([readonly]), select, textarea"
+    );
+
+    if(firstField){
+
+        setTimeout(function(){
+            firstField.focus();
+        },100);
+
+    }
+}
+
+
+/* Extra compatibility */
+
+function openServiceForm(){
+    openService();
+}
+
+
+/* ESC */
+
+document.addEventListener("keydown",function(event){
+
+    if(event.key === "Escape"){
+        closeService();
+    }
+
+});
+
+
+/* Backdrop */
+
+document.addEventListener("click",function(event){
+
+    if(event.target.classList.contains("service-modal-backdrop")){
+        closeService();
+    }
+
+});
+
+
+/* DOM READY */
+
+document.addEventListener("DOMContentLoaded",function(){
+
+    var select = document.getElementById("serviceSelect");
+
+    if(select){
+
+        select.addEventListener("change",function(){
+            selectService();
+        });
+
+    }
+
+});
+
+</script>
+
 </head>
 
+
 <body>
+
 
 <!-- =========================
      HEADER
      ========================= -->
 
 <header>
+
 <div class="wrap nav">
 
     <div class="brand">
@@ -510,45 +669,58 @@ footer{
             alt="Shiva Janseva Kendra">
 
         <div>
+
             <h1>Shiva Janseva Kendra</h1>
-            <small>Retailer Dashboard</small>
+
+            <small>
+                Retailer Dashboard
+            </small>
+
         </div>
 
     </div>
+
 
     <div class="nav-right">
 
         <a
             href="/retailer/presence/offline"
             class="btn btn-secondary">
+
             Go Offline
+
         </a>
+
 
         <a
             href="/retailer-login"
             class="btn btn-danger">
+
             Logout
+
         </a>
 
     </div>
 
 </div>
+
 </header>
 
 
 <main>
+
 <div class="wrap">
 
-<!-- =========================
-     FLASH MESSAGES
-     ========================= -->
+
+<!-- FLASH -->
 
 {% with messages = get_flashed_messages(with_categories=true) %}
+
 {% if messages %}
 
 <div class="flash-area">
 
-{% for category, message in messages %}
+{% for category,message in messages %}
 
 <div class="flash {{ category }}">
     {{ message }}
@@ -559,18 +731,19 @@ footer{
 </div>
 
 {% endif %}
+
 {% endwith %}
 
 
-<!-- =========================
-     PAGE TITLE
-     ========================= -->
+<!-- TITLE -->
 
 <div class="page-title">
 
     <h2>
+
         Welcome,
         {{ retailer["name"] if retailer["name"] else retailer["username"] }}
+
     </h2>
 
     <p>
@@ -580,453 +753,462 @@ footer{
 </div>
 
 
-<!-- =========================
-     STATS
-     ========================= -->
+<!-- STATS -->
 
 <div class="dashboard-grid">
 
-    <div class="card wallet-card">
 
-        <div class="stat-title">
-            Wallet Balance
-        </div>
+<div class="card wallet-card">
 
-        <div class="stat-value">
-            ₹{{ "%.2f"|format(retailer["wallet_balance"] or 0) }}
-        </div>
-
-        <div class="minimum-note">
-            Minimum required balance:
-            ₹{{ "%.2f"|format(min_required_balance or 0) }}
-        </div>
-
+    <div class="stat-title">
+        Wallet Balance
     </div>
 
-
-    <div class="card">
-
-        <div class="stat-title">
-            Retailer Username
-        </div>
-
-        <div class="stat-value" style="font-size:20px;">
-            {{ retailer["username"] }}
-        </div>
-
+    <div class="stat-value">
+        ₹{{ "%.2f"|format(retailer["wallet_balance"] or 0) }}
     </div>
 
+    <div class="minimum-note">
 
-    <div class="card">
-
-        <div class="stat-title">
-            Total Applications
-        </div>
-
-        <div class="stat-value">
-            {{ requests|length }}
-        </div>
+        Minimum required balance:
+        ₹{{ "%.2f"|format(min_required_balance or 0) }}
 
     </div>
 
 </div>
 
 
-<!-- =========================
-     WALLET
-     ========================= -->
+<div class="card">
+
+    <div class="stat-title">
+        Retailer Username
+    </div>
+
+    <div class="stat-value" style="font-size:20px;">
+        {{ retailer["username"] }}
+    </div>
+
+</div>
+
+
+<div class="card">
+
+    <div class="stat-title">
+        Total Applications
+    </div>
+
+    <div class="stat-value">
+        {{ requests|length }}
+    </div>
+
+</div>
+
+
+</div>
+
+
+<!-- WALLET -->
 
 <section class="card section">
 
-    <div class="section-header">
+<div class="section-header">
 
-        <div>
-            <h2>Wallet</h2>
+<div>
 
-            <p>
-                Add money to your retailer wallet.
-            </p>
-        </div>
+<h2>Wallet</h2>
 
-        <a
-            href="/retailer/topup"
-            class="btn">
-            Add Money
-        </a>
+<p>
+Add money to your retailer wallet.
+</p>
 
-    </div>
+</div>
+
+
+<a
+    href="/retailer/topup"
+    class="btn">
+
+    Add Money
+
+</a>
+
+</div>
 
 </section>
 
 
-<!-- =========================
-     ALL SERVICES
-     ========================= -->
+<!-- ALL SERVICES -->
 
 <section class="card section">
 
-    <div class="section-header">
+<div class="section-header">
 
-        <div>
-            <h2>All Services</h2>
+<div>
 
-            <p>
-                Service select karke application form bharen.
-            </p>
-        </div>
+<h2>
+All Services
+</h2>
 
+<p>
+Service select karke application form bharen.
+</p>
 
-        <!-- IMPORTANT: DIRECT ONCLICK -->
-
-        <button
-            type="button"
-            class="btn"
-            onclick="openServiceModal()">
-
-            📝 Apply for Service
-
-        </button>
-
-    </div>
+</div>
 
 
-    <div class="services-list">
+<!-- IMPORTANT -->
 
-        {% for s in services %}
+<button
+    type="button"
+    class="btn"
+    onclick="openService()">
 
-        <div class="service-item">
+    📝 Apply for Service
 
-            <div class="service-name">
+</button>
 
-                <span class="service-icon">
-                    {{ service_icons.get(s,'📝') }}
-                </span>
 
-                <strong>
-                    {{ s }}
-                </strong>
+</div>
 
-            </div>
 
-        </div>
+<div class="services-list">
 
-        {% else %}
+{% for s in services %}
 
-        <div class="empty">
-            No services available.
-        </div>
+<div class="service-item">
 
-        {% endfor %}
+<div class="service-name">
 
-    </div>
+<span class="service-icon">
+    {{ service_icons.get(s,'📝') }}
+</span>
+
+<strong>
+    {{ s }}
+</strong>
+
+</div>
+
+</div>
+
+{% else %}
+
+<div class="empty">
+    No services available.
+</div>
+
+{% endfor %}
+
+</div>
 
 </section>
 
 
-<!-- =========================
-     MY APPLICATIONS
-     ========================= -->
+<!-- APPLICATIONS -->
 
 <section class="card section">
 
-    <div class="section-header">
+<div class="section-header">
 
-        <div>
+<div>
 
-            <h2>
-                My Applications
-            </h2>
+<h2>
+My Applications
+</h2>
 
-            <p>
-                Your latest service requests.
-            </p>
+<p>
+Your latest service requests.
+</p>
 
-        </div>
+</div>
 
-    </div>
-
-
-    {% if requests %}
-
-    <div class="table-wrap">
-
-        <table>
-
-            <thead>
-
-                <tr>
-                    <th>ID</th>
-                    <th>Customer</th>
-                    <th>Mobile</th>
-                    <th>Service</th>
-                    <th>Charge</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                    <th>Action</th>
-                </tr>
-
-            </thead>
+</div>
 
 
-            <tbody>
+{% if requests %}
 
-            {% for r in requests %}
+<div class="table-wrap">
 
-            <tr>
+<table>
 
-                <td>
-                    #{{ r["id"] }}
-                </td>
+<thead>
 
-                <td>
-                    {{ r["name"] }}
-                </td>
+<tr>
 
-                <td>
-                    {{ r["phone"] }}
-                </td>
+<th>ID</th>
+<th>Customer</th>
+<th>Mobile</th>
+<th>Service</th>
+<th>Charge</th>
+<th>Status</th>
+<th>Date</th>
+<th>Action</th>
 
-                <td>
-                    {{ r["service"] }}
-                </td>
+</tr>
 
-                <td>
-                    ₹{{ "%.2f"|format(r["charge"] or 0) }}
-                </td>
+</thead>
 
-                <td>
 
-                    {% if r["status"] == "Success" %}
+<tbody>
 
-                    <span class="status status-success">
-                        Success
-                    </span>
+{% for r in requests %}
 
-                    {% elif r["status"] == "Rejected" %}
+<tr>
 
-                    <span class="status status-rejected">
-                        Rejected
-                    </span>
+<td>
+#{{ r["id"] }}
+</td>
 
-                    {% else %}
+<td>
+{{ r["name"] }}
+</td>
 
-                    <span class="status status-pending">
-                        {{ r["status"] or "Pending" }}
-                    </span>
+<td>
+{{ r["phone"] }}
+</td>
 
-                    {% endif %}
+<td>
+{{ r["service"] }}
+</td>
 
-                </td>
+<td>
+₹{{ "%.2f"|format(r["charge"] or 0) }}
+</td>
 
-                <td>
-                    {{ r["created_at"] }}
-                </td>
+<td>
 
-                <td>
+{% if r["status"] == "Success" %}
 
-                    {% if r["status"] == "Success" and r["pdf_filename"] %}
+<span class="status status-success">
+Success
+</span>
 
-                    <a
-                        href="/retailer/request/{{ r['id'] }}/download"
-                        class="btn btn-success">
+{% elif r["status"] == "Rejected" %}
 
-                        Download PDF
+<span class="status status-rejected">
+Rejected
+</span>
 
-                    </a>
+{% else %}
 
-                    {% else %}
+<span class="status status-pending">
+{{ r["status"] or "Pending" }}
+</span>
 
-                    —
+{% endif %}
 
-                    {% endif %}
+</td>
 
-                </td>
+<td>
+{{ r["created_at"] }}
+</td>
 
-            </tr>
+<td>
 
-            {% endfor %}
+{% if r["status"] == "Success" and r["pdf_filename"] %}
 
-            </tbody>
+<a
+    href="/retailer/request/{{ r['id'] }}/download"
+    class="btn btn-success">
 
-        </table>
+    Download PDF
 
-    </div>
+</a>
 
-    {% else %}
+{% else %}
 
-    <div class="empty">
-        No service applications yet.
-    </div>
+—
 
-    {% endif %}
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% else %}
+
+<div class="empty">
+No service applications yet.
+</div>
+
+{% endif %}
 
 </section>
 
 
-<!-- =========================
-     WALLET HISTORY
-     ========================= -->
+<!-- WALLET HISTORY -->
 
 <section class="card section">
 
-    <div class="section-header">
+<div class="section-header">
 
-        <div>
+<div>
 
-            <h2>
-                Wallet History
-            </h2>
+<h2>
+Wallet History
+</h2>
 
-            <p>
-                Recent wallet transactions.
-            </p>
+<p>
+Recent wallet transactions.
+</p>
 
-        </div>
+</div>
 
-    </div>
-
-
-    {% if ledger %}
-
-    <div class="table-wrap">
-
-        <table>
-
-            <thead>
-
-                <tr>
-                    <th>Date</th>
-                    <th>Type</th>
-                    <th>Amount</th>
-                    <th>Balance After</th>
-                    <th>Note</th>
-                </tr>
-
-            </thead>
+</div>
 
 
-            <tbody>
+{% if ledger %}
 
-            {% for l in ledger %}
+<div class="table-wrap">
 
-            <tr>
+<table>
 
-                <td>
-                    {{ l["created_at"] }}
-                </td>
+<thead>
 
-                <td>
-                    {{ l["type"] }}
-                </td>
+<tr>
 
-                <td>
-                    ₹{{ "%.2f"|format(l["amount"] or 0) }}
-                </td>
+<th>Date</th>
+<th>Type</th>
+<th>Amount</th>
+<th>Balance After</th>
+<th>Note</th>
 
-                <td>
-                    ₹{{ "%.2f"|format(l["balance_after"] or 0) }}
-                </td>
+</tr>
 
-                <td>
-                    {{ l["note"] or "—" }}
-                </td>
+</thead>
 
-            </tr>
 
-            {% endfor %}
+<tbody>
 
-            </tbody>
+{% for l in ledger %}
 
-        </table>
+<tr>
 
-    </div>
+<td>
+{{ l["created_at"] }}
+</td>
 
-    {% else %}
+<td>
+{{ l["type"] }}
+</td>
 
-    <div class="empty">
-        No wallet transactions yet.
-    </div>
+<td>
+₹{{ "%.2f"|format(l["amount"] or 0) }}
+</td>
 
-    {% endif %}
+<td>
+₹{{ "%.2f"|format(l["balance_after"] or 0) }}
+</td>
+
+<td>
+{{ l["note"] or "—" }}
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% else %}
+
+<div class="empty">
+No wallet transactions yet.
+</div>
+
+{% endif %}
 
 </section>
 
 
-<!-- =========================
-     SERVICE CHARGES
-     ========================= -->
+<!-- SERVICE CHARGES -->
 
 <section class="card section">
 
-    <div class="section-header">
+<div class="section-header">
 
-        <div>
+<div>
 
-            <h2>
-                Service Charges
-            </h2>
+<h2>
+Service Charges
+</h2>
 
-            <p>
-                Current charges for available services.
-            </p>
+<p>
+Current charges for available services.
+</p>
 
-        </div>
+</div>
 
-    </div>
-
-
-    {% if service_charges %}
-
-    <div class="table-wrap">
-
-        <table>
-
-            <thead>
-
-                <tr>
-                    <th>Service</th>
-                    <th>Charge</th>
-                </tr>
-
-            </thead>
+</div>
 
 
-            <tbody>
+{% if service_charges %}
 
-            {% for sc in service_charges %}
+<div class="table-wrap">
 
-            <tr>
+<table>
 
-                <td>
-                    {{ sc["service"] }}
-                </td>
+<thead>
 
-                <td>
-                    ₹{{ "%.2f"|format(sc["charge"] or 0) }}
-                </td>
+<tr>
 
-            </tr>
+<th>Service</th>
+<th>Charge</th>
 
-            {% endfor %}
+</tr>
 
-            </tbody>
+</thead>
 
-        </table>
 
-    </div>
+<tbody>
 
-    {% else %}
+{% for sc in service_charges %}
 
-    <div class="empty">
-        Service charges are not configured yet.
-    </div>
+<tr>
 
-    {% endif %}
+<td>
+{{ sc["service"] }}
+</td>
+
+<td>
+₹{{ "%.2f"|format(sc["charge"] or 0) }}
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% else %}
+
+<div class="empty">
+Service charges are not configured yet.
+</div>
+
+{% endif %}
 
 </section>
 
 
 </div>
+
 </main>
 
 
@@ -1040,8 +1222,7 @@ footer{
 
 
     <div
-        class="service-modal-backdrop"
-        onclick="closeServiceModal()">
+        class="service-modal-backdrop">
     </div>
 
 
@@ -1051,7 +1232,7 @@ footer{
         <button
             type="button"
             class="service-modal-close"
-            onclick="closeServiceModal()">
+            onclick="closeService()">
 
             ✕
 
@@ -1063,9 +1244,7 @@ footer{
         </h2>
 
 
-        <!-- =========================
-             SERVICE DROPDOWN
-             ========================= -->
+        <!-- SERVICE SELECT -->
 
         <div class="form-group">
 
@@ -1080,8 +1259,7 @@ footer{
 
             <select
                 id="serviceSelect"
-                class="form-input"
-                onchange="selectService()">
+                class="form-input">
 
                 <option value="">
                     -- Select Service --
@@ -1101,12 +1279,9 @@ footer{
         </div>
 
 
-        <!-- =================================================
-             SERVICE FORMS
-             ================================================= -->
+        <!-- SERVICE FORMS -->
 
         {% for s in services %}
-
 
         <div
             class="service-form-area"
@@ -1117,8 +1292,6 @@ footer{
                 method="post"
                 action="{{ url_for('retailer_service_request') }}">
 
-
-                <!-- SERVICE VALUE -->
 
                 <input
                     type="hidden"
@@ -1143,9 +1316,7 @@ footer{
                 </div>
 
 
-                <!-- =========================
-                     SERVICE SPECIFIC FIELDS
-                     ========================= -->
+                <!-- SERVICE FIELDS -->
 
                 {% for field in service_fields.get(s,[]) %}
 
@@ -1157,28 +1328,22 @@ footer{
 
                 <div class="form-group">
 
-
                     <label>
 
                         {{ field_label }}
 
                         {% if field_required %}
 
-                        <span class="required">
-                            *
-                        </span>
+                        <span class="required">*</span>
 
                         {% endif %}
 
                     </label>
 
 
-                    <!-- =========================
-                         STATE / UT DROPDOWN
-                         ========================= -->
+                    <!-- STATE -->
 
                     {% if field_key == "state_name" %}
-
 
                     <select
                         name="{{ field_key }}"
@@ -1253,12 +1418,9 @@ footer{
                     </select>
 
 
-                    <!-- =========================
-                         CERTIFICATE TYPE
-                         ========================= -->
+                    <!-- CERTIFICATE TYPE -->
 
                     {% elif field_key == "certificate_type" %}
-
 
                     <select
                         name="{{ field_key }}"
@@ -1284,12 +1446,9 @@ footer{
                     </select>
 
 
-                    <!-- =========================
-                         PAN TYPE
-                         ========================= -->
+                    <!-- PAN TYPE -->
 
                     {% elif field_key == "application_type" %}
-
 
                     <select
                         name="{{ field_key }}"
@@ -1315,12 +1474,9 @@ footer{
                     </select>
 
 
-                    <!-- =========================
-                         SERVICE DETAILS
-                         ========================= -->
+                    <!-- DETAILS -->
 
                     {% elif field_key == "service_details" %}
-
 
                     <textarea
                         name="{{ field_key }}"
@@ -1330,12 +1486,9 @@ footer{
                         placeholder="{{ field_label }}"></textarea>
 
 
-                    <!-- =========================
-                         NORMAL INPUT
-                         ========================= -->
+                    <!-- NORMAL INPUT -->
 
                     {% else %}
-
 
                     <input
                         name="{{ field_key }}"
@@ -1344,7 +1497,6 @@ footer{
                         {% if field_required %}required{% endif %}
                         placeholder="{{ field_label }}">
 
-
                     {% endif %}
 
                 </div>
@@ -1352,9 +1504,7 @@ footer{
                 {% endfor %}
 
 
-                <!-- =========================
-                     ADDITIONAL MESSAGE
-                     ========================= -->
+                <!-- MESSAGE -->
 
                 <div class="form-group">
 
@@ -1366,21 +1516,20 @@ footer{
                         name="message"
                         class="form-textarea"
                         rows="4"
+                        maxlength="1000"
                         placeholder="Enter additional details if any..."></textarea>
 
                 </div>
 
 
-                <!-- =========================
-                     BUTTONS
-                     ========================= -->
+                <!-- ACTIONS -->
 
                 <div class="modal-actions">
 
                     <button
                         type="button"
                         class="btn btn-secondary"
-                        onclick="closeServiceModal()">
+                        onclick="closeService()">
 
                         Cancel
 
@@ -1408,184 +1557,6 @@ footer{
     </div>
 
 </div>
-
-
-<!-- =================================================
-     JAVASCRIPT
-     ================================================= -->
-
-<script>
-
-function openServiceModal(){
-
-    var modal =
-        document.getElementById("serviceModal");
-
-    var select =
-        document.getElementById("serviceSelect");
-
-
-    if(!modal){
-
-        alert("Service modal nahi mila.");
-
-        return;
-    }
-
-
-    modal.style.display = "flex";
-
-    document.body.classList.add("modal-open");
-
-
-    if(select){
-
-        select.value = "";
-
-    }
-
-
-    document
-        .querySelectorAll(".service-form-area")
-        .forEach(function(form){
-
-            form.classList.remove("active");
-
-        });
-
-}
-
-
-function closeServiceModal(){
-
-    var modal =
-        document.getElementById("serviceModal");
-
-
-    if(modal){
-
-        modal.style.display = "none";
-
-    }
-
-
-    document.body.classList.remove("modal-open");
-
-
-    var select =
-        document.getElementById("serviceSelect");
-
-
-    if(select){
-
-        select.value = "";
-
-    }
-
-
-    document
-        .querySelectorAll(".service-form-area")
-        .forEach(function(form){
-
-            form.classList.remove("active");
-
-        });
-
-}
-
-
-function selectService(){
-
-    var select =
-        document.getElementById("serviceSelect");
-
-
-    if(!select){
-
-        return;
-
-    }
-
-
-    var selectedIndex =
-        select.value;
-
-
-    document
-        .querySelectorAll(".service-form-area")
-        .forEach(function(form){
-
-            form.classList.remove("active");
-
-        });
-
-
-    if(selectedIndex === ""){
-
-        return;
-
-    }
-
-
-    var selectedForm =
-        document.querySelector(
-            '.service-form-area[data-service-index="' +
-            selectedIndex +
-            '"]'
-        );
-
-
-    if(!selectedForm){
-
-        return;
-
-    }
-
-
-    selectedForm.classList.add("active");
-
-
-    var firstField =
-        selectedForm.querySelector(
-            "input:not([type='hidden']):not([readonly]), select, textarea"
-        );
-
-
-    if(firstField){
-
-        setTimeout(function(){
-
-            firstField.focus();
-
-        },100);
-
-    }
-
-}
-
-
-/* ESC KEY */
-
-document.addEventListener(
-    "keydown",
-    function(event){
-
-        if(event.key === "Escape"){
-
-            closeServiceModal();
-
-        }
-
-    }
-);
-```javascript
-/* OLD BUTTON COMPATIBILITY */
-window.openService = window.openServiceModal;
-window.closeService = window.closeServiceModal;
-window.selectServiceForm = window.selectService;
-```
-
-</script>
 
 
 <footer>
