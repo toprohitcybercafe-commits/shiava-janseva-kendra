@@ -1,5 +1,5 @@
+```html
 <!doctype html>
-
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -7,7 +7,9 @@
 <title>Shiva Janseva Kendra - Retailer Dashboard</title>
 
 <style>
-*{box-sizing:border-box}
+*{
+    box-sizing:border-box;
+}
 
 body{
     margin:0;
@@ -82,6 +84,7 @@ header{
     cursor:pointer;
     font-size:14px;
     font-weight:600;
+    display:inline-block;
 }
 
 .btn:hover{
@@ -301,15 +304,6 @@ th{
     padding:15px;
 }
 
-.service-modal.open{
-    display:flex;
-}
-
-.service-modal-backdrop{
-    position:absolute;
-    inset:0;
-}
-
 .service-modal-card{
     position:relative;
     z-index:2;
@@ -373,6 +367,7 @@ th{
 .form-textarea:focus{
     outline:none;
     border-color:#2563eb;
+    box-shadow:0 0 0 2px rgba(37,99,235,.12);
 }
 
 .required{
@@ -402,7 +397,9 @@ footer{
 }
 
 
-/* MOBILE */
+/* =========================
+   MOBILE
+   ========================= */
 
 @media(max-width:850px){
 
@@ -413,7 +410,6 @@ footer{
     .brand h1{
         font-size:18px;
     }
-
 }
 
 @media(max-width:600px){
@@ -448,10 +444,8 @@ footer{
     .modal-actions .btn{
         width:100%;
     }
-
 }
 </style>
-
 </head>
 
 <body>
@@ -461,62 +455,50 @@ footer{
      ========================= -->
 
 <header>
-
 <div class="wrap nav">
 
-<div class="brand">
+    <div class="brand">
 
-<img
-src="/static/logo.svg"
-class="brand-logo"
-alt="Shiva Janseva Kendra">
+        <img
+            src="/static/logo.svg"
+            class="brand-logo"
+            alt="Shiva Janseva Kendra">
 
-<div>
+        <div>
+            <h1>Shiva Janseva Kendra</h1>
+            <small>Retailer Dashboard</small>
+        </div>
 
-<h1>
-Shiva Janseva Kendra
-</h1>
+    </div>
 
-<small>
-Retailer Dashboard
-</small>
+    <div class="nav-right">
 
-</div>
+        <a
+            href="/retailer/presence/offline"
+            class="btn btn-secondary">
+            Go Offline
+        </a>
 
-</div>
+        <a
+            href="/retailer-login"
+            class="btn btn-danger">
+            Logout
+        </a>
 
-<div class="nav-right">
-
-<a
-href="/retailer/presence/offline"
-class="btn btn-secondary">
-
-Go Offline
-
-</a>
-
-<a
-href="/retailer-login"
-class="btn btn-danger">
-
-Logout
-
-</a>
+    </div>
 
 </div>
-
-</div>
-
 </header>
 
-<main>
 
+<main>
 <div class="wrap">
 
-<!-- FLASH MESSAGES -->
+<!-- =========================
+     FLASH MESSAGES
+     ========================= -->
 
 {% with messages = get_flashed_messages(with_categories=true) %}
-
 {% if messages %}
 
 <div class="flash-area">
@@ -524,9 +506,7 @@ Logout
 {% for category, message in messages %}
 
 <div class="flash {{ category }}">
-
-{{ message }}
-
+    {{ message }}
 </div>
 
 {% endfor %}
@@ -534,28 +514,26 @@ Logout
 </div>
 
 {% endif %}
-
 {% endwith %}
 
-<!-- PAGE TITLE -->
+
+<!-- =========================
+     PAGE TITLE
+     ========================= -->
 
 <div class="page-title">
 
-<h2>
+    <h2>
+        Welcome,
+        {{ retailer["name"] if retailer["name"] else retailer["username"] }}
+    </h2>
 
-Welcome,
-
-{{ retailer["name"] if retailer["name"] else retailer["username"] }}
-
-</h2>
-
-<p>
-
-Manage services, applications and wallet from here.
-
-</p>
+    <p>
+        Manage services, applications and wallet from here.
+    </p>
 
 </div>
+
 
 <!-- =========================
      STATS
@@ -563,57 +541,51 @@ Manage services, applications and wallet from here.
 
 <div class="dashboard-grid">
 
-<div class="card wallet-card">
+    <div class="card wallet-card">
 
-<div class="stat-title">
-Wallet Balance
-</div>
+        <div class="stat-title">
+            Wallet Balance
+        </div>
 
-<div class="stat-value">
+        <div class="stat-value">
+            ₹{{ "%.2f"|format(retailer["wallet_balance"] or 0) }}
+        </div>
 
-₹{{ "%.2f"|format(retailer["wallet_balance"] or 0) }}
+        <div class="minimum-note">
+            Minimum required balance:
+            ₹{{ "%.2f"|format(min_required_balance or 0) }}
+        </div>
 
-</div>
+    </div>
 
-<div class="minimum-note">
 
-Minimum required balance:
+    <div class="card">
 
-₹{{ "%.2f"|format(min_required_balance or 0) }}
+        <div class="stat-title">
+            Retailer Username
+        </div>
 
-</div>
+        <div class="stat-value" style="font-size:20px;">
+            {{ retailer["username"] }}
+        </div>
 
-</div>
+    </div>
 
-<div class="card">
 
-<div class="stat-title">
-Retailer Username
-</div>
+    <div class="card">
 
-<div class="stat-value" style="font-size:20px;">
+        <div class="stat-title">
+            Total Applications
+        </div>
 
-{{ retailer["username"] }}
+        <div class="stat-value">
+            {{ requests|length }}
+        </div>
 
-</div>
-
-</div>
-
-<div class="card">
-
-<div class="stat-title">
-Total Applications
-</div>
-
-<div class="stat-value">
-
-{{ requests|length }}
+    </div>
 
 </div>
 
-</div>
-
-</div>
 
 <!-- =========================
      WALLET
@@ -621,31 +593,26 @@ Total Applications
 
 <section class="card section">
 
-<div class="section-header">
+    <div class="section-header">
 
-<div>
+        <div>
+            <h2>Wallet</h2>
 
-<h2>
-Wallet
-</h2>
+            <p>
+                Add money to your retailer wallet.
+            </p>
+        </div>
 
-<p>
-Add money to your retailer wallet.
-</p>
+        <a
+            href="/retailer/topup"
+            class="btn">
+            Add Money
+        </a>
 
-</div>
-
-<a
-href="/retailer/topup"
-class="btn">
-
-Add Money
-
-</a>
-
-</div>
+    </div>
 
 </section>
+
 
 <!-- =========================
      ALL SERVICES
@@ -653,68 +620,63 @@ Add Money
 
 <section class="card section">
 
-<div class="section-header">
+    <div class="section-header">
 
-<div>
+        <div>
+            <h2>All Services</h2>
 
-<h2>
-All Services
-</h2>
+            <p>
+                Service select karke application form bharen.
+            </p>
+        </div>
 
-<p>
-Service select karke application form bharen.
-</p>
 
-</div>
+        <!-- IMPORTANT: DIRECT ONCLICK -->
 
-<button
-type="button"
-class="btn"
-id="openServiceModal">
+        <button
+            type="button"
+            class="btn"
+            onclick="openServiceModal()">
 
-📝 Apply for Service
+            📝 Apply for Service
 
-</button>
+        </button>
 
-</div>
+    </div>
 
-<div class="services-list">
 
-{% for s in services %}
+    <div class="services-list">
 
-<div class="service-item">
+        {% for s in services %}
 
-<div class="service-name">
+        <div class="service-item">
 
-<span class="service-icon">
+            <div class="service-name">
 
-{{ service_icons.get(s,'📝') }}
+                <span class="service-icon">
+                    {{ service_icons.get(s,'📝') }}
+                </span>
 
-</span>
+                <strong>
+                    {{ s }}
+                </strong>
 
-<strong>
+            </div>
 
-{{ s }}
+        </div>
 
-</strong>
+        {% else %}
 
-</div>
+        <div class="empty">
+            No services available.
+        </div>
 
-</div>
+        {% endfor %}
 
-{% else %}
-
-<div class="empty">
-
-No services available.
-
-</div>
-
-{% endfor %}
-
-</div>
+    </div>
 
 </section>
+
 
 <!-- =========================
      MY APPLICATIONS
@@ -722,140 +684,139 @@ No services available.
 
 <section class="card section">
 
-<div class="section-header">
+    <div class="section-header">
 
-<div>
+        <div>
 
-<h2>
-My Applications
-</h2>
+            <h2>
+                My Applications
+            </h2>
 
-<p>
-Your latest service requests.
-</p>
+            <p>
+                Your latest service requests.
+            </p>
 
-</div>
+        </div>
 
-</div>
+    </div>
 
-{% if requests %}
 
-<div class="table-wrap">
+    {% if requests %}
 
-<table>
+    <div class="table-wrap">
 
-<thead>
+        <table>
 
-<tr>
+            <thead>
 
-<th>ID</th>
-<th>Customer</th>
-<th>Mobile</th>
-<th>Service</th>
-<th>Charge</th>
-<th>Status</th>
-<th>Date</th>
-<th>Action</th>
+                <tr>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Mobile</th>
+                    <th>Service</th>
+                    <th>Charge</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
 
-</tr>
+            </thead>
 
-</thead>
 
-<tbody>
+            <tbody>
 
-{% for r in requests %}
+            {% for r in requests %}
 
-<tr>
+            <tr>
 
-<td>
-#{{ r["id"] }}
-</td>
+                <td>
+                    #{{ r["id"] }}
+                </td>
 
-<td>
-{{ r["name"] }}
-</td>
+                <td>
+                    {{ r["name"] }}
+                </td>
 
-<td>
-{{ r["phone"] }}
-</td>
+                <td>
+                    {{ r["phone"] }}
+                </td>
 
-<td>
-{{ r["service"] }}
-</td>
+                <td>
+                    {{ r["service"] }}
+                </td>
 
-<td>
-₹{{ "%.2f"|format(r["charge"] or 0) }}
-</td>
+                <td>
+                    ₹{{ "%.2f"|format(r["charge"] or 0) }}
+                </td>
 
-<td>
+                <td>
 
-{% if r["status"] == "Success" %}
+                    {% if r["status"] == "Success" %}
 
-<span class="status status-success">
-Success
-</span>
+                    <span class="status status-success">
+                        Success
+                    </span>
 
-{% elif r["status"] == "Rejected" %}
+                    {% elif r["status"] == "Rejected" %}
 
-<span class="status status-rejected">
-Rejected
-</span>
+                    <span class="status status-rejected">
+                        Rejected
+                    </span>
 
-{% else %}
+                    {% else %}
 
-<span class="status status-pending">
-{{ r["status"] or "Pending" }}
-</span>
+                    <span class="status status-pending">
+                        {{ r["status"] or "Pending" }}
+                    </span>
 
-{% endif %}
+                    {% endif %}
 
-</td>
+                </td>
 
-<td>
-{{ r["created_at"] }}
-</td>
+                <td>
+                    {{ r["created_at"] }}
+                </td>
 
-<td>
+                <td>
 
-{% if r["status"] == "Success" and r["pdf_filename"] %}
+                    {% if r["status"] == "Success" and r["pdf_filename"] %}
 
-<a
-href="/retailer/request/{{ r['id'] }}/download"
-class="btn btn-success">
+                    <a
+                        href="/retailer/request/{{ r['id'] }}/download"
+                        class="btn btn-success">
 
-Download PDF
+                        Download PDF
 
-</a>
+                    </a>
 
-{% else %}
+                    {% else %}
 
-—
+                    —
 
-{% endif %}
+                    {% endif %}
 
-</td>
+                </td>
 
-</tr>
+            </tr>
 
-{% endfor %}
+            {% endfor %}
 
-</tbody>
+            </tbody>
 
-</table>
+        </table>
 
-</div>
+    </div>
 
-{% else %}
+    {% else %}
 
-<div class="empty">
+    <div class="empty">
+        No service applications yet.
+    </div>
 
-No service applications yet.
-
-</div>
-
-{% endif %}
+    {% endif %}
 
 </section>
+
 
 <!-- =========================
      WALLET HISTORY
@@ -863,89 +824,88 @@ No service applications yet.
 
 <section class="card section">
 
-<div class="section-header">
+    <div class="section-header">
 
-<div>
+        <div>
 
-<h2>
-Wallet History
-</h2>
+            <h2>
+                Wallet History
+            </h2>
 
-<p>
-Recent wallet transactions.
-</p>
+            <p>
+                Recent wallet transactions.
+            </p>
 
-</div>
+        </div>
 
-</div>
+    </div>
 
-{% if ledger %}
 
-<div class="table-wrap">
+    {% if ledger %}
 
-<table>
+    <div class="table-wrap">
 
-<thead>
+        <table>
 
-<tr>
+            <thead>
 
-<th>Date</th>
-<th>Type</th>
-<th>Amount</th>
-<th>Balance After</th>
-<th>Note</th>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Balance After</th>
+                    <th>Note</th>
+                </tr>
 
-</tr>
+            </thead>
 
-</thead>
 
-<tbody>
+            <tbody>
 
-{% for l in ledger %}
+            {% for l in ledger %}
 
-<tr>
+            <tr>
 
-<td>
-{{ l["created_at"] }}
-</td>
+                <td>
+                    {{ l["created_at"] }}
+                </td>
 
-<td>
-{{ l["type"] }}
-</td>
+                <td>
+                    {{ l["type"] }}
+                </td>
 
-<td>
-₹{{ "%.2f"|format(l["amount"] or 0) }}
-</td>
+                <td>
+                    ₹{{ "%.2f"|format(l["amount"] or 0) }}
+                </td>
 
-<td>
-₹{{ "%.2f"|format(l["balance_after"] or 0) }}
-</td>
+                <td>
+                    ₹{{ "%.2f"|format(l["balance_after"] or 0) }}
+                </td>
 
-<td>
-{{ l["note"] or "—" }}
-</td>
+                <td>
+                    {{ l["note"] or "—" }}
+                </td>
 
-</tr>
+            </tr>
 
-{% endfor %}
+            {% endfor %}
 
-</tbody>
+            </tbody>
 
-</table>
+        </table>
 
-</div>
+    </div>
 
-{% else %}
+    {% else %}
 
-<div class="empty">
+    <div class="empty">
+        No wallet transactions yet.
+    </div>
 
-No wallet transactions yet.
-
-</div>
-
-{% endif %}
+    {% endif %}
 
 </section>
+
 
 <!-- =========================
      SERVICE CHARGES
@@ -953,435 +913,457 @@ No wallet transactions yet.
 
 <section class="card section">
 
-<div class="section-header">
+    <div class="section-header">
 
-<div>
+        <div>
 
-<h2>
-Service Charges
-</h2>
+            <h2>
+                Service Charges
+            </h2>
 
-<p>
-Current charges for available services.
-</p>
+            <p>
+                Current charges for available services.
+            </p>
 
-</div>
+        </div>
 
-</div>
+    </div>
 
-{% if service_charges %}
 
-<div class="table-wrap">
+    {% if service_charges %}
 
-<table>
+    <div class="table-wrap">
 
-<thead>
+        <table>
 
-<tr>
+            <thead>
 
-<th>
-Service
-</th>
+                <tr>
+                    <th>Service</th>
+                    <th>Charge</th>
+                </tr>
 
-<th>
-Charge
-</th>
+            </thead>
 
-</tr>
 
-</thead>
+            <tbody>
 
-<tbody>
+            {% for sc in service_charges %}
 
-{% for sc in service_charges %}
+            <tr>
 
-<tr>
+                <td>
+                    {{ sc["service"] }}
+                </td>
 
-<td>
-{{ sc["service"] }}
-</td>
+                <td>
+                    ₹{{ "%.2f"|format(sc["charge"] or 0) }}
+                </td>
 
-<td>
-₹{{ "%.2f"|format(sc["charge"] or 0) }}
-</td>
+            </tr>
 
-</tr>
+            {% endfor %}
 
-{% endfor %}
+            </tbody>
 
-</tbody>
+        </table>
 
-</table>
+    </div>
 
-</div>
+    {% else %}
 
-{% else %}
+    <div class="empty">
+        Service charges are not configured yet.
+    </div>
 
-<div class="empty">
-
-Service charges are not configured yet.
-
-</div>
-
-{% endif %}
+    {% endif %}
 
 </section>
 
-</div>
 
+</div>
 </main>
 
+
 <!-- =================================================
-     SINGLE SERVICE MODAL
+     SERVICE MODAL
      ================================================= -->
 
 <div
-id="serviceModal"
-class="service-modal">
+    id="serviceModal"
+    class="service-modal">
 
-<div
-class="service-modal-backdrop"
-id="serviceModalBackdrop">
+
+    <div
+        class="service-modal-backdrop"
+        onclick="closeServiceModal()">
+    </div>
+
+
+    <div class="service-modal-card">
+
+
+        <button
+            type="button"
+            class="service-modal-close"
+            onclick="closeServiceModal()">
+
+            ✕
+
+        </button>
+
+
+        <h2 class="modal-title">
+            Apply for Service
+        </h2>
+
+
+        <!-- =========================
+             SERVICE DROPDOWN
+             ========================= -->
+
+        <div class="form-group">
+
+            <label for="serviceSelect">
+
+                Select Service
+
+                <span class="required">*</span>
+
+            </label>
+
+
+            <select
+                id="serviceSelect"
+                class="form-input"
+                onchange="selectService()">
+
+                <option value="">
+                    -- Select Service --
+                </option>
+
+
+                {% for s in services %}
+
+                <option value="{{ loop.index0 }}">
+                    {{ s }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <!-- =================================================
+             SERVICE FORMS
+             ================================================= -->
+
+        {% for s in services %}
+
+
+        <div
+            class="service-form-area"
+            data-service-index="{{ loop.index0 }}">
+
+
+            <form
+                method="post"
+                action="{{ url_for('retailer_service_request') }}">
+
+
+                <!-- SERVICE VALUE -->
+
+                <input
+                    type="hidden"
+                    name="service"
+                    value="{{ s }}">
+
+
+                <!-- SELECTED SERVICE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Selected Service
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-input"
+                        value="{{ s }}"
+                        readonly>
+
+                </div>
+
+
+                <!-- =========================
+                     SERVICE SPECIFIC FIELDS
+                     ========================= -->
+
+                {% for field in service_fields.get(s,[]) %}
+
+                {% set field_key = field[0] %}
+                {% set field_label = field[1] %}
+                {% set field_type = field[2] or "text" %}
+                {% set field_required = field[3] %}
+
+
+                <div class="form-group">
+
+
+                    <label>
+
+                        {{ field_label }}
+
+                        {% if field_required %}
+
+                        <span class="required">
+                            *
+                        </span>
+
+                        {% endif %}
+
+                    </label>
+
+
+                    <!-- =========================
+                         STATE / UT DROPDOWN
+                         ========================= -->
+
+                    {% if field_key == "state_name" %}
+
+
+                    <select
+                        name="{{ field_key }}"
+                        class="form-input"
+                        {% if field_required %}required{% endif %}>
+
+                        <option value="">
+                            -- Select State / UT --
+                        </option>
+
+                        <option>Andhra Pradesh</option>
+                        <option>Arunachal Pradesh</option>
+                        <option>Assam</option>
+                        <option>Bihar</option>
+                        <option>Chhattisgarh</option>
+                        <option>Goa</option>
+                        <option>Gujarat</option>
+                        <option>Haryana</option>
+                        <option>Himachal Pradesh</option>
+                        <option>Jharkhand</option>
+                        <option>Karnataka</option>
+                        <option>Kerala</option>
+                        <option>Madhya Pradesh</option>
+                        <option>Maharashtra</option>
+                        <option>Manipur</option>
+                        <option>Meghalaya</option>
+                        <option>Mizoram</option>
+                        <option>Nagaland</option>
+                        <option>Odisha</option>
+                        <option>Punjab</option>
+                        <option>Rajasthan</option>
+                        <option>Sikkim</option>
+                        <option>Tamil Nadu</option>
+                        <option>Telangana</option>
+                        <option>Tripura</option>
+                        <option>Uttar Pradesh</option>
+                        <option>Uttarakhand</option>
+                        <option>West Bengal</option>
+
+                        <option>
+                            Andaman and Nicobar Islands
+                        </option>
+
+                        <option>
+                            Chandigarh
+                        </option>
+
+                        <option>
+                            Dadra and Nagar Haveli and Daman and Diu
+                        </option>
+
+                        <option>
+                            Delhi
+                        </option>
+
+                        <option>
+                            Jammu and Kashmir
+                        </option>
+
+                        <option>
+                            Ladakh
+                        </option>
+
+                        <option>
+                            Lakshadweep
+                        </option>
+
+                        <option>
+                            Puducherry
+                        </option>
+
+                    </select>
+
+
+                    <!-- =========================
+                         CERTIFICATE TYPE
+                         ========================= -->
+
+                    {% elif field_key == "certificate_type" %}
+
+
+                    <select
+                        name="{{ field_key }}"
+                        class="form-input"
+                        {% if field_required %}required{% endif %}>
+
+                        <option value="">
+                            -- Select Certificate Type --
+                        </option>
+
+                        <option value="Income Certificate">
+                            Income Certificate
+                        </option>
+
+                        <option value="Caste Certificate">
+                            Caste Certificate
+                        </option>
+
+                        <option value="Residence Certificate">
+                            Residence Certificate
+                        </option>
+
+                    </select>
+
+
+                    <!-- =========================
+                         PAN TYPE
+                         ========================= -->
+
+                    {% elif field_key == "application_type" %}
+
+
+                    <select
+                        name="{{ field_key }}"
+                        class="form-input"
+                        {% if field_required %}required{% endif %}>
+
+                        <option value="">
+                            -- Select Application Type --
+                        </option>
+
+                        <option value="New PAN">
+                            New PAN
+                        </option>
+
+                        <option value="PAN Correction">
+                            PAN Correction
+                        </option>
+
+                        <option value="PAN Reprint">
+                            PAN Reprint
+                        </option>
+
+                    </select>
+
+
+                    <!-- =========================
+                         SERVICE DETAILS
+                         ========================= -->
+
+                    {% elif field_key == "service_details" %}
+
+
+                    <textarea
+                        name="{{ field_key }}"
+                        class="form-textarea"
+                        rows="4"
+                        {% if field_required %}required{% endif %}
+                        placeholder="{{ field_label }}"></textarea>
+
+
+                    <!-- =========================
+                         NORMAL INPUT
+                         ========================= -->
+
+                    {% else %}
+
+
+                    <input
+                        name="{{ field_key }}"
+                        class="form-input"
+                        type="{% if field_type in ['text','tel','email','date','number'] %}{{ field_type }}{% else %}text{% endif %}"
+                        {% if field_required %}required{% endif %}
+                        placeholder="{{ field_label }}">
+
+
+                    {% endif %}
+
+                </div>
+
+                {% endfor %}
+
+
+                <!-- =========================
+                     ADDITIONAL MESSAGE
+                     ========================= -->
+
+                <div class="form-group">
+
+                    <label>
+                        Message / Additional Details
+                    </label>
+
+                    <textarea
+                        name="message"
+                        class="form-textarea"
+                        rows="4"
+                        placeholder="Enter additional details if any..."></textarea>
+
+                </div>
+
+
+                <!-- =========================
+                     BUTTONS
+                     ========================= -->
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        onclick="closeServiceModal()">
+
+                        Cancel
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-success">
+
+                        Submit Application
+
+                    </button>
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+        {% endfor %}
+
+
+    </div>
+
 </div>
 
-<div class="service-modal-card">
-
-<button
-type="button"
-class="service-modal-close"
-id="serviceModalClose">
-
-✕
-
-</button>
-
-<h2 class="modal-title">
-
-Apply for Service
-
-</h2>
-
-<!-- SERVICE DROPDOWN -->
-
-<div class="form-group">
-
-<label for="serviceSelect">
-
-Select Service
-
-<span class="required">*</span>
-
-</label>
-
-<select
-id="serviceSelect"
-class="form-input">
-
-<option value="">
-
--- Select Service --
-
-</option>
-
-{% for s in services %}
-
-<option value="{{ loop.index0 }}">
-
-{{ s }}
-
-</option>
-
-{% endfor %}
-
-</select>
-
-</div>
-
-<!-- =================================================
-     SERVICE FORMS
-     ================================================= -->
-
-{% for s in services %}
-
-<div
-class="service-form-area"
-data-service-index="{{ loop.index0 }}">
-
-<form
-method="post"
-action="{{ url_for('retailer_service_request') }}">
-
-<input
-type="hidden"
-name="service"
-value="{{ s }}">
-
-<!-- SERVICE NAME -->
-
-<div class="form-group">
-
-<label>
-Selected Service
-</label>
-
-<input
-type="text"
-class="form-input"
-value="{{ s }}"
-readonly>
-
-</div>
-
-<!-- SERVICE SPECIFIC FIELDS -->
-
-{% for field in service_fields.get(s,[]) %}
-
-{% set field_key = field[0] %}
-{% set field_label = field[1] %}
-{% set field_type = field[2] or "text" %}
-{% set field_required = field[3] %}
-
-<div class="form-group">
-
-<label>
-
-{{ field_label }}
-
-{% if field_required %}
-
-<span class="required">
-*
-</span>
-
-{% endif %}
-
-</label>
-
-<!-- STATE DROPDOWN -->
-
-{% if field_key == "state_name" %}
-
-<select
-name="{{ field_key }}"
-class="form-input"
-{% if field_required %}required{% endif %}>
-
-<option value="">
-
--- Select State / UT --
-
-</option>
-
-<option>Andhra Pradesh</option>
-<option>Arunachal Pradesh</option>
-<option>Assam</option>
-<option>Bihar</option>
-<option>Chhattisgarh</option>
-<option>Goa</option>
-<option>Gujarat</option>
-<option>Haryana</option>
-<option>Himachal Pradesh</option>
-<option>Jharkhand</option>
-<option>Karnataka</option>
-<option>Kerala</option>
-<option>Madhya Pradesh</option>
-<option>Maharashtra</option>
-<option>Manipur</option>
-<option>Meghalaya</option>
-<option>Mizoram</option>
-<option>Nagaland</option>
-<option>Odisha</option>
-<option>Punjab</option>
-<option>Rajasthan</option>
-<option>Sikkim</option>
-<option>Tamil Nadu</option>
-<option>Telangana</option>
-<option>Tripura</option>
-<option>Uttar Pradesh</option>
-<option>Uttarakhand</option>
-<option>West Bengal</option>
-
-<option>
-Andaman and Nicobar Islands
-</option>
-
-<option>
-Chandigarh
-</option>
-
-<option>
-Dadra and Nagar Haveli and Daman and Diu
-</option>
-
-<option>
-Delhi
-</option>
-
-<option>
-Jammu and Kashmir
-</option>
-
-<option>
-Ladakh
-</option>
-
-<option>
-Lakshadweep
-</option>
-
-<option>
-Puducherry
-</option>
-
-</select>
-
-<!-- CERTIFICATE TYPE -->
-
-{% elif field_key == "certificate_type" %}
-
-<select
-name="{{ field_key }}"
-class="form-input"
-{% if field_required %}required{% endif %}>
-
-<option value="">
-
--- Select Certificate Type --
-
-</option>
-
-<option value="Income Certificate">
-
-Income Certificate
-
-</option>
-
-<option value="Caste Certificate">
-
-Caste Certificate
-
-</option>
-
-<option value="Residence Certificate">
-
-Residence Certificate
-
-</option>
-
-</select>
-
-<!-- PAN APPLICATION TYPE -->
-
-{% elif field_key == "application_type" %}
-
-<select
-name="{{ field_key }}"
-class="form-input"
-{% if field_required %}required{% endif %}>
-
-<option value="">
-
--- Select Application Type --
-
-</option>
-
-<option value="New PAN">
-
-New PAN
-
-</option>
-
-<option value="PAN Correction">
-
-PAN Correction
-
-</option>
-
-<option value="PAN Reprint">
-
-PAN Reprint
-
-</option>
-
-</select>
-
-<!-- SERVICE DETAILS -->
-
-{% elif field_key == "service_details" %}
-
-<textarea
-name="{{ field_key }}"
-class="form-textarea"
-rows="4"
-{% if field_required %}required{% endif %}
-placeholder="{{ field_label }}"></textarea>
-
-<!-- NORMAL INPUT -->
-
-{% else %}
-
-<input
-name="{{ field_key }}"
-class="form-input"
-type="{% if field_type in ['text','tel','email','date','number'] %}{{ field_type }}{% else %}text{% endif %}"
-{% if field_required %}required{% endif %}
-placeholder="{{ field_label }}">
-
-{% endif %}
-
-</div>
-
-{% endfor %}
-
-<!-- COMMON MESSAGE -->
-
-<div class="form-group">
-
-<label>
-
-Message / Additional Details
-
-</label>
-
-<textarea
-name="message"
-class="form-textarea"
-rows="4"
-placeholder="Enter additional details if any..."></textarea>
-
-</div>
-
-<!-- BUTTONS -->
-
-<div class="modal-actions">
-
-<button
-type="button"
-class="btn btn-secondary cancel-service">
-
-Cancel
-
-</button>
-
-<button
-type="submit"
-class="btn btn-success">
-
-Submit Application
-
-</button>
-
-</div>
-
-</form>
-
-</div>
-
-{% endfor %}
-
-</div>
-
-</div>
 
 <!-- =================================================
      JAVASCRIPT
@@ -1389,169 +1371,171 @@ Submit Application
 
 <script>
 
-document.addEventListener("DOMContentLoaded", function(){
+function openServiceModal(){
 
-    const modal =
+    var modal =
         document.getElementById("serviceModal");
 
-    const openButton =
-        document.getElementById("openServiceModal");
-
-    const closeButton =
-        document.getElementById("serviceModalClose");
-
-    const backdrop =
-        document.getElementById("serviceModalBackdrop");
-
-    const serviceSelect =
+    var select =
         document.getElementById("serviceSelect");
 
-    const serviceForms =
-        document.querySelectorAll(".service-form-area");
+
+    if(!modal){
+
+        alert("Service modal nahi mila.");
+
+        return;
+    }
 
 
-    /* OPEN MODAL */
+    modal.style.display = "flex";
 
-    openButton.addEventListener("click", function(){
-
-        modal.classList.add("open");
-
-        document.body.classList.add("modal-open");
-
-        serviceSelect.value = "";
-
-        serviceForms.forEach(function(form){
-
-            form.classList.remove("active");
-
-        });
-
-    });
+    document.body.classList.add("modal-open");
 
 
-    /* SERVICE CHANGE */
+    if(select){
 
-    serviceSelect.addEventListener("change", function(){
-
-        const selectedIndex =
-            this.value;
-
-
-        serviceForms.forEach(function(form){
-
-            form.classList.remove("active");
-
-        });
-
-
-        if(selectedIndex === ""){
-
-            return;
-
-        }
-
-
-        const selectedForm =
-            document.querySelector(
-                '.service-form-area[data-service-index="' +
-                selectedIndex +
-                '"]'
-            );
-
-
-        if(!selectedForm){
-
-            return;
-
-        }
-
-
-        selectedForm.classList.add("active");
-
-
-        const firstField =
-            selectedForm.querySelector(
-                "input:not([type='hidden']):not([readonly]), select, textarea"
-            );
-
-
-        if(firstField){
-
-            setTimeout(function(){
-
-                firstField.focus();
-
-            },100);
-
-        }
-
-    });
-
-
-    /* CLOSE */
-
-    function closeModal(){
-
-        modal.classList.remove("open");
-
-        document.body.classList.remove("modal-open");
-
-        serviceSelect.value = "";
-
-        serviceForms.forEach(function(form){
-
-            form.classList.remove("active");
-
-        });
+        select.value = "";
 
     }
 
 
-    closeButton.addEventListener(
-        "click",
-        closeModal
-    );
+    document
+        .querySelectorAll(".service-form-area")
+        .forEach(function(form){
+
+            form.classList.remove("active");
+
+        });
+
+}
 
 
-    backdrop.addEventListener(
-        "click",
-        closeModal
-    );
+function closeServiceModal(){
+
+    var modal =
+        document.getElementById("serviceModal");
+
+
+    if(modal){
+
+        modal.style.display = "none";
+
+    }
+
+
+    document.body.classList.remove("modal-open");
+
+
+    var select =
+        document.getElementById("serviceSelect");
+
+
+    if(select){
+
+        select.value = "";
+
+    }
 
 
     document
-        .querySelectorAll(".cancel-service")
-        .forEach(function(button){
+        .querySelectorAll(".service-form-area")
+        .forEach(function(form){
 
-            button.addEventListener(
-                "click",
-                closeModal
-            );
+            form.classList.remove("active");
+
+        });
+
+}
+
+
+function selectService(){
+
+    var select =
+        document.getElementById("serviceSelect");
+
+
+    if(!select){
+
+        return;
+
+    }
+
+
+    var selectedIndex =
+        select.value;
+
+
+    document
+        .querySelectorAll(".service-form-area")
+        .forEach(function(form){
+
+            form.classList.remove("active");
 
         });
 
 
-    /* ESCAPE */
+    if(selectedIndex === ""){
 
-    document.addEventListener(
-        "keydown",
-        function(event){
+        return;
 
-            if(
-                event.key === "Escape" &&
-                modal.classList.contains("open")
-            ){
+    }
 
-                closeModal();
 
-            }
+    var selectedForm =
+        document.querySelector(
+            '.service-form-area[data-service-index="' +
+            selectedIndex +
+            '"]'
+        );
+
+
+    if(!selectedForm){
+
+        return;
+
+    }
+
+
+    selectedForm.classList.add("active");
+
+
+    var firstField =
+        selectedForm.querySelector(
+            "input:not([type='hidden']):not([readonly]), select, textarea"
+        );
+
+
+    if(firstField){
+
+        setTimeout(function(){
+
+            firstField.focus();
+
+        },100);
+
+    }
+
+}
+
+
+/* ESC KEY */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(event.key === "Escape"){
+
+            closeServiceModal();
 
         }
-    );
 
-});
+    }
+);
 
 </script>
+
 
 <footer>
 
@@ -1564,5 +1548,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
 </footer>
 
+
 </body>
 </html>
+```
