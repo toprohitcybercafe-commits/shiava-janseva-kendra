@@ -1,1259 +1,976 @@
-```html
 <!doctype html>
+
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>Shiva Janseva Kendra - Retailer Dashboard</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f4f6f9;
-            color: #111827;
-        }
-
-        body.modal-open {
-            overflow: hidden;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .wrap {
-            width: min(1200px, calc(100% - 30px));
-            margin: auto;
-        }
-
-        /* HEADER */
-        header {
-            background: #fff;
-            border-bottom: 1px solid #e5e7eb;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .nav {
-            min-height: 72px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand-logo {
-            width: 48px;
-            height: 48px;
-            object-fit: contain;
-        }
-
-        .brand h1 {
-            margin: 0;
-            font-size: 21px;
-        }
-
-        .brand small {
-            color: #6b7280;
-        }
-
-        .nav-right {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        /* BUTTON */
-        .btn {
-            border: 0;
-            border-radius: 9px;
-            padding: 10px 16px;
-            background: #2563eb;
-            color: #fff;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .btn:hover {
-            opacity: .9;
-        }
-
-        .btn-danger {
-            background: #dc2626;
-        }
-
-        .btn-success {
-            background: #16a34a;
-        }
-
-        .btn-secondary {
-            background: #6b7280;
-        }
-
-        /* FLASH */
-        .flash-area {
-            margin-top: 18px;
-        }
-
-        .flash {
-            padding: 13px 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .flash.success {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .flash.error {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        /* MAIN */
-        main {
-            padding: 25px 0 45px;
-        }
-
-        .page-title {
-            margin-bottom: 20px;
-        }
-
-        .page-title h2 {
-            margin: 0 0 5px;
-            font-size: 26px;
-        }
-
-        .page-title p {
-            margin: 0;
-            color: #6b7280;
-        }
-
-        /* CARDS */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
-        }
-
-        .card {
-            background: #fff;
-            border-radius: 15px;
-            border: 1px solid #e5e7eb;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,.04);
-        }
-
-        .wallet-card {
-            border-left: 5px solid #2563eb;
-        }
-
-        .stat-title {
-            color: #6b7280;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-
-        .stat-value {
-            font-size: 25px;
-            font-weight: 700;
-        }
-
-        .minimum-note {
-            margin-top: 7px;
-            color: #6b7280;
-            font-size: 12px;
-        }
-
-        .section {
-            margin-top: 22px;
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            gap: 15px;
-        }
-
-        .section-header h2 {
-            margin: 0;
-            font-size: 21px;
-        }
-
-        .section-header p {
-            margin: 4px 0 0;
-            color: #6b7280;
-            font-size: 13px;
-        }
-
-        /* SERVICES */
-        .services-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .service-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-            padding: 15px;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            background: #fff;
-        }
-
-        .service-name {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .service-icon {
-            width: 44px;
-            height: 44px;
-            min-width: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 11px;
-            background: #eff6ff;
-            font-size: 21px;
-        }
-
-        .apply-service-btn {
-            white-space: nowrap;
-        }
-
-        /* TABLE */
-        .table-wrap {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 700px;
-        }
-
-        th,
-        td {
-            padding: 12px 10px;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-            font-size: 14px;
-        }
-
-        th {
-            background: #f9fafb;
-        }
-
-        .status {
-            display: inline-block;
-            padding: 5px 9px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .status-pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-success {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .status-rejected {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .empty {
-            padding: 25px;
-            text-align: center;
-            color: #6b7280;
-        }
-
-        /* MODAL */
-        .service-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 99999;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,.65);
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-        }
-
-        .service-modal.open {
-            display: flex;
-        }
-
-        .service-modal-backdrop {
-            position: absolute;
-            inset: 0;
-        }
-
-        .service-modal-card {
-            position: relative;
-            z-index: 2;
-            width: 100%;
-            max-width: 650px;
-            max-height: 90vh;
-            overflow-y: auto;
-            background: #fff;
-            color: #111;
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,.3);
-        }
-
-        .service-modal-close {
-            position: absolute;
-            right: 12px;
-            top: 12px;
-            border: 0;
-            background: #f3f4f6;
-            width: 35px;
-            height: 35px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 20px;
-        }
-
-        .modal-title {
-            margin: 0 45px 20px 0;
-            font-size: 21px;
-        }
-
-        /* FORMS */
-        .service-form {
-            display: none;
-        }
-
-        .service-form.active {
-            display: block;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 7px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .form-input,
-        .form-textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 9px;
-            background: #fff;
-            color: #111;
-            font-size: 15px;
-            font-family: inherit;
-        }
-
-        .form-input:focus,
-        .form-textarea:focus {
-            outline: none;
-            border-color: #2563eb;
-        }
-
-        .required {
-            color: #dc2626;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        footer {
-            padding: 25px 0;
-            text-align: center;
-            color: #6b7280;
-            font-size: 13px;
-        }
-
-        /* MOBILE */
-        @media (max-width: 850px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .brand h1 {
-                font-size: 18px;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .wrap {
-                width: calc(100% - 20px);
-            }
-
-            .service-item {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .apply-service-btn {
-                width: 100%;
-            }
-
-            .nav-right .btn {
-                padding: 8px 10px;
-                font-size: 12px;
-            }
-
-            .service-modal {
-                padding: 8px;
-            }
-
-            .service-modal-card {
-                max-height: 94vh;
-                padding: 20px;
-            }
-
-            .modal-actions {
-                flex-direction: column;
-            }
-
-            .modal-actions .btn {
-                width: 100%;
-            }
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shiva Janseva Kendra - Retailer Dashboard</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f4f6f9;
+    color:#111827;
+}
+
+a{text-decoration:none;color:inherit}
+
+.wrap{
+    width:min(1200px,calc(100% - 30px));
+    margin:auto;
+}
+
+header{
+    background:#fff;
+    border-bottom:1px solid #e5e7eb;
+    position:sticky;
+    top:0;
+    z-index:1000;
+}
+
+.nav{
+    min-height:72px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.brand-logo{
+    width:48px;
+    height:48px;
+    object-fit:contain;
+}
+
+.brand h1{
+    margin:0;
+    font-size:21px;
+}
+
+.brand small{
+    color:#6b7280;
+}
+
+.nav-right{
+    display:flex;
+    gap:8px;
+    align-items:center;
+}
+
+.btn{
+    display:inline-block;
+    border:0;
+    border-radius:9px;
+    padding:10px 16px;
+    background:#2563eb;
+    color:#fff;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:600;
+}
+
+.btn:hover{opacity:.9}
+
+.btn-danger{background:#dc2626}
+.btn-success{background:#16a34a}
+.btn-secondary{background:#6b7280}
+
+.flash-area{margin-top:18px}
+
+.flash{
+    padding:13px 15px;
+    border-radius:10px;
+    margin-bottom:10px;
+    font-weight:600;
+}
+
+.flash.success{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.flash.error{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+main{
+    padding:25px 0 45px;
+}
+
+.page-title{
+    margin-bottom:20px;
+}
+
+.page-title h2{
+    margin:0 0 5px;
+    font-size:26px;
+}
+
+.page-title p{
+    margin:0;
+    color:#6b7280;
+}
+
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+}
+
+.card{
+    background:#fff;
+    border-radius:15px;
+    border:1px solid #e5e7eb;
+    padding:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,.04);
+}
+
+.wallet-card{
+    border-left:5px solid #2563eb;
+}
+
+.stat-title{
+    color:#6b7280;
+    font-size:14px;
+    margin-bottom:8px;
+}
+
+.stat-value{
+    font-size:25px;
+    font-weight:700;
+}
+
+.minimum-note{
+    margin-top:7px;
+    color:#6b7280;
+    font-size:12px;
+}
+
+.section{
+    margin-top:22px;
+}
+
+.section-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:15px;
+    gap:15px;
+}
+
+.section-header h2{
+    margin:0;
+    font-size:21px;
+}
+
+.section-header p{
+    margin:4px 0 0;
+    color:#6b7280;
+    font-size:13px;
+}
+
+.services-list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.service-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    padding:15px;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    background:#fff;
+}
+
+.service-name{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.service-icon{
+    width:44px;
+    height:44px;
+    min-width:44px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:11px;
+    background:#eff6ff;
+    font-size:21px;
+}
+
+.table-wrap{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:700px;
+}
+
+th,td{
+    padding:12px 10px;
+    text-align:left;
+    border-bottom:1px solid #e5e7eb;
+    font-size:14px;
+}
+
+th{
+    background:#f9fafb;
+}
+
+.status{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:700;
+}
+
+.status-pending{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.status-success{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.status-rejected{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.empty{
+    padding:25px;
+    text-align:center;
+    color:#6b7280;
+}
+
+/* =========================
+   NO-JAVASCRIPT MODALS
+   ========================= */
+
+.service-modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:99999;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.70);
+    align-items:center;
+    justify-content:center;
+    padding:15px;
+}
+
+.service-modal:target{
+    display:flex;
+}
+
+.service-modal-backdrop{
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,.10);
+}
+
+.service-modal-card{
+    position:relative;
+    z-index:2;
+    width:100%;
+    max-width:650px;
+    max-height:90vh;
+    overflow-y:auto;
+    background:#fff;
+    color:#111827;
+    padding:25px;
+    border-radius:16px;
+    box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+.service-modal-close{
+    position:absolute;
+    right:12px;
+    top:12px;
+    border:0;
+    background:#f3f4f6;
+    width:38px;
+    height:38px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.service-modal-close:hover{
+    background:#e5e7eb;
+}
+
+.modal-title{
+    margin:0 45px 20px 0;
+    font-size:21px;
+}
+
+.form-group{
+    margin-bottom:15px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:7px;
+    font-size:14px;
+    font-weight:600;
+}
+
+.form-input,
+.form-textarea{
+    width:100%;
+    padding:12px;
+    border:1px solid #d1d5db;
+    border-radius:9px;
+    background:#fff;
+    color:#111;
+    font-size:15px;
+    font-family:inherit;
+}
+
+.form-input:focus,
+.form-textarea:focus{
+    outline:none;
+    border-color:#2563eb;
+}
+
+.required{
+    color:#dc2626;
+}
+
+.modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-top:20px;
+}
+
+footer{
+    padding:25px 0;
+    text-align:center;
+    color:#6b7280;
+    font-size:13px;
+}
+
+@media(max-width:850px){
+    .dashboard-grid{
+        grid-template-columns:1fr;
+    }
+
+    .brand h1{
+        font-size:18px;
+    }
+}
+
+@media(max-width:600px){
+    .wrap{
+        width:calc(100% - 20px);
+    }
+
+    .service-item{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .apply-service-btn{
+        width:100%;
+        text-align:center;
+    }
+
+    .nav-right .btn{
+        padding:8px 10px;
+        font-size:12px;
+    }
+
+    .service-modal{
+        padding:8px;
+    }
+
+    .service-modal-card{
+        max-height:94vh;
+        padding:20px;
+    }
+
+    .modal-actions{
+        flex-direction:column;
+    }
+
+    .modal-actions .btn{
+        width:100%;
+        text-align:center;
+    }
+}
+</style>
+
 </head>
 
 <body>
 
 <header>
-    <div class="wrap nav">
+<div class="wrap nav">
 
-        <div class="brand">
+<div class="brand">
+<img src="/static/logo.svg" class="brand-logo" alt="Shiva Janseva Kendra">
 
-            <img
-                src="/static/logo.svg"
-                class="brand-logo"
-                alt="Shiva Janseva Kendra">
+<div>
+<h1>Shiva Janseva Kendra</h1>
+<small>Retailer Dashboard</small>
+</div>
+</div>
 
-            <div>
-                <h1>Shiva Janseva Kendra</h1>
-                <small>Retailer Dashboard</small>
-            </div>
+<div class="nav-right">
 
-        </div>
+<a href="/retailer/presence/offline" class="btn btn-secondary">
+Go Offline
+</a>
 
-        <div class="nav-right">
+<a href="/retailer-login" class="btn btn-danger">
+Logout
+</a>
 
-            <a
-                href="/retailer/presence/offline"
-                class="btn btn-secondary">
-                Go Offline
-            </a>
-
-            <a
-                href="/retailer-login"
-                class="btn btn-danger">
-                Logout
-            </a>
-
-        </div>
-
-    </div>
+</div>
+</div>
 </header>
 
-
 <main>
-
 <div class="wrap">
 
-    <!-- FLASH -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-
-        {% if messages %}
-
-            <div class="flash-area">
-
-                {% for category, message in messages %}
-
-                    <div class="flash {{ category }}">
-                        {{ message }}
-                    </div>
-
-                {% endfor %}
-
-            </div>
-
-        {% endif %}
-
-    {% endwith %}
-
-
-    <!-- TITLE -->
-    <div class="page-title">
-
-        <h2>
-            Welcome,
-            {{ retailer["name"] if retailer["name"] else retailer["username"] }}
-        </h2>
-
-        <p>
-            Manage services, applications and wallet from here.
-        </p>
-
-    </div>
-
-
-    <!-- STATS -->
-    <div class="dashboard-grid">
-
-        <div class="card wallet-card">
-
-            <div class="stat-title">
-                Wallet Balance
-            </div>
-
-            <div class="stat-value">
-                ₹{{ "%.2f"|format(retailer["wallet_balance"] or 0) }}
-            </div>
-
-            <div class="minimum-note">
-                Minimum required balance:
-                ₹{{ "%.2f"|format(min_required_balance or 0) }}
-            </div>
-
-        </div>
-
-
-        <div class="card">
-
-            <div class="stat-title">
-                Retailer Username
-            </div>
-
-            <div class="stat-value" style="font-size:20px;">
-                {{ retailer["username"] }}
-            </div>
-
-        </div>
-
-
-        <div class="card">
-
-            <div class="stat-title">
-                Total Applications
-            </div>
-
-            <div class="stat-value">
-                {{ requests|length }}
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- WALLET -->
-    <section class="card section">
-
-        <div class="section-header">
-
-            <div>
-                <h2>Wallet</h2>
-                <p>Add money to your retailer wallet.</p>
-            </div>
-
-            <a
-                href="/retailer/topup"
-                class="btn">
-                Add Money
-            </a>
-
-        </div>
-
-    </section>
-
-
-    <!-- ALL SERVICES -->
-    <section class="card section">
-
-        <div class="section-header">
-
-            <div>
-                <h2>All Services</h2>
-
-                <p>
-                    Select a service and click Apply Now.
-                </p>
-            </div>
-
-        </div>
-
-
-        <div class="services-list">
-
-            {% for s in services %}
-
-                <div class="service-item">
-
-                    <div class="service-name">
-
-                        <span class="service-icon">
-                            {{ service_icons.get(s, '📝') }}
-                        </span>
-
-                        <strong>
-                            {{ s }}
-                        </strong>
-
-                    </div>
-
-
-                    <button
-                        type="button"
-                        class="btn apply-service-btn"
-                        data-service-index="{{ loop.index0 }}">
-
-                        📝 Apply Now
-
-                    </button>
-
-                </div>
-
-            {% else %}
-
-                <div class="empty">
-                    No services available.
-                </div>
-
-            {% endfor %}
-
-        </div>
-
-    </section>
-
-
-    <!-- APPLICATIONS -->
-    <section class="card section">
-
-        <div class="section-header">
-
-            <div>
-                <h2>My Applications</h2>
-                <p>Your latest service requests.</p>
-            </div>
-
-        </div>
-
-
-        {% if requests %}
-
-            <div class="table-wrap">
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-                            <th>ID</th>
-                            <th>Customer</th>
-                            <th>Mobile</th>
-                            <th>Service</th>
-                            <th>Charge</th>
-                            <th>Status</th>
-                            <th>Date</th>
-                            <th>Action</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {% for r in requests %}
-
-                            <tr>
-
-                                <td>
-                                    #{{ r["id"] }}
-                                </td>
-
-                                <td>
-                                    {{ r["name"] }}
-                                </td>
-
-                                <td>
-                                    {{ r["phone"] }}
-                                </td>
-
-                                <td>
-                                    {{ r["service"] }}
-                                </td>
-
-                                <td>
-                                    ₹{{ "%.2f"|format(r["charge"] or 0) }}
-                                </td>
-
-                                <td>
-
-                                    {% if r["status"] == "Success" %}
-
-                                        <span class="status status-success">
-                                            Success
-                                        </span>
-
-                                    {% elif r["status"] == "Rejected" %}
-
-                                        <span class="status status-rejected">
-                                            Rejected
-                                        </span>
-
-                                    {% else %}
-
-                                        <span class="status status-pending">
-                                            {{ r["status"] or "Pending" }}
-                                        </span>
-
-                                    {% endif %}
-
-                                </td>
-
-                                <td>
-                                    {{ r["created_at"] }}
-                                </td>
-
-                                <td>
-
-                                    {% if r["status"] == "Success" and r["pdf_filename"] %}
-
-                                        <a
-                                            href="/retailer/request/{{ r['id'] }}/download"
-                                            class="btn btn-success">
-
-                                            Download PDF
-
-                                        </a>
-
-                                    {% else %}
-
-                                        —
-
-                                    {% endif %}
-
-                                </td>
-
-                            </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        {% else %}
-
-            <div class="empty">
-                No service applications yet.
-            </div>
-
-        {% endif %}
-
-    </section>
-
-
-    <!-- WALLET LEDGER -->
-    <section class="card section">
-
-        <div class="section-header">
-
-            <div>
-                <h2>Wallet History</h2>
-                <p>Recent wallet transactions.</p>
-            </div>
-
-        </div>
-
-
-        {% if ledger %}
-
-            <div class="table-wrap">
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-                            <th>Date</th>
-                            <th>Type</th>
-                            <th>Amount</th>
-                            <th>Balance After</th>
-                            <th>Note</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {% for l in ledger %}
-
-                            <tr>
-
-                                <td>
-                                    {{ l["created_at"] }}
-                                </td>
-
-                                <td>
-                                    {{ l["type"] }}
-                                </td>
-
-                                <td>
-                                    ₹{{ "%.2f"|format(l["amount"] or 0) }}
-                                </td>
-
-                                <td>
-                                    ₹{{ "%.2f"|format(l["balance_after"] or 0) }}
-                                </td>
-
-                                <td>
-                                    {{ l["note"] or "—" }}
-                                </td>
-
-                            </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        {% else %}
-
-            <div class="empty">
-                No wallet transactions yet.
-            </div>
-
-        {% endif %}
-
-    </section>
-
-
-    <!-- SERVICE CHARGES -->
-    <section class="card section">
-
-        <div class="section-header">
-
-            <div>
-                <h2>Service Charges</h2>
-                <p>Current charges for available services.</p>
-            </div>
-
-        </div>
-
-
-        {% if service_charges %}
-
-            <div class="table-wrap">
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-                            <th>Service</th>
-                            <th>Charge</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {% for sc in service_charges %}
-
-                            <tr>
-
-                                <td>
-                                    {{ sc["service"] }}
-                                </td>
-
-                                <td>
-                                    ₹{{ "%.2f"|format(sc["charge"] or 0) }}
-                                </td>
-
-                            </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        {% else %}
-
-            <div class="empty">
-                Service charges are not configured yet.
-            </div>
-
-        {% endif %}
-
-    </section>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+
+<div class="flash-area">
+{% for category,message in messages %}
+<div class="flash {{ category }}">{{ message }}</div>
+{% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+<div class="page-title">
+<h2>
+Welcome,
+{{ retailer["name"] if retailer["name"] else retailer["username"] }}
+</h2>
+
+<p>
+Manage services, applications and wallet from here.
+</p>
+</div>
+
+<div class="dashboard-grid">
+
+<div class="card wallet-card">
+<div class="stat-title">Wallet Balance</div>
+
+<div class="stat-value">
+₹{{ "%.2f"|format(retailer["wallet_balance"] or 0) }}
+</div>
+
+<div class="minimum-note">
+Minimum required balance:
+₹{{ "%.2f"|format(min_required_balance or 0) }}
+</div>
+</div>
+
+<div class="card">
+<div class="stat-title">Retailer Username</div>
+
+<div class="stat-value" style="font-size:20px;">
+{{ retailer["username"] }}
+</div>
+</div>
+
+<div class="card">
+<div class="stat-title">Total Applications</div>
+
+<div class="stat-value">
+{{ requests|length }}
+</div>
+</div>
 
 </div>
 
+<section class="card section">
+
+<div class="section-header">
+
+<div>
+<h2>Wallet</h2>
+<p>Add money to your retailer wallet.</p>
+</div>
+
+<a href="/retailer/topup" class="btn">
+Add Money
+</a>
+
+</div>
+
+</section>
+
+<!-- =========================
+     ALL SERVICES
+     ========================= -->
+
+<section class="card section">
+
+<div class="section-header">
+<div>
+<h2>All Services</h2>
+<p>Select a service and click Apply Now.</p>
+</div>
+</div>
+
+<div class="services-list">
+
+{% for s in services %}
+
+<div class="service-item">
+
+<div class="service-name">
+
+<span class="service-icon">
+{{ service_icons.get(s,'📝') }}
+</span>
+
+<strong>{{ s }}</strong>
+
+</div>
+
+<!-- IMPORTANT:
+     NO JAVASCRIPT
+     DIRECT HTML MODAL LINK -->
+
+<a
+href="#serviceModal{{ loop.index0 }}"
+class="btn apply-service-btn">
+
+📝 Apply Now
+
+</a>
+
+</div>
+
+{% else %}
+
+<div class="empty">
+No services available.
+</div>
+
+{% endfor %}
+
+</div>
+
+</section>
+
+<!-- =========================
+     APPLICATIONS
+     ========================= -->
+
+<section class="card section">
+
+<div class="section-header">
+<div>
+<h2>My Applications</h2>
+<p>Your latest service requests.</p>
+</div>
+</div>
+
+{% if requests %}
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+<tr>
+<th>ID</th>
+<th>Customer</th>
+<th>Mobile</th>
+<th>Service</th>
+<th>Charge</th>
+<th>Status</th>
+<th>Date</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for r in requests %}
+
+<tr>
+
+<td>#{{ r["id"] }}</td>
+
+<td>{{ r["name"] }}</td>
+
+<td>{{ r["phone"] }}</td>
+
+<td>{{ r["service"] }}</td>
+
+<td>
+₹{{ "%.2f"|format(r["charge"] or 0) }}
+</td>
+
+<td>
+
+{% if r["status"] == "Success" %}
+
+<span class="status status-success">
+Success
+</span>
+
+{% elif r["status"] == "Rejected" %}
+
+<span class="status status-rejected">
+Rejected
+</span>
+
+{% else %}
+
+<span class="status status-pending">
+{{ r["status"] or "Pending" }}
+</span>
+
+{% endif %}
+
+</td>
+
+<td>{{ r["created_at"] }}</td>
+
+<td>
+
+{% if r["status"] == "Success" and r["pdf_filename"] %}
+
+<a
+href="/retailer/request/{{ r['id'] }}/download"
+class="btn btn-success">
+
+Download PDF
+
+</a>
+
+{% else %}
+
+—
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+</table>
+
+</div>
+
+{% else %}
+
+<div class="empty">
+No service applications yet.
+</div>
+
+{% endif %}
+
+</section>
+
+<!-- =========================
+     WALLET LEDGER
+     ========================= -->
+
+<section class="card section">
+
+<div class="section-header">
+<div>
+<h2>Wallet History</h2>
+<p>Recent wallet transactions.</p>
+</div>
+</div>
+
+{% if ledger %}
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+<tr>
+<th>Date</th>
+<th>Type</th>
+<th>Amount</th>
+<th>Balance After</th>
+<th>Note</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for l in ledger %}
+
+<tr>
+
+<td>{{ l["created_at"] }}</td>
+
+<td>{{ l["type"] }}</td>
+
+<td>
+₹{{ "%.2f"|format(l["amount"] or 0) }}
+</td>
+
+<td>
+₹{{ "%.2f"|format(l["balance_after"] or 0) }}
+</td>
+
+<td>
+{{ l["note"] or "—" }}
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+</table>
+
+</div>
+
+{% else %}
+
+<div class="empty">
+No wallet transactions yet.
+</div>
+
+{% endif %}
+
+</section>
+
+<!-- =========================
+     SERVICE CHARGES
+     ========================= -->
+
+<section class="card section">
+
+<div class="section-header">
+
+<div>
+<h2>Service Charges</h2>
+<p>Current charges for available services.</p>
+</div>
+
+</div>
+
+{% if service_charges %}
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+<tr>
+<th>Service</th>
+<th>Charge</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for sc in service_charges %}
+
+<tr>
+
+<td>{{ sc["service"] }}</td>
+
+<td>
+₹{{ "%.2f"|format(sc["charge"] or 0) }}
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+</table>
+
+</div>
+
+{% else %}
+
+<div class="empty">
+Service charges are not configured yet.
+</div>
+
+{% endif %}
+
+</section>
+
+</div>
 </main>
 
+<!-- =====================================================
+     SERVICE MODALS
+     ONE MODAL PER SERVICE
+     NO JAVASCRIPT NEEDED
+     ===================================================== -->
 
-<!-- ========================================================= -->
-<!-- SERVICE MODAL -->
-<!-- ========================================================= -->
+{% for s in services %}
 
 <div
-    id="serviceModal"
-    class="service-modal">
+id="serviceModal{{ loop.index0 }}"
+class="service-modal">
 
-    <div
-        class="service-modal-backdrop"
-        id="serviceModalBackdrop">
-    </div>
+<div class="service-modal-backdrop"></div>
 
+<div class="service-modal-card">
 
-    <div class="service-modal-card">
+<!-- CLOSE -->
 
-        <button
-            type="button"
-            class="service-modal-close"
-            id="serviceModalClose">
+<a
+href="#"
+class="service-modal-close"
+aria-label="Close">
 
-            ✕
+✕
 
-        </button>
+</a>
 
+<h2 class="modal-title">
+{{ s }} — Apply Now
+</h2>
 
-        <h2
-            class="modal-title"
-            id="modalTitle">
-            Apply for Service
-        </h2>
+<form
+method="post"
+action="/retailer/service-request">
 
+<input
+type="hidden"
+name="service"
+value="{{ s }}">
 
-        <!-- ================================================= -->
-        <!-- ONE FORM FOR EVERY SERVICE -->
-        <!-- ================================================= -->
+<!-- SERVICE FIELDS -->
 
-        {% for s in services %}
+{% for field in service_fields.get(s,[]) %}
 
-            <form
-                method="post"
-                action="/retailer/service-request"
-                class="service-form"
-                data-form-index="{{ loop.index0 }}">
+{% set field_key = field[0] %}
+{% set field_label = field[1] %}
+{% set field_type = field[2] or "text" %}
+{% set field_required = field[3] %}
 
-                <input
-                    type="hidden"
-                    name="service"
-                    value="{{ s }}">
+<div class="form-group">
 
+<label
+for="field_{{ loop.index0 }}_{{ field_key }}">
 
-                <!-- SERVICE FIELDS -->
+{{ field_label }}
 
-                {% for field in service_fields.get(s, []) %}
+{% if field_required %} <span class="required">*</span>
+{% endif %}
 
-                    {% set field_key = field[0] %}
-                    {% set field_label = field[1] %}
-                    {% set field_type = field[2] or "text" %}
-                    {% set field_required = field[3] %}
+</label>
 
+{% if field_key == "service_details" %}
 
-                    <div class="form-group">
+<textarea
+id="field_{{ loop.index0 }}_{{ field_key }}"
+name="{{ field_key }}"
+class="form-textarea"
+rows="4"
+{% if field_required %}required{% endif %}
+placeholder="{{ field_label }}"></textarea>
 
-                        <label
-                            for="service_{{ loop.index0 }}_{{ field_key }}">
+{% else %}
 
-                            {{ field_label }}
+<input
+id="field_{{ loop.index0 }}_{{ field_key }}"
+name="{{ field_key }}"
+class="form-input"
+type="{% if field_type in ['text','tel','email','date','number'] %}{{ field_type }}{% else %}text{% endif %}"
+{% if field_required %}required{% endif %}
+placeholder="{{ field_label }}">
 
-                            {% if field_required %}
-                                <span class="required">*</span>
-                            {% endif %}
-
-                        </label>
-
-
-                        {% if field_key == "service_details" %}
-
-                            <textarea
-                                id="service_{{ loop.index0 }}_{{ field_key }}"
-                                name="{{ field_key }}"
-                                class="form-textarea"
-                                rows="4"
-                                {% if field_required %}required{% endif %}
-                                placeholder="{{ field_label }}"></textarea>
-
-                        {% else %}
-
-                            <input
-                                id="service_{{ loop.index0 }}_{{ field_key }}"
-                                name="{{ field_key }}"
-                                class="form-input"
-                                type="{{ field_type if field_type in ['text','tel','email','date','number'] else 'text' }}"
-                                {% if field_required %}required{% endif %}
-                                placeholder="{{ field_label }}">
-
-                        {% endif %}
-
-                    </div>
-
-                {% endfor %}
-
-
-                <!-- COMMON MESSAGE -->
-
-                <div class="form-group">
-
-                    <label>
-                        Message / Additional Details
-                    </label>
-
-                    <textarea
-                        name="message"
-                        class="form-textarea"
-                        rows="4"
-                        placeholder="Enter additional details if any..."></textarea>
-
-                </div>
-
-
-                <!-- ACTIONS -->
-
-                <div class="modal-actions">
-
-                    <button
-                        type="button"
-                        class="btn btn-secondary cancel-service">
-
-                        Cancel
-
-                    </button>
-
-
-                    <button
-                        type="submit"
-                        class="btn btn-success">
-
-                        Submit Application
-
-                    </button>
-
-                </div>
-
-            </form>
-
-        {% endfor %}
-
-    </div>
+{% endif %}
 
 </div>
 
+{% endfor %}
 
-<!-- ========================================================= -->
-<!-- SIMPLE JAVASCRIPT -->
-<!-- ========================================================= -->
+<!-- COMMON MESSAGE -->
 
-<script>
+<div class="form-group">
 
-document.addEventListener("DOMContentLoaded", function () {
+<label>
+Message / Additional Details
+</label>
 
-    const modal =
-        document.getElementById("serviceModal");
+<textarea
+name="message"
+class="form-textarea"
+rows="4"
+placeholder="Enter additional details if any..."></textarea>
 
-    const modalTitle =
-        document.getElementById("modalTitle");
+</div>
 
-    const closeButton =
-        document.getElementById("serviceModalClose");
+<div class="modal-actions">
 
-    const backdrop =
-        document.getElementById("serviceModalBackdrop");
+<a
+href="#"
+class="btn btn-secondary">
 
+Cancel
 
-    const buttons =
-        document.querySelectorAll(".apply-service-btn");
+</a>
 
+<button
+type="submit"
+class="btn btn-success">
 
-    const forms =
-        document.querySelectorAll(".service-form");
+Submit Application
 
+</button>
 
-    function closeModal() {
+</div>
 
-        modal.classList.remove("open");
+</form>
 
-        document.body.classList.remove("modal-open");
+</div>
+</div>
 
-        forms.forEach(function (form) {
-            form.classList.remove("active");
-        });
-
-    }
-
-
-    buttons.forEach(function (button) {
-
-        button.addEventListener("click", function () {
-
-            const index =
-                this.getAttribute("data-service-index");
-
-
-            const form =
-                document.querySelector(
-                    '.service-form[data-form-index="' + index + '"]'
-                );
-
-
-            if (!form) {
-                return;
-            }
-
-
-            forms.forEach(function (item) {
-                item.classList.remove("active");
-            });
-
-
-            form.classList.add("active");
-
-
-            const serviceInput =
-                form.querySelector(
-                    'input[name="service"]'
-                );
-
-
-            if (serviceInput) {
-
-                modalTitle.textContent =
-                    serviceInput.value + " — Apply Now";
-
-            }
-
-
-            modal.classList.add("open");
-
-            document.body.classList.add("modal-open");
-
-
-            const firstInput =
-                form.querySelector(
-                    "input:not([type='hidden']), textarea"
-                );
-
-
-            if (firstInput) {
-
-                setTimeout(function () {
-                    firstInput.focus();
-                }, 100);
-
-            }
-
-        });
-
-    });
-
-
-    closeButton.addEventListener(
-        "click",
-        closeModal
-    );
-
-
-    backdrop.addEventListener(
-        "click",
-        closeModal
-    );
-
-
-    document.querySelectorAll(".cancel-service")
-        .forEach(function (button) {
-
-            button.addEventListener(
-                "click",
-                closeModal
-            );
-
-        });
-
-
-    document.addEventListener(
-        "keydown",
-        function (event) {
-
-            if (
-                event.key === "Escape" &&
-                modal.classList.contains("open")
-            ) {
-
-                closeModal();
-
-            }
-
-        }
-    );
-
-});
-
-</script>
-
+{% endfor %}
 
 <footer>
 
-    <div class="wrap">
-
-        © 2026 Shiva Janseva Kendra
-        — Retailer Panel
-
-    </div>
+<div class="wrap">
+© 2026 Shiva Janseva Kendra — Retailer Panel
+</div>
 
 </footer>
 
 </body>
 </html>
-```
