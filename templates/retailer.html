@@ -1,900 +1,100 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Retailer Dashboard - {{ business_name }}</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            color: #172033;
-        }
-
-        button,
-        input,
-        select,
-        textarea {
-            font: inherit;
-        }
-
-        .topbar {
-            background: linear-gradient(135deg, #111827, #1f3c88);
-            color: white;
-            padding: 16px;
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            box-shadow: 0 3px 12px rgba(0,0,0,.18);
-        }
-
-        .topbar-inner {
-            max-width: 1100px;
-            margin: auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-        }
-
-        .brand {
-            font-size: 20px;
-            font-weight: 800;
-        }
-
-        .subtitle {
-            font-size: 12px;
-            opacity: .8;
-            margin-top: 3px;
-        }
-
-        .logout {
-            color: white;
-            text-decoration: none;
-            background: rgba(255,255,255,.15);
-            padding: 9px 13px;
-            border-radius: 10px;
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: auto;
-            padding: 18px;
-        }
-
-        .flash {
-            padding: 13px 15px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-
-        .flash.success {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .flash.error {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .wallet-card {
-            background: linear-gradient(135deg, #064e3b, #059669);
-            color: white;
-            border-radius: 20px;
-            padding: 22px;
-            box-shadow: 0 10px 30px rgba(0,0,0,.15);
-            margin-bottom: 18px;
-        }
-
-        .wallet-title {
-            opacity: .9;
-            font-size: 14px;
-        }
-
-        .wallet-balance {
-            font-size: 34px;
-            font-weight: 900;
-            margin: 5px 0 15px;
-        }
-
-        .retailer-info {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            font-size: 13px;
-        }
-
-        .info-pill {
-            background: rgba(255,255,255,.15);
-            padding: 7px 10px;
-            border-radius: 20px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 18px;
-            padding: 18px;
-            margin-bottom: 18px;
-            box-shadow: 0 4px 18px rgba(0,0,0,.07);
-        }
-
-        .card h2 {
-            margin: 0 0 15px;
-            font-size: 20px;
-        }
-
-        .topup-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr auto;
-            gap: 10px;
-        }
-
-        input,
-        select,
-        textarea {
-            width: 100%;
-            border: 1px solid #d1d5db;
-            border-radius: 11px;
-            padding: 12px;
-            outline: none;
-            background: white;
-        }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37,99,235,.10);
-        }
-
-        textarea {
-            min-height: 90px;
-            resize: vertical;
-        }
-
-        .btn {
-            border: 0;
-            border-radius: 11px;
-            padding: 11px 15px;
-            cursor: pointer;
-            font-weight: 700;
-        }
-
-        .btn-primary {
-            background: #2563eb;
-            color: white;
-        }
-
-        .btn-success {
-            background: #059669;
-            color: white;
-        }
-
-        .btn-danger {
-            background: #dc2626;
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #e5e7eb;
-            color: #111827;
-        }
-
-        .hint {
-            color: #6b7280;
-            font-size: 12px;
-            margin-top: 8px;
-        }
-
-        .service-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 13px;
-        }
-
-        .service-card {
-            border: 1px solid #e5e7eb;
-            background: white;
-            border-radius: 16px;
-            padding: 16px;
-            cursor: pointer;
-            transition: .2s;
-        }
-
-        .service-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 22px rgba(0,0,0,.09);
-            border-color: #93c5fd;
-        }
-
-        .service-icon {
-            font-size: 31px;
-            margin-bottom: 10px;
-        }
-
-        .service-name {
-            font-weight: 800;
-            line-height: 1.3;
-            min-height: 42px;
-        }
-
-        .service-price {
-            color: #2563eb;
-            font-weight: 800;
-            margin-top: 9px;
-        }
-
-        .open-label {
-            display: inline-block;
-            margin-top: 10px;
-            color: #2563eb;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .table-wrap {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 650px;
-        }
-
-        th,
-        td {
-            padding: 11px 9px;
-            border-bottom: 1px solid #e5e7eb;
-            text-align: left;
-            font-size: 13px;
-        }
-
-        th {
-            background: #f8fafc;
-        }
-
-        .status {
-            display: inline-block;
-            padding: 5px 9px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 800;
-        }
-
-        .status.pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .status.success {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .status.rejected {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .status.approved {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .empty {
-            color: #6b7280;
-            text-align: center;
-            padding: 20px;
-        }
-
-        /* MODAL */
-
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 100;
-            background: rgba(0,0,0,.65);
-            padding: 15px;
-            overflow-y: auto;
-        }
-
-        .modal.show {
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-        }
-
-        .modal-box {
-            background: white;
-            width: 100%;
-            max-width: 650px;
-            margin: 20px auto;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,.3);
-        }
-
-        .modal-head {
-            background: linear-gradient(135deg, #1d4ed8, #2563eb);
-            color: white;
-            padding: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        .modal-title {
-            font-size: 19px;
-            font-weight: 900;
-        }
-
-        .close {
-            border: 0;
-            background: rgba(255,255,255,.18);
-            color: white;
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            font-size: 22px;
-            cursor: pointer;
-        }
-
-        .modal-body {
-            padding: 18px;
-        }
-
-        .form-group {
-            margin-bottom: 13px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 800;
-            margin-bottom: 6px;
-        }
-
-        .required {
-            color: #dc2626;
-        }
-
-        .charge-box {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            color: #1e40af;
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 14px;
-            font-weight: 700;
-        }
-
-        .warning {
-            background: #fff7ed;
-            border: 1px solid #fed7aa;
-            color: #9a3412;
-            padding: 11px;
-            border-radius: 11px;
-            font-size: 12px;
-            margin-bottom: 14px;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .modal-actions button {
-            flex: 1;
-        }
-
-        @media(max-width: 800px) {
-            .service-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .topup-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media(max-width: 520px) {
-            .container {
-                padding: 11px;
-            }
-
-            .service-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
-            }
-
-            .service-card {
-                padding: 12px;
-            }
-
-            .service-icon {
-                font-size: 27px;
-            }
-
-            .service-name {
-                font-size: 13px;
-                min-height: auto;
-            }
-
-            .wallet-balance {
-                font-size: 29px;
-            }
-
-            .brand {
-                font-size: 16px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-<header class="topbar">
-    <div class="topbar-inner">
-
-        <div>
-            <div class="brand">🛡️ {{ business_name }}</div>
-            <div class="subtitle">Retailer Dashboard • {{ location }}</div>
-        </div>
-
-        <a class="logout" href="{{ url_for('logout') }}">
-            Logout
-        </a>
-
-    </div>
-</header>
-
-
-<main class="container">
-
-    <!-- FLASH -->
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="flash {{ category }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-
-    <!-- WALLET -->
-
-    <section class="wallet-card">
-
-        <div class="wallet-title">
-            Available Wallet Balance
-        </div>
-
-        <div class="wallet-balance">
-            ₹{{ "%.2f"|format(retailer["wallet_balance"]|float) }}
-        </div>
-
-        <div class="retailer-info">
-
-            <div class="info-pill">
-                👤 {{ retailer["name"] }}
-            </div>
-
-            <div class="info-pill">
-                🆔 {{ retailer["username"] }}
-            </div>
-
-            <div class="info-pill">
-                📱 {{ retailer["phone"] }}
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- ADD WALLET -->
-
-    <section class="card">
-
-        <h2>💰 Add Wallet</h2>
-
-        <form method="POST" action="{{ url_for('retailer_topup') }}">
-
-            <div class="topup-grid">
-
-                <input
-                    type="number"
-                    name="amount"
-                    min="{{ min_topup }}"
-                    step="0.01"
-                    placeholder="Amount ₹"
-                    required
-                >
-
-                <input
-                    type="text"
-                    name="transaction_id"
-                    maxlength="100"
-                    placeholder="Transaction ID / UTR"
-                    required
-                >
-
-                <button class="btn btn-success" type="submit">
-                    Submit Top-up
-                </button>
-
-            </div>
-
-        </form>
-
-        <div class="hint">
-            Minimum wallet add amount: ₹{{ "%.0f"|format(min_topup) }}.
-            Admin approval ke baad amount wallet me add hoga.
-        </div>
-
-    </section>
-
-
-    <!-- SERVICES -->
-
-    <section class="card">
-
-        <h2>🧾 All Services</h2>
-
-        <div class="service-grid">
-
-            {% for service in services %}
-
-                <div
-                    class="service-card"
-                    onclick='openService({{ service|tojson }})'
-                >
-
-                    <div class="service-icon">
-                        {{ service_icons.get(service, "📂") }}
-                    </div>
-
-                    <div class="service-name">
-                        {{ service }}
-                    </div>
-
-                    <div class="service-price">
-                        ₹{{ "%.2f"|format(
-                            (
-                                service_charges
-                                |selectattr("service", "equalto", service)
-                                |map(attribute="charge")
-                                |first
-                                |default(0)
-                            )|float
-                        ) }}
-                    </div>
-
-                    <div class="open-label">
-                        Open Service →
-                    </div>
-
-                </div>
-
-            {% endfor %}
-
-        </div>
-
-    </section>
-
-
-    <!-- TOPUP HISTORY -->
-
-    <section class="card">
-
-        <h2>💳 Wallet Top-up History</h2>
-
-        <div class="table-wrap">
-
-            {% if topups %}
-
-            <table>
-
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Amount</th>
-                        <th>Transaction ID</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                {% for row in topups %}
-
-                    <tr>
-
-                        <td>#{{ row["id"] }}</td>
-
-                        <td>
-                            ₹{{ "%.2f"|format(row["amount"]|float) }}
-                        </td>
-
-                        <td>
-                            {{ row["transaction_id"] }}
-                        </td>
-
-                        <td>
-
-                            {% set st = row["status"]|lower %}
-
-                            <span class="status {{ st }}">
-                                {{ row["status"] }}
-                            </span>
-
-                        </td>
-
-                        <td>
-                            {{ row["created_at"] }}
-                        </td>
-
-                    </tr>
-
-                {% endfor %}
-
-                </tbody>
-
-            </table>
-
-            {% else %}
-
-                <div class="empty">
-                    No wallet top-up history.
-                </div>
-
-            {% endif %}
-
-        </div>
-
-    </section>
-
-
-    <!-- SERVICE REQUESTS -->
-
-    <section class="card">
-
-        <h2>📋 My Service Requests</h2>
-
-        <div class="table-wrap">
-
-            {% if requests %}
-
-            <table>
-
-                <thead>
-
-                    <tr>
-                        <th>ID</th>
-                        <th>Customer</th>
-                        <th>Service</th>
-                        <th>Charge</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                        <th>PDF</th>
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                {% for row in requests %}
-
-                    <tr>
-
-                        <td>
-                            #{{ row["id"] }}
-                        </td>
-
-                        <td>
-                            {{ row["name"] }}<br>
-                            <small>{{ row["phone"] }}</small>
-                        </td>
-
-                        <td>
-                            {{ row["service"] }}
-                        </td>
-
-                        <td>
-                            ₹{{ "%.2f"|format(row["charge"]|float) }}
-                        </td>
-
-                        <td>
-
-                            {% set st = row["status"]|lower %}
-
-                            <span class="status {{ st }}">
-                                {{ row["status"] }}
-                            </span>
-
-                        </td>
-
-                        <td>
-                            {{ row["created_at"] }}
-                        </td>
-
-                        <td>
-
-                            {% if row["status"] == "Success" and row["pdf_filename"] %}
-
-                                <a
-                                    class="btn btn-success"
-                                    href="{{ url_for('download_retailer_pdf', req_id=row['id']) }}"
-                                >
-                                    Download
-                                </a>
-
-                            {% else %}
-
-                                —
-
-                            {% endif %}
-
-                        </td>
-
-                    </tr>
-
-                {% endfor %}
-
-                </tbody>
-
-            </table>
-
-            {% else %}
-
-                <div class="empty">
-                    No service requests yet.
-                </div>
-
-            {% endif %}
-
-        </div>
-
-    </section>
-
-
-    <!-- LEDGER -->
-
-    <section class="card">
-
-        <h2>📊 Wallet Ledger</h2>
-
-        <div class="table-wrap">
-
-            {% if ledger %}
-
-            <table>
-
-                <thead>
-
-                    <tr>
-                        <th>Date</th>
-                        <th>Type</th>
-                        <th>Amount</th>
-                        <th>Balance After</th>
-                        <th>Note</th>
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                {% for row in ledger %}
-
-                    <tr>
-
-                        <td>
-                            {{ row["created_at"] }}
-                        </td>
-
-                        <td>
-                            {{ row["type"] }}
-                        </td>
-
-                        <td>
-
-                            {% if row["amount"]|float >= 0 %}
-                                <span style="color:#059669;font-weight:800;">
-                                    +₹{{ "%.2f"|format(row["amount"]|float) }}
-                                </span>
-                            {% else %}
-                                <span style="color:#dc2626;font-weight:800;">
-                                    -₹{{ "%.2f"|format((row["amount"]|float)|abs) }}
-                                </span>
-                            {% endif %}
-
-                        </td>
-
-                        <td>
-                            ₹{{ "%.2f"|format(row["balance_after"]|float) }}
-                        </td>
-
-                        <td>
-                            {{ row["note"] or "—" }}
-                        </td>
-
-                    </tr>
-
-                {% endfor %}
-
-                </tbody>
-
-            </table>
-
-            {% else %}
-
-                <div class="empty">
-                    No wallet transactions yet.
-                </div>
-
-            {% endif %}
-
-        </div>
-
-    </section>
-
-</main>
-
-
-<!-- SERVICE MODAL -->
-
-<div id="serviceModal" class="modal">
-
-    <div class="modal-box">
-
-        <div class="modal-head">
-
-            <div class="modal-title" id="modalTitle">
-                Service
-            </div>
-
-            <button
-                type="button"
-                class="close"
-                onclick="closeService()"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div class="modal-body">
-
-            <form
-                method="POST"
-                action="{{ url_for('retailer_service_request') }}"
-                id="serviceForm"
-            >
-
-                <input
-                    type="hidden"
-                    name="service"
-                    id="serviceInput"
-                >
-
-
-                <div class="charge-box">
-                    Service 
+<!doctype html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Retailer Dashboard</title><link rel="stylesheet" href="/static/style.css"></head><body>
+<header><div class="wrap nav"><div class="brand"><img src="/static/logo.svg" class="brand-logo" alt="Shiva Janseva Kendra logo"><div><h1>Shiva Janseva Kendra</h1><small>Retailer Dashboard · {{retailer.name}} · {{retailer.username}}</small></div></div><a class="btn ghost" href="/logout">Logout</a></div></header><main class="wrap">
+{% with messages=get_flashed_messages(with_categories=true) %}{% for cat,msg in messages %}<div class="alert {{cat}}">{{msg}}</div>{% endfor %}{% endwith %}
+<section class="wallet-grid"><div class="wallet-card"><span>Wallet Balance</span><strong>₹{{"{:,.2f}".format(retailer.wallet_balance or 0)}}</strong><small>Minimum required balance: ₹{{"{:,.0f}".format(min_required_balance)}}</small></div><div class="wallet-card"><span>Minimum Add</span><strong>₹{{"{:,.0f}".format(min_topup)}}</strong><small>QR payment + Transaction ID</small></div><div class="wallet-card"><span>Service Charge</span><strong>₹{{"{:,.0f}".format(service_charge)}}</strong><small>₹20 must remain after request</small></div></section>
+
+<section class="card services-dashboard">
+<h2>🧾 All Services</h2>
+<p class="muted">Dashboard se kisi bhi service ko directly open karein.</p>
+<div class="service-grid">
+{% for s in services %}<button type="button" class="service-tile" onclick="openService({{s|tojson}})"><span class="service-icon">{{ service_icons.get(s, '📄') }}</span><span>{{s}}</span><small>📝 Apply Now</small></button>{% endfor %}
+</div>
+</section>
+
+<div class="two-col">
+<section class="card">
+<h2>💰 Add Wallet</h2>
+<p>₹{{"{:,.0f}".format(min_topup)}} minimum. Wallet add karne ke liye button dabayein.</p>
+<button type="button" class="btn" id="openWalletBtn" onclick="toggleWalletBox()">➕ Add Wallet</button>
+<div id="walletBox" style="display:none;margin-top:16px;">
+<p class="muted">QR scan karke payment karein, phir Transaction ID/UTR submit karein.</p>
+<img class="qr" src="/static/qr.jpg" alt="Payment QR Code">
+<form method="post" action="/retailer/topup">
+<label>Amount (₹)<input name="amount" type="number" min="{{min_topup}}" step="1" required></label>
+<label>Transaction ID / UTR<input name="transaction_id" maxlength="100" required placeholder="Payment ke baad UTR/Transaction ID"></label>
+<button class="btn">Submit Wallet Request</button>
+</form>
+</div>
+<script>
+function toggleWalletBox(){
+ const box=document.getElementById('walletBox');
+ const btn=document.getElementById('openWalletBtn');
+ const open=box.style.display==='none';
+ box.style.display=open?'block':'none';
+ btn.textContent=open?'✖ Close Wallet':'➕ Add Wallet';
+}
+</script>
+</section>
+
+<div id="serviceModal" class="service-modal" aria-hidden="true">
+  <div class="service-modal-backdrop" onclick="closeServiceModal()"></div>
+  <section class="service-modal-card" role="dialog" aria-modal="true" aria-labelledby="serviceModalTitle">
+    <button type="button" class="service-modal-close" onclick="closeServiceModal()" aria-label="Close">✕</button>
+    <h2 id="serviceModalTitle">🧾 Service Application</h2>
+    <p class="muted">Required details भरें. Charge Admin set करता है. Request के बाद wallet में कम से कम ₹{{"{:,.0f}".format(min_required_balance)}} रहना चाहिए.</p>
+    <form method="post" action="/retailer/service-request" id="serviceForm">
+      <label>Service*<select name="service" id="serviceSelect" required><option value="">Select Service</option>{% for s in services %}<option value="{{s}}">{{s}}</option>{% endfor %}</select></label>
+      <div id="serviceFields"></div>
+      <label>Message / Extra Details<textarea name="message" maxlength="500" placeholder="Aadhaar number/OTP mat likhein"></textarea></label>
+      <div id="chargeBox" class="notice">Service select करें.</div>
+      <button class="btn" type="submit">Submit Service Request</button>
+    </form>
+  </section>
+</div>
+<script>
+function openService(service){
+ const modal=document.getElementById('serviceModal');
+ const sel=document.getElementById('serviceSelect');
+ sel.value=service;
+ sel.dispatchEvent(new Event('change'));
+ modal.classList.add('open');
+ modal.setAttribute('aria-hidden','false');
+ document.body.classList.add('modal-open');
+ setTimeout(()=>{ const first=document.querySelector('#serviceFields input, #serviceFields select'); if(first) first.focus(); },50);
+}
+function closeServiceModal(){
+ const modal=document.getElementById('serviceModal');
+ modal.classList.remove('open');
+ modal.setAttribute('aria-hidden','true');
+ document.body.classList.remove('modal-open');
+}
+const fields={{service_fields|tojson}};
+const states=[
+'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal',
+'Andaman and Nicobar Islands','Chandigarh','Dadra and Nagar Haveli and Daman and Diu','Delhi','Jammu and Kashmir','Ladakh','Lakshadweep','Puducherry'
+];
+const charges={% set dummy=namespace(x=1) %}{ {% for c in service_charges %}{{c.service|tojson}}:{{c.charge|float}},{% endfor %} };
+const sel=document.getElementById('serviceSelect'), holder=document.getElementById('serviceFields'), box=document.getElementById('chargeBox');
+sel.addEventListener('change',()=>{holder.innerHTML=''; const fs=fields[sel.value]||[]; fs.forEach(([key,label,type,req])=>{const l=document.createElement('label');l.textContent=label+(req?'*':'');let i;if(key==='state_name'){i=document.createElement('select');i.name=key;i.required=req;const first=document.createElement('option');first.value='';first.textContent='Select State / UT';i.appendChild(first);states.forEach(st=>{const o=document.createElement('option');o.value=st;o.textContent=st;i.appendChild(o)});}else{i=document.createElement('input');i.name=key;i.type=type;i.required=req;i.maxLength=120;}l.appendChild(i);holder.appendChild(l)});const c=Number(charges[sel.value]||0);box.textContent='Service Charge: ₹'+c.toFixed(2);});
+
+async function updatePresence(){
+  const service=sel.value||'';
+  try{
+    await fetch('/retailer/presence',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'service='+encodeURIComponent(service),credentials:'same-origin',keepalive:true});
+  }catch(e){}
+}
+async function markOffline(){
+  try{await fetch('/retailer/presence/offline',{method:'POST',credentials:'same-origin',keepalive:true});}catch(e){}
+}
+sel.addEventListener('change',updatePresence);
+updatePresence();
+setInterval(updatePresence,10000);
+window.addEventListener('pagehide',markOffline);
+</script>
+
+<section class="card"><h2>Wallet Add Requests</h2><div class="tablewrap"><table><thead><tr><th>ID</th><th>Amount</th><th>Transaction ID</th><th>Status</th><th>Date</th></tr></thead><tbody>{% for t in topups %}<tr><td>#{{t.id}}</td><td>₹{{"{:,.2f}".format(t.amount)}}</td><td>{{t.transaction_id}}</td><td><span class="badge {{t.status|lower}}">{{t.status}}</span></td><td>{{t.created_at}}</td></tr>{% else %}<tr><td colspan="5">No wallet requests yet.</td></tr>{% endfor %}</tbody></table></div></section>
+
+<section class="card"><h2>Service History</h2><div class="tablewrap"><table><thead><tr><th>ID</th><th>Customer</th><th>Service</th><th>Charge</th><th>Status</th><th>PDF</th><th>Date</th></tr></thead><tbody>{% for r in requests %}<tr><td>#{{r.id}}</td><td>{{r.name}}<br>{{r.phone}}</td><td>{{r.service}}</td><td>₹{{"{:,.2f}".format(r.charge)}}</td><td>{% if r.status=="Success" %}<span class="approved-msg">🟢 Successfully Approved</span>{% else %}<span class="badge {{r.status|lower}}">{{r.status}}</span>{% endif %}</td><td>{% if r.status=="Success" and r.pdf_filename %}<a class="btn" href="/retailer/request/{{r.id}}/download">📄 Download PDF</a>{% else %}-{% endif %}</td><td>{{r.created_at}}</td></tr>{% else %}<tr><td colspan="7">No service requests yet.</td></tr>{% endfor %}</tbody></table></div></section>
+
+<section class="card"><h2>Wallet Ledger</h2><div class="tablewrap"><table><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Balance After</th><th>Note</th></tr></thead><tbody>{% for l in ledger %}<tr><td>{{l.created_at}}</td><td>{{l.type}}</td><td class="{% if l.amount < 0 %}negative{% else %}positive{% endif %}">₹{{"{:,.2f}".format(l.amount)}}</td><td>₹{{"{:,.2f}".format(l.balance_after)}}</td><td>{{l.note or '-'}}</td></tr>{% else %}<tr><td colspan="5">No ledger entries yet.</td></tr>{% endfor %}</tbody></table></div></section>
+</main></body></html>
