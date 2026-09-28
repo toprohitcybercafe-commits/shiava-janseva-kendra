@@ -1,216 +1,349 @@
 ```html
 <!doctype html>
 <html lang="hi">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Retailer Dashboard</title>
-<link rel="stylesheet" href="/static/style.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
 
-<style>
-.service-list{
-    display:grid;
-    gap:12px;
-}
+    <title>Retailer Dashboard</title>
 
-.service-item{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    padding:14px;
-    border:1px solid #ddd;
-    border-radius:10px;
-}
+    <link rel="stylesheet" href="/static/style.css">
 
-.modal{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.55);
-    z-index:9999;
-    align-items:center;
-    justify-content:center;
-    padding:15px;
-}
+    <style>
+        .service-list {
+            display: grid;
+            gap: 12px;
+            margin-top: 15px;
+        }
 
-.modal.show{
-    display:flex;
-}
+        .service-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background: #fff;
+        }
 
-.modal-box{
-    background:#fff;
-    width:min(650px,100%);
-    max-height:90vh;
-    overflow:auto;
-    border-radius:14px;
-    padding:20px;
-    position:relative;
-}
+        .service-item strong {
+            font-size: 16px;
+        }
 
-.close{
-    position:absolute;
-    right:14px;
-    top:8px;
-    border:0;
-    background:none;
-    font-size:30px;
-    cursor:pointer;
-}
-</style>
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+
+        .modal.show {
+            display: flex !important;
+        }
+
+        .modal-box {
+            background: #fff;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 25px;
+            border-radius: 15px;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .modal-box h2 {
+            margin-top: 0;
+            padding-right: 35px;
+        }
+
+        .modal-box label {
+            display: block;
+            margin: 12px 0;
+        }
+
+        .modal-box input,
+        .modal-box textarea,
+        .modal-box select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            margin-top: 6px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        .modal-box textarea {
+            resize: vertical;
+        }
+
+        .close {
+            position: absolute;
+            right: 12px;
+            top: 5px;
+            border: none;
+            background: none;
+            font-size: 32px;
+            line-height: 1;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .close:hover {
+            color: red;
+        }
+
+        @media (max-width: 600px) {
+            .service-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .service-item .btn {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
 <header>
-<div class="wrap nav">
+    <div class="wrap nav">
 
-<div>
-<h1>Retailer Dashboard</h1>
-<small>Shiva Janseva Kendra · {{retailer.name}}</small>
-</div>
+        <div>
+            <h1>Retailer Dashboard</h1>
+            <small>
+                Shiva Janseva Kendra · {{retailer.name}}
+            </small>
+        </div>
 
-<a class="btn ghost" href="/retailer/logout">Logout</a>
+        <a class="btn ghost" href="/retailer/logout">
+            Logout
+        </a>
 
-</div>
+    </div>
 </header>
+
 
 <main class="wrap">
 
-{% with messages=get_flashed_messages(with_categories=true) %}
-{% for cat,msg in messages %}
-<div class="alert {{cat}}">{{msg}}</div>
-{% endfor %}
-{% endwith %}
+    <!-- FLASH MESSAGES -->
 
-<section class="wallet-grid">
+    {% with messages = get_flashed_messages(with_categories=true) %}
 
-<div class="wallet-card">
-<span>My Balance</span>
-<strong>₹{{"{:,.2f}".format(retailer.balance)}}</strong>
-<small>
-Service charge:
-₹{{"{:,.2f}".format(service_charge)}} per request
-</small>
-</div>
+        {% for cat, msg in messages %}
 
-<div class="wallet-card">
-<span>Retailer ID</span>
-<strong>{{retailer.username}}</strong>
-<small>{{retailer.phone}}</small>
-</div>
+            <div class="alert {{cat}}">
+                {{msg}}
+            </div>
 
-</section>
+        {% endfor %}
+
+    {% endwith %}
 
 
-<!-- ALL SERVICES -->
+    <!-- WALLET -->
 
-<div class="card">
+    <section class="wallet-grid">
 
-<h2>🧾 All Services</h2>
+        <div class="wallet-card">
 
-<p class="muted">
-Dashboard se kisi bhi service ko directly open karein.
-</p>
+            <span>My Balance</span>
 
-<div class="service-list">
+            <strong>
+                ₹{{"{:,.2f}".format(retailer.balance)}}
+            </strong>
 
-{% for s in services %}
+            <small>
+                Service charge:
+                ₹{{"{:,.2f}".format(service_charge)}}
+                per request
+            </small>
 
-<div class="service-item">
-
-<strong>{{s}}</strong>
-
-<button
-class="btn"
-type="button"
-onclick="openServiceForm({{s|tojson|forceescape}})">
-📝 Apply Now
-</button>
-
-</div>
-
-{% endfor %}
-
-</div>
-
-</div>
+        </div>
 
 
-<!-- SERVICE REQUESTS -->
+        <div class="wallet-card">
 
-<div class="card">
+            <span>Retailer ID</span>
 
-<h2>My Service Requests</h2>
+            <strong>
+                {{retailer.username}}
+            </strong>
 
-<div class="tablewrap">
+            <small>
+                {{retailer.phone}}
+            </small>
 
-<table>
+        </div>
 
-<thead>
+    </section>
 
-<tr>
-<th>ID</th>
-<th>Customer</th>
-<th>Service</th>
-<th>Amount</th>
-<th>Status</th>
-<th>Refund</th>
-<th>Date</th>
-</tr>
 
-</thead>
+    <!-- ALL SERVICES -->
 
-<tbody>
+    <div class="card">
 
-{% for r in rows %}
+        <h2>🧾 All Services</h2>
 
-<tr>
+        <p class="muted">
+            Dashboard se kisi bhi service ko directly open karein.
+        </p>
 
-<td>#{{r.id}}</td>
 
-<td>
-{{r.name}}<br>
-{{r.phone}}
-</td>
+        <div class="service-list">
 
-<td>{{r.service}}</td>
+            {% for s in services %}
 
-<td>
-₹{{"{:,.2f}".format(r.amount)}}
-</td>
+                <div class="service-item">
 
-<td>{{r.status}}</td>
+                    <strong>
+                        {{s}}
+                    </strong>
 
-<td>
-{% if r.refunded %}
-Yes
-{% else %}
--
-{% endif %}
-</td>
 
-<td>{{r.created_at}}</td>
+                    <button
+                        class="btn"
+                        type="button"
+                        onclick="openServiceForm({{ s|tojson|forceescape }})">
 
-</tr>
+                        📝 Apply Now
 
-{% else %}
+                    </button>
 
-<tr>
-<td colspan="7">
-No service requests yet.
-</td>
-</tr>
+                </div>
 
-{% endfor %}
+            {% else %}
 
-</tbody>
+                <p>
+                    No services available.
+                </p>
 
-</table>
+            {% endfor %}
 
-</div>
+        </div>
 
-</div>
+    </div>
+
+
+    <!-- MY SERVICE REQUESTS -->
+
+    <div class="card">
+
+        <h2>
+            My Service Requests
+        </h2>
+
+
+        <div class="tablewrap">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Customer</th>
+
+                        <th>Service</th>
+
+                        <th>Amount</th>
+
+                        <th>Status</th>
+
+                        <th>Refund</th>
+
+                        <th>Date</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for r in rows %}
+
+                        <tr>
+
+                            <td>
+                                #{{r.id}}
+                            </td>
+
+
+                            <td>
+                                {{r.name}}
+                                <br>
+                                {{r.phone}}
+                            </td>
+
+
+                            <td>
+                                {{r.service}}
+                            </td>
+
+
+                            <td>
+                                ₹{{"{:,.2f}".format(r.amount)}}
+                            </td>
+
+
+                            <td>
+                                {{r.status}}
+                            </td>
+
+
+                            <td>
+
+                                {% if r.refunded %}
+
+                                    Yes
+
+                                {% else %}
+
+                                    -
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+                                {{r.created_at}}
+                            </td>
+
+                        </tr>
+
+                    {% else %}
+
+                        <tr>
+
+                            <td colspan="7">
+                                No service requests yet.
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
 
 </main>
 
@@ -218,120 +351,182 @@ No service requests yet.
 <!-- SERVICE FORM POPUP -->
 
 <div
-id="serviceModal"
-class="modal"
-onclick="if(event.target===this)closeServiceForm()">
+    id="serviceModal"
+    class="modal"
+    onclick="if(event.target === this) closeServiceForm()"
+>
 
-<div class="modal-box">
+    <div class="modal-box">
 
-<button
-class="close"
-type="button"
-onclick="closeServiceForm()">
-×
-</button>
+        <button
+            type="button"
+            class="close"
+            onclick="closeServiceForm()"
+        >
+            ×
+        </button>
 
-<h2 id="modalTitle">
-Apply for Service
-</h2>
 
-<form method="post" action="/retailer/request">
+        <h2 id="modalTitle">
+            Apply for Service
+        </h2>
 
-<label>
-Customer Name*
-<input
-name="name"
-required
-maxlength="80">
-</label>
 
-<label>
-Customer Mobile*
-<input
-name="phone"
-required
-maxlength="15">
-</label>
+        <form
+            method="post"
+            action="/retailer/request"
+        >
 
-<label>
-Service*
-<input
-id="serviceField"
-name="service"
-readonly
-required>
-</label>
+            <label>
 
-<label>
-Preferred Date
-<input
-name="preferred_date"
-type="date">
-</label>
+                Customer Name*
 
-<label>
-Message / Details
+                <input
+                    type="text"
+                    name="name"
+                    maxlength="80"
+                    required
+                >
 
-<textarea
-name="message"
-rows="4"
-maxlength="1000"></textarea>
+            </label>
 
-</label>
 
-<p class="muted">
+            <label>
 
-Submit karne par
-₹{{"{:,.2f}".format(service_charge)}}
-balance se deduct hoga.
+                Customer Mobile*
 
-Admin Reject karega to amount automatically refund hoga.
+                <input
+                    type="text"
+                    name="phone"
+                    maxlength="15"
+                    required
+                >
 
-</p>
+            </label>
 
-<button
-class="btn"
-type="submit">
-Submit Service Request
-</button>
 
-</form>
+            <label>
+
+                Service*
+
+                <input
+                    id="serviceField"
+                    type="text"
+                    name="service"
+                    readonly
+                    required
+                >
+
+            </label>
+
+
+            <label>
+
+                Preferred Date
+
+                <input
+                    type="date"
+                    name="preferred_date"
+                >
+
+            </label>
+
+
+            <label>
+
+                Message / Details
+
+                <textarea
+                    name="message"
+                    rows="4"
+                    maxlength="1000"
+                ></textarea>
+
+            </label>
+
+
+            <p class="muted">
+
+                Submit karne par
+                ₹{{"{:,.2f}".format(service_charge)}}
+                balance se deduct hoga.
+                Admin Reject karega to amount automatically refund hoga.
+
+            </p>
+
+
+            <button
+                class="btn"
+                type="submit"
+            >
+
+                Submit Service Request
+
+            </button>
+
+        </form>
+
+    </div>
 
 </div>
 
-</div>
 
+<!-- JAVASCRIPT -->
 
 <script>
 
-function openServiceForm(service){
+function openServiceForm(service) {
 
-    document.getElementById("serviceField").value = service;
+    const modal = document.getElementById("serviceModal");
 
-    document.getElementById("modalTitle").textContent =
-        service + " — Apply Now";
+    const serviceField = document.getElementById("serviceField");
 
-    document.getElementById("serviceModal")
-        .classList.add("show");
+    const modalTitle = document.getElementById("modalTitle");
+
+
+    if (!modal || !serviceField || !modalTitle) {
+
+        alert("Service form load nahi ho raha.");
+
+        return;
+
+    }
+
+
+    serviceField.value = service;
+
+    modalTitle.textContent = service + " — Apply Now";
+
+    modal.classList.add("show");
+
 }
 
 
-function closeServiceForm(){
+function closeServiceForm() {
 
-    document.getElementById("serviceModal")
-        .classList.remove("show");
+    const modal = document.getElementById("serviceModal");
+
+    if (modal) {
+
+        modal.classList.remove("show");
+
+    }
+
 }
 
 
-document.addEventListener("keydown", function(e){
+document.addEventListener("keydown", function(event) {
 
-    if(e.key === "Escape"){
+    if (event.key === "Escape") {
+
         closeServiceForm();
+
     }
 
 });
 
 </script>
+
 
 </body>
 </html>
