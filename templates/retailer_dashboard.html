@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
 
     <title>Retailer Dashboard</title>
 
@@ -28,81 +28,6 @@
             background: #fff;
         }
 
-        .service-item strong {
-            font-size: 16px;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.65);
-            z-index: 999999;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-            box-sizing: border-box;
-        }
-
-        .modal.show {
-            display: flex !important;
-        }
-
-        .modal-box {
-            background: #fff;
-            width: 100%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 25px;
-            border-radius: 15px;
-            position: relative;
-            box-sizing: border-box;
-        }
-
-        .modal-box h2 {
-            margin-top: 0;
-            padding-right: 35px;
-        }
-
-        .modal-box label {
-            display: block;
-            margin: 14px 0;
-        }
-
-        .modal-box input,
-        .modal-box textarea {
-            display: block;
-            width: 100%;
-            box-sizing: border-box;
-            padding: 11px;
-            margin-top: 6px;
-            border: 1px solid #ccc;
-            border-radius: 7px;
-            font-size: 15px;
-        }
-
-        .modal-box textarea {
-            resize: vertical;
-        }
-
-        .close {
-            position: absolute;
-            right: 12px;
-            top: 8px;
-            border: none;
-            background: transparent;
-            font-size: 32px;
-            line-height: 1;
-            cursor: pointer;
-        }
-
-        .close:hover {
-            color: red;
-        }
-
         @media (max-width: 600px) {
             .service-item {
                 flex-direction: column;
@@ -115,7 +40,6 @@
         }
     </style>
 </head>
-
 
 <body>
 
@@ -139,9 +63,6 @@
 
 
 <main class="wrap">
-
-
-    <!-- FLASH MESSAGES -->
 
     {% with messages = get_flashed_messages(with_categories=true) %}
 
@@ -215,13 +136,25 @@
                     {{ s }}
                 </strong>
 
-                <button
-                    type="button"
-                    class="btn apply-service-btn"
-                    data-service="{{ s }}"
-                >
-                    📝 Apply Now
-                </button>
+
+                <!-- APPLY BUTTON -->
+
+                <form method="get" action="/retailer/apply">
+
+                    <input
+                        type="hidden"
+                        name="service"
+                        value="{{ s }}"
+                    >
+
+                    <button
+                        type="submit"
+                        class="btn"
+                    >
+                        📝 Apply Now
+                    </button>
+
+                </form>
 
             </div>
 
@@ -330,189 +263,6 @@
     </div>
 
 </main>
-
-
-<!-- SERVICE FORM POPUP -->
-
-<div id="serviceModal" class="modal">
-
-    <div class="modal-box">
-
-        <button
-            type="button"
-            class="close"
-            id="closeServiceModal"
-        >
-            ×
-        </button>
-
-
-        <h2 id="modalTitle">
-            Apply for Service
-        </h2>
-
-
-        <form
-            method="post"
-            action="/retailer/request"
-        >
-
-            <label>
-                Customer Name*
-
-                <input
-                    type="text"
-                    name="name"
-                    maxlength="80"
-                    required
-                >
-            </label>
-
-
-            <label>
-                Customer Mobile*
-
-                <input
-                    type="text"
-                    name="phone"
-                    maxlength="15"
-                    required
-                >
-            </label>
-
-
-            <label>
-                Service*
-
-                <input
-                    id="serviceField"
-                    type="text"
-                    name="service"
-                    readonly
-                    required
-                >
-            </label>
-
-
-            <label>
-                Preferred Date
-
-                <input
-                    type="date"
-                    name="preferred_date"
-                >
-            </label>
-
-
-            <label>
-                Message / Details
-
-                <textarea
-                    name="message"
-                    rows="4"
-                    maxlength="1000"
-                ></textarea>
-            </label>
-
-
-            <p class="muted">
-
-                Submit karne par
-                ₹{{ "{:,.2f}".format(service_charge) }}
-                balance se deduct hoga.
-                Admin Reject karega to amount automatically refund hoga.
-
-            </p>
-
-
-            <button
-                type="submit"
-                class="btn"
-            >
-                Submit Service Request
-            </button>
-
-        </form>
-
-    </div>
-
-</div>
-
-
-<script>
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const modal = document.getElementById("serviceModal");
-
-    const serviceField =
-        document.getElementById("serviceField");
-
-    const modalTitle =
-        document.getElementById("modalTitle");
-
-    const closeButton =
-        document.getElementById("closeServiceModal");
-
-
-    const buttons =
-        document.querySelectorAll(".apply-service-btn");
-
-
-    buttons.forEach(function (button) {
-
-        button.addEventListener("click", function () {
-
-            const service =
-                button.getAttribute("data-service");
-
-
-            serviceField.value = service;
-
-
-            modalTitle.textContent =
-                service + " — Apply Now";
-
-
-            modal.classList.add("show");
-
-        });
-
-    });
-
-
-    closeButton.addEventListener("click", function () {
-
-        modal.classList.remove("show");
-
-    });
-
-
-    modal.addEventListener("click", function (event) {
-
-        if (event.target === modal) {
-
-            modal.classList.remove("show");
-
-        }
-
-    });
-
-
-    document.addEventListener("keydown", function (event) {
-
-        if (event.key === "Escape") {
-
-            modal.classList.remove("show");
-
-        }
-
-    });
-
-});
-
-</script>
-
 
 </body>
 </html>
